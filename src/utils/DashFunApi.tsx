@@ -2,8 +2,24 @@ import { GameData } from "@/components/DashFunData/GameData"
 import { DashFunUser } from "@/components/DashFunData/UserData"
 import axios from "axios"
 
+const api_local = "https://tma-server-test.nexgami.com/api/v1/"
+const api_test = "https://dashfun-server-test.nexgami.com/api/v1/"
+const api_prod = "https://dashfun.nexgami.com/api/v1/"
 
-const dashFunApiUrl = "https://tma-server-test.nexgami.com/api/v1/"
+const api_url = () => {
+	const url = window.location.href;
+	console.log("api_url.url===", url);
+	if (url.indexOf("https://dashfun-test") >= 0) {
+		return api_test;
+	}
+	if (url.indexOf("https://dashfun") >= 0) {
+		return api_prod;
+	}
+	return api_local;
+}
+
+
+const dashFunApiUrl = api_url()
 
 const UserApi = {
 	apiUrl: (): string => {
