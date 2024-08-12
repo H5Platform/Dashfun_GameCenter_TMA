@@ -2,6 +2,8 @@ import { GameData } from "@/components/DashFunData/GameData"
 import { DashFunUser } from "@/components/DashFunData/UserData"
 import axios from "axios"
 
+let isTestEnv = false;
+
 const api_local = "https://tma-server-test.nexgami.com/api/v1/"
 const api_test = "https://dashfun-server-test.nexgami.com/api/v1/"
 const api_prod = "https://dashfun.nexgami.com/api/v1/"
@@ -10,14 +12,16 @@ const api_url = () => {
 	const url = window.location.href;
 	console.log("api_url.url===", url);
 	if (url.indexOf("https://dashfun-test") >= 0) {
+		isTestEnv = true
 		return api_test;
 	}
 	if (url.indexOf("https://dashfun") >= 0) {
+		isTestEnv = false
 		return api_prod;
 	}
+	isTestEnv = false
 	return api_local;
 }
-
 
 const dashFunApiUrl = api_url()
 
@@ -93,4 +97,15 @@ const PaymentApi = {
 	}
 }
 
-export { GameApi, PaymentApi, UserApi }
+const tg_link = () => {
+	const botName = isTestEnv ? "DashFunTestBot" : "DashFunBot";
+	return `https://t.me/${botName}`
+}
+
+const TGLink = {
+	gameLink: (gameId: string) => {
+		return `${tg_link()}/Games?startapp=${gameId}`
+	}
+}
+
+export { GameApi, PaymentApi, UserApi, TGLink }

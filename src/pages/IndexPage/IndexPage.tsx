@@ -5,6 +5,7 @@ import { Link } from '@/components/Link/Link.tsx';
 
 import tonSvg from './ton.svg';
 import { useUtils } from '@telegram-apps/sdk-react';
+import { TGLink } from '@/utils/DashFunApi';
 
 export const IndexPage: FC = () => {
   const util = useUtils()
@@ -28,7 +29,7 @@ export const IndexPage: FC = () => {
         footer='These pages help developer to learn more about current launch information'
       >
         <Link to='' onClick={() => {
-          util.openTelegramLink("https://t.me/DashFunBot/Games?startapp=6c2ghrcwm4g")
+          util.openTelegramLink(TGLink.gameLink("6c2ghrcwm4g"))
         }}>
           <Cell subtitle="Stone Age">Open</Cell>
         </Link>
