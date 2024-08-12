@@ -6,7 +6,6 @@ import { SectionHeader } from '@telegram-apps/telegram-ui/dist/components/Blocks
 import { useState, type FC } from 'react';
 import Iframe from 'react-iframe';
 import "./GameWrapper.css";
-import { useDashFunUser } from '@/components/DashFun/DashFunUser';
 export const GameWrapper: FC = () => {
 
 	const [play, setPlay] = useState(false);
@@ -14,7 +13,7 @@ export const GameWrapper: FC = () => {
 	const [game, setGame] = useState<GameData | null>(null);
 	const util = useUtils();
 	const initData = useInitData();
-	const dfUser = useDashFunUser();
+	// const dfUser = useDashFunUser();
 
 	const onShare = () => {
 		if (game != null) {

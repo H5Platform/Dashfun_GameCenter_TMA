@@ -1,10 +1,10 @@
 import { FC, useEffect, useState } from "react";
 
-import "./GameLauncher.css"
-import { Button, Spinner, Text, Title } from "@telegram-apps/telegram-ui";
-import { InvoiceState, useInvoice, useLaunchParams, useUtils } from "@telegram-apps/sdk-react";
 import { GameApi } from "@/utils/DashFunApi";
+import { InvoiceState, useInvoice, useLaunchParams, useUtils } from "@telegram-apps/sdk-react";
+import { Button, Spinner } from "@telegram-apps/telegram-ui";
 import { GameData } from "../DashFunData/GameData";
+import "./GameLauncher.css";
 
 export type GLProps = JSX.IntrinsicElements['div'] & {
 	gameId: string | undefined,
@@ -127,7 +127,7 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked }) => 
 				</>}
 		</div>
 		<div className="gl-playbutton">
-			<Button size="m" stretched loading={game == null} onClick={e => {
+			<Button size="m" stretched loading={game == null} onClick={_ => {
 				onPlayClicked?.call([]);
 			}}>Play</Button>
 		</div>

@@ -6,9 +6,7 @@ import {
   initNavigator, useLaunchParams,
   useMiniApp,
   useThemeParams,
-  useViewport,
-  useSwipeBehavior,
-  useClosingBehavior,
+  useViewport
 } from '@telegram-apps/sdk-react';
 import { AppRoot } from '@telegram-apps/telegram-ui';
 import { type FC, useEffect, useMemo } from 'react';
@@ -27,8 +25,8 @@ export const App: FC = () => {
   const miniApp = useMiniApp();
   const themeParams = useThemeParams();
   const viewport = useViewport();
-  const sb = useSwipeBehavior();
-  const cb = useClosingBehavior();
+  // const sb = useSwipeBehavior();
+  // const cb = useClosingBehavior();
 
   useEffect(() => {
     return bindMiniAppCSSVars(miniApp, themeParams);

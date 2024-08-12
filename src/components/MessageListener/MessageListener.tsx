@@ -1,9 +1,9 @@
-import { InitData, initInitData, initInvoice, initUtils, Invoice, useInitData, useInvoice, useLaunchParams, useUtils, Utils } from "@telegram-apps/sdk-react";
+import { PaymentApi } from "@/utils/DashFunApi";
+import { InitData, initInitData, initInvoice, initUtils, useInitData, useLaunchParams, Utils } from "@telegram-apps/sdk-react";
 import { FC, useEffect } from "react";
-import { DashFunEvents } from "./Events";
 import { useDashFunUser } from "../DashFun/DashFunUser";
 import { DashFunUser } from "../DashFunData/UserData";
-import { PaymentApi } from "@/utils/DashFunApi";
+import { DashFunEvents } from "./Events";
 
 class Context {
 	callData: any;
