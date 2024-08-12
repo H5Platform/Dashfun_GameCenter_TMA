@@ -36,5 +36,5 @@ jobs:
           port: ${{ vars.PORT }}
           username: ${{ secrets.DEPLOY_USERNAME }}
           key: ${{ secrets.DEPLOY_KEY }}
-          source: "./build"
+          source: "./dist"
           target: "/home/website/websites/dashfun_web_test"
