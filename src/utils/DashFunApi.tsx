@@ -2,7 +2,13 @@ import { GameData } from "@/components/DashFunData/GameData"
 import { DashFunUser } from "@/components/DashFunData/UserData"
 import axios from "axios"
 
-let isTestEnv = false;
+enum Env {
+	Dev,
+	Test,
+	Prod
+}
+
+let env: Env = Env.Test
 
 const api_local = "https://tma-server-test.nexgami.com/api/v1/"
 const api_test = "https://dashfun-server-test.nexgami.com/api/v1/"
@@ -12,14 +18,14 @@ const api_url = () => {
 	const url = window.location.href;
 	console.log("api_url.url===", url);
 	if (url.indexOf("https://dashfun-test") >= 0) {
-		isTestEnv = true
+		env = Env.Test
 		return api_test;
 	}
 	if (url.indexOf("https://dashfun") >= 0) {
-		isTestEnv = false
+		env = Env.Prod
 		return api_prod;
 	}
-	isTestEnv = false
+	env = Env.Dev
 	return api_local;
 }
 
@@ -54,6 +60,24 @@ const GameApi = {
 		return dashFunApiUrl + "game/"
 	},
 	findGame: async (gameId: string, tgToken: string): Promise<GameData> => {
+
+		if (gameId.startsWith("test-") && env != Env.Prod) {
+			//for test
+			const encoded = gameId.slice("test-".length)
+			const url = atob(encoded)
+			console.log("encoded url::::", url);
+			return new GameData({
+				id: "ForTest",
+				name: "Test Game",
+				desc: "Only For Test",
+				url: url,
+				genre: [1],
+				iconUrl: "",
+				time: 0
+			});
+		}
+
+
 		const api = GameApi.apiUrl() + gameId
 		const result = await axios.get(api, {
 			headers: {
@@ -98,14 +122,30 @@ const PaymentApi = {
 }
 
 const tg_link = () => {
-	const botName = isTestEnv ? "DashFunTestBot" : "DashFunBot";
+	let botName = "DashFunBot";
+
+	switch (env) {
+		case Env.Test:
+			botName = "DashFunTestBot";
+			break;
+		case Env.Dev:
+			botName = "DashFunBot";
+			break;
+		case Env.Prod:
+			botName = "DashFunBot";
+			break;
+	}
 	return `https://t.me/${botName}`
 }
 
 const TGLink = {
 	gameLink: (gameId: string) => {
 		return `${tg_link()}/Games?startapp=${gameId}`
+	},
+	centerLink: () => {
+		return `${tg_link()}/Center`
 	}
 }
+
 
 export { GameApi, PaymentApi, UserApi, TGLink }

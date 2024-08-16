@@ -30,7 +30,7 @@ import './index.css';
 // document.documentElement.addEventListener('touchmove', onTouchMove, { passive: false })
 
 postEvent("web_app_expand")
-postEvent("web_app_setup_swipe_behavior", { allow_vertical_swipe: false })
+//postEvent("web_app_setup_swipe_behavior", { allow_vertical_swipe: false })
 ReactDOM.createRoot(document.getElementById('root')!).render(<Root />);
 
 // const overflow = 100

@@ -5,6 +5,7 @@ import { InvoiceState, useInvoice, useLaunchParams, useUtils } from "@telegram-a
 import { Button, Spinner } from "@telegram-apps/telegram-ui";
 import { GameData } from "../DashFunData/GameData";
 import "./GameLauncher.css";
+import { GameLoadingEvent } from "../Event/Events";
 
 export type GLProps = JSX.IntrinsicElements['div'] & {
 	gameId: string | undefined,
@@ -16,11 +17,8 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked }) => 
 
 	const initDataRaw = useLaunchParams().initDataRaw;
 	const [game, setGame] = useState<GameData | null>(null);
+	const [loading, setLoading] = useState(-1);
 	const utils = useUtils();
-	const invoice = useInvoice();
-	invoice.on("change", (state: InvoiceState) => {
-		console.log("cccccc", state)
-	})
 
 	const loadGame = async (gameId: string | undefined): Promise<GameData | undefined> => {
 		if (gameId == null) {
@@ -29,30 +27,20 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked }) => 
 		const game = await GameApi.findGame(gameId, initDataRaw as string)
 		if (game != null) {
 			setGame(game);
-			console.log("get game:", game)
 			onLoad(game);
 		}
 	}
 
 	useEffect(() => {
 		loadGame(gameId);
-		// const g: Game = {
-		// 	id: gameId as string,
-		// 	name: "Test Game",
-		// 	desc: "game description....game description....game description....game description....game description....",
-		// 	//url: "http://10.0.0.173:7456/web-mobile/web-mobile/index.html",
-		// 	url: "https://stone-res.83you.com/StoneAge_20230413/game.html",
-		// 	tgLink: "https://t.me/DashFunBot/Games?startapp=" + gameId
-		// };
 
-		// //模拟读取数据
-		// setTimeout(() => {
-		// 	setGame(g);
-		// 	onLoad(g);
-		// }, 1000);
-		// if (gameId != null) {
-		// 	GameApi.findGame(gameId, initDataRaw as string)
-		// }
+		const onLoading = (value: number) => {
+			console.log("loading....", value)
+			setLoading(value);
+		}
+
+		GameLoadingEvent.addListener(onLoading);
+		return () => { GameLoadingEvent.removeListener(onLoading); }
 	}, [gameId])
 
 	return <div className="gl-container">
@@ -84,41 +72,41 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked }) => 
 							mode="bezeled"
 							size="m"
 							onClick={() => {
-								window.postMessage({
-									dashfun: {
-										method: "getUserProfile"
-									}
-								}, "*");
+								// window.postMessage({
+								// 	dashfun: {
+								// 		method: "getUserProfile"
+								// 	}
+								// }, "*");
 
-								const eventListener = (ev: MessageEvent<any>) => {
-									const { data } = ev;
-									if (data.dashfun) {
-										const { method, result } = data.dashfun;
-										if (method == "requestPaymentResult" && result.state == "success") {
-											const { invoiceLink, paymentId } = result.data;
-											console.log(invoiceLink, paymentId)
-											window.removeEventListener('message', eventListener)
-											window.postMessage({
-												dashfun: {
-													method: "openInvoice",
-													value: invoiceLink
-												}
-											})
-										}
-									}
-								}
+								// const eventListener = (ev: MessageEvent<any>) => {
+								// 	const { data } = ev;
+								// 	if (data.dashfun) {
+								// 		const { method, result } = data.dashfun;
+								// 		if (method == "requestPaymentResult" && result.state == "success") {
+								// 			const { invoiceLink, paymentId } = result.data;
+								// 			console.log(invoiceLink, paymentId)
+								// 			window.removeEventListener('message', eventListener)
+								// 			window.postMessage({
+								// 				dashfun: {
+								// 					method: "openInvoice",
+								// 					value: invoiceLink
+								// 				}
+								// 			})
+								// 		}
+								// 	}
+								// }
 
-								window.addEventListener('message', eventListener)
-								window.postMessage({
-									dashfun: {
-										method: "requestPayment",
-										gameId,
-										title: "Test Item",
-										desc: "for payment test",
-										payload: "dashfun payload",
-										price: 1
-									}
-								}, "*")
+								// window.addEventListener('message', eventListener)
+								// window.postMessage({
+								// 	dashfun: {
+								// 		method: "requestPayment",
+								// 		gameId,
+								// 		title: "Test Item",
+								// 		desc: "for payment test",
+								// 		payload: "dashfun payload",
+								// 		price: 1
+								// 	}
+								// }, "*")
 							}}
 						>
 							<i className="fa-regular fa-heart"></i>&nbsp;
@@ -127,7 +115,7 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked }) => 
 				</>}
 		</div>
 		<div className="gl-playbutton">
-			<Button size="m" stretched loading={game == null} onClick={_ => {
+			<Button size="m" stretched disabled={loading == -1} loading={loading >= 0 && loading < 100} onClick={_ => {
 				onPlayClicked?.call([]);
 			}}>Play</Button>
 		</div>

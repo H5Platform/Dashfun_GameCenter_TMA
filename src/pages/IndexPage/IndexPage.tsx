@@ -33,6 +33,13 @@ export const IndexPage: FC = () => {
         }}>
           <Cell subtitle="Stone Age">Open</Cell>
         </Link>
+
+        <Link to='' onClick={() => {
+          util.openTelegramLink(TGLink.gameLink("LocalTest"))
+        }}>
+          <Cell subtitle="Local Test">Open</Cell>
+        </Link>
+
         <Link to='/init-data'>
           <Cell subtitle='User data, chat information, technical data'>Init Data</Cell>
         </Link>

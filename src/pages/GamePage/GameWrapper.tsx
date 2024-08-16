@@ -6,6 +6,7 @@ import { SectionHeader } from '@telegram-apps/telegram-ui/dist/components/Blocks
 import { useState, type FC } from 'react';
 import Iframe from 'react-iframe';
 import "./GameWrapper.css";
+import { TGLink } from '@/utils/DashFunApi';
 export const GameWrapper: FC = () => {
 
 	const [play, setPlay] = useState(false);
@@ -21,6 +22,10 @@ export const GameWrapper: FC = () => {
 		}
 	}
 
+	const onBackToCenter = () => {
+		util.openTelegramLink(TGLink.centerLink())
+	}
+
 	return <div className="game-wrapper">
 		<SectionHeader style={{
 			paddingTop: "5px",
@@ -28,9 +33,11 @@ export const GameWrapper: FC = () => {
 		}}>
 			<div className='game-title'>
 
-				<Button size="s" mode="white" style={{ color: "#000000" }}><i className="fa-brands fa-bitcoin" style={{ color: "#ff8000" }}></i> 12345</Button>
+				<Button size="s" mode="white" style={{ color: "#000000" }}><i className="fa-brands fa-bitcoin" style={{ color: "#ff8000" }}></i> 0</Button>
 				<div style={{ display: 'flex', gap: 10 }}>
-					<Button size="s" mode="filled" >&nbsp;<i className="fa-solid fa-gamepad">&nbsp;</i></Button>
+					<Button size="s" mode="filled" >&nbsp;<i className="fa-solid fa-gamepad" onClick={() => {
+						onBackToCenter();
+					}}>&nbsp;</i></Button>
 					<Button size="s" mode="white" style={{ color: "#000000" }} onClick={() => {
 						onShare();
 					}}>&nbsp;<i className="fa-solid fa-paper-plane"></i>&nbsp;</Button>

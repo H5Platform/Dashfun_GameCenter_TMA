@@ -3,7 +3,8 @@ import { InitData, initInitData, initInvoice, initUtils, useInitData, useLaunchP
 import { FC, useEffect } from "react";
 import { useDashFunUser } from "../DashFun/DashFunUser";
 import { DashFunUser } from "../DashFunData/UserData";
-import { DashFunEvents } from "./Events";
+import { DashFunMessages } from "./Messages";
+import { GameLoadingEvent } from "../Event/Events";
 
 class Context {
 	callData: any;
@@ -45,39 +46,38 @@ const sendResult = (source: Window, method: string, result: Result) => {
 
 const onGetUserProfile = (ctx: Context) => {
 	const { method } = ctx.callData;
-	sendResult(ctx.source, method, new Result("success", ctx.initData.user))
+	sendResult(ctx.source, method, new Result("success", ctx.dfUser))
 }
 
 const onOpenTelegramLink = (ctx: Context) => {
 	console.log("invoke onOpenTelegramLink")
-	const { value } = ctx.callData;
+	const { value } = ctx.callData.payload;
 	ctx.utils.openTelegramLink(value);
 }
 
 const onOpenInvoice = (ctx: Context) => {
-	const { value } = ctx.callData;
+	const { method, payload } = ctx.callData;
+	const { invoiceUrl, paymentId } = payload;
 	const invoice = initInvoice();
-	console.log("opening invoice", value)
-	invoice.on("change:isOpened", (v: boolean) => {
-		console.log(`invoice [${value}] open status changed: `, v)
-	})
-	invoice.open(value, "url").then((status) => {
-		console.log(`invoice ${value} status changed:`, status);
+	console.log("opening invoice", invoiceUrl)
+	invoice.open(invoiceUrl, "url").then((status) => {
+		console.log(`invoice ${invoiceUrl} status changed:`, status);
+		sendResult(ctx.source, method, new Result("success", { paymentId, status }))
 	}).catch(e => {
 		console.error(e);
 	});
 }
 
 const onRequestPayment = (ctx: Context) => {
-	const { method, gameId, title, desc, payload, price } = ctx.callData
+	const { method, payload } = ctx.callData
+	const { gameId, title, desc, info, price } = payload
 	PaymentApi.requestPayment(ctx.initDataRaw, {
 		game_id: gameId,
 		title,
 		desc,
-		payload,
+		payload: info,
 		price
 	}).then(result => {
-		console.log("pppp result ====", result)
 		const r = new Result("success", result);
 		sendResult(ctx.source, method, r)
 	}).catch(e => {
@@ -87,12 +87,23 @@ const onRequestPayment = (ctx: Context) => {
 	})
 }
 
+const onLoading = (ctx: Context) => {
+	const { payload } = ctx.callData
+	let { value } = payload;
+
+	if (value == null) {
+		value = 0
+	}
+	GameLoadingEvent.fire(value);
+}
+
 
 const processors: { [key: string]: (ctx: Context) => void } = {};
-processors[DashFunEvents.getUserProfile] = onGetUserProfile;
-processors[DashFunEvents.openTelegramLink] = onOpenTelegramLink;
-processors[DashFunEvents.openInvoice] = onOpenInvoice;
-processors[DashFunEvents.requestPayment] = onRequestPayment
+processors[DashFunMessages.getUserProfile] = onGetUserProfile;
+processors[DashFunMessages.openTelegramLink] = onOpenTelegramLink;
+processors[DashFunMessages.openInvoice] = onOpenInvoice;
+processors[DashFunMessages.requestPayment] = onRequestPayment;
+processors[DashFunMessages.loading] = onLoading;
 
 export const MessageListener: FC = () => {
 	const initDataRaw = useLaunchParams().initDataRaw;
@@ -114,7 +125,7 @@ export const MessageListener: FC = () => {
 			window.removeEventListener('message', eventListener);
 		}
 
-	}, [initData, initDataRaw]);
+	}, [initData, initDataRaw, dfUser]);
 
 	return <></>
 }

@@ -1,3 +1,5 @@
+import { TGLink } from "@/utils/DashFunApi";
+
 type GameDataParams = {
 	id: string;
 	name: string;
@@ -19,7 +21,8 @@ class GameData {
 	time: number = 0;
 
 	tgLink(): string {
-		return "https://t.me/DashFunBot/Games?startapp=" + this.id;
+		// return "https://t.me/DashFunBot/Games?startapp=" + this.id;
+		return TGLink.gameLink(this.id)
 	}
 
 	constructor(data: GameDataParams) {
