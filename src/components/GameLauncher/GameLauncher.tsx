@@ -1,11 +1,11 @@
 import { FC, useEffect, useState } from "react";
 
 import { GameApi } from "@/utils/DashFunApi";
-import { InvoiceState, useInvoice, useLaunchParams, useUtils } from "@telegram-apps/sdk-react";
+import { useLaunchParams, useUtils } from "@telegram-apps/sdk-react";
 import { Button, Spinner } from "@telegram-apps/telegram-ui";
 import { GameData } from "../DashFunData/GameData";
-import "./GameLauncher.css";
 import { GameLoadingEvent } from "../Event/Events";
+import "./GameLauncher.css";
 
 export type GLProps = JSX.IntrinsicElements['div'] & {
 	gameId: string | undefined,
@@ -24,6 +24,7 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked }) => 
 		if (gameId == null) {
 			return undefined;
 		}
+
 		const game = await GameApi.findGame(gameId, initDataRaw as string)
 		if (game != null) {
 			setGame(game);
