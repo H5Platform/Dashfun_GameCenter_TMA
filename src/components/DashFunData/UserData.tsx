@@ -8,9 +8,10 @@ class DashFunUser {
 	createData: number		//创建时间
 	loginTime: number		//登录时间
 	logoffTime: number		//登出时间
+	language: string 		//语言设定
 
 	constructor(data: any) {
-		const { id, channel_id, display_name, user_name, avatar_url, from, create_data, login_time, logoff_time } = data
+		const { id, channel_id, display_name, user_name, avatar_url, from, create_data, login_time, logoff_time, language } = data
 		this.id = id;
 		this.channelId = channel_id;
 		this.displayName = display_name;
@@ -20,6 +21,7 @@ class DashFunUser {
 		this.createData = create_data;
 		this.loginTime = login_time;
 		this.logoffTime = logoff_time
+		this.language = language
 	}
 }
 

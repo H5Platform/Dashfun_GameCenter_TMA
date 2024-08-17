@@ -11,6 +11,7 @@ const useDashFunUser = (): DashFunUser | null => {
 	const loginUser = async () => {
 		if (initDataRaw == null) return;
 		const dfUser = await UserApi.tgLogin(initDataRaw as string);
+		dfUser.language = initData?.user?.languageCode as string
 		console.log("===", dfUser)
 		setUser(dfUser);
 	}
