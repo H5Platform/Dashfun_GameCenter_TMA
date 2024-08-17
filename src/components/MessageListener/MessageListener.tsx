@@ -61,6 +61,7 @@ const onOpenTelegramLink = (ctx: Context) => {
 
 const onOpenInvoice = (ctx: Context) => {
 	const { method, payload } = ctx.callData;
+	console.log("open invoice payload:", payload)
 	const { invoiceLink, paymentId } = payload;
 	const invoice = initInvoice();
 	console.log("opening invoice", invoiceLink)
