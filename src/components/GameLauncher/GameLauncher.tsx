@@ -1,12 +1,11 @@
 import { FC, useEffect, useState } from "react";
 
-import { GameApi } from "@/utils/DashFunApi";
-import { useLaunchParams, useUtils } from "@telegram-apps/sdk-react";
+import { useUtils } from "@telegram-apps/sdk-react";
 import { Button, Spinner } from "@telegram-apps/telegram-ui";
+import { useDashFunGame } from "../DashFun/DashFunGame";
 import { GameData } from "../DashFunData/GameData";
 import { GameLoadingEvent } from "../Event/Events";
 import "./GameLauncher.css";
-import { useDashFunGame } from "../DashFun/DashFunGame";
 
 export type GLProps = JSX.IntrinsicElements['div'] & {
 	gameId: string | undefined,
