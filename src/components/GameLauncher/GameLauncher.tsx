@@ -119,7 +119,9 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked }) => 
 		</div>
 		<div className="gl-playbutton">
 			<Button size="m" stretched disabled={loading == -1} loading={loading >= 0 && loading < 100} onClick={_ => {
-				onPlayClicked?.call([]);
+				if (loading >= 100) {
+					onPlayClicked?.call([]);
+				}
 			}}>Play</Button>
 		</div>
 	</div>
