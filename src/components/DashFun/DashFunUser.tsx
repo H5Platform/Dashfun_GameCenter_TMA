@@ -12,7 +12,6 @@ const useDashFunUser = (): DashFunUser | null => {
 		if (initDataRaw == null) return;
 		const dfUser = await UserApi.tgLogin(initDataRaw as string);
 		dfUser.language = initData?.user?.languageCode as string
-		console.log("===", dfUser)
 		setUser(dfUser);
 	}
 
@@ -23,6 +22,7 @@ const useDashFunUser = (): DashFunUser | null => {
 		if (user == null || user.channelId != initData.user.id.toString()) {
 			loginUser();
 		}
+
 	}, [initData?.user?.id, initDataRaw])
 
 	return user;

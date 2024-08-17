@@ -5,6 +5,8 @@ import { useDashFunUser } from "../DashFun/DashFunUser";
 import { DashFunUser } from "../DashFunData/UserData";
 import { DashFunMessages } from "./Messages";
 import { GameLoadingEvent } from "../Event/Events";
+import { useDashFunGame } from "../DashFun/DashFunGame";
+import { GameData } from "../DashFunData/GameData";
 
 class Context {
 	callData: any;
@@ -12,15 +14,17 @@ class Context {
 	utils: Utils;
 	dfUser: DashFunUser;
 	initDataRaw: string;
-	source: Window
+	source: Window;
+	dfGame: GameData;
 
-	constructor(source: Window, callData: any, dfUser: DashFunUser, initDataRaw: string) {
+	constructor(source: Window, callData: any, dfGame: GameData, dfUser: DashFunUser, initDataRaw: string) {
 		this.initData = initInitData() as InitData;
 		this.dfUser = dfUser;
 		this.callData = callData;
 		this.utils = initUtils();
 		this.initDataRaw = initDataRaw;
 		this.source = source;
+		this.dfGame = dfGame;
 	}
 }
 
@@ -57,11 +61,11 @@ const onOpenTelegramLink = (ctx: Context) => {
 
 const onOpenInvoice = (ctx: Context) => {
 	const { method, payload } = ctx.callData;
-	const { invoiceUrl, paymentId } = payload;
+	const { invoiceLink, paymentId } = payload;
 	const invoice = initInvoice();
-	console.log("opening invoice", invoiceUrl)
-	invoice.open(invoiceUrl, "url").then((status) => {
-		console.log(`invoice ${invoiceUrl} status changed:`, status);
+	console.log("opening invoice", invoiceLink)
+	invoice.open(invoiceLink, "url").then((status) => {
+		console.log(`invoice ${invoiceLink} status changed:`, status);
 		sendResult(ctx.source, method, new Result("success", { paymentId, status }))
 	}).catch(e => {
 		console.error(e);
@@ -70,9 +74,9 @@ const onOpenInvoice = (ctx: Context) => {
 
 const onRequestPayment = (ctx: Context) => {
 	const { method, payload } = ctx.callData
-	const { gameId, title, desc, info, price } = payload
+	const { title, desc, info, price } = payload
 	PaymentApi.requestPayment(ctx.initDataRaw, {
-		game_id: gameId,
+		game_id: ctx.dfGame.id,
 		title,
 		desc,
 		payload: info,
@@ -109,6 +113,7 @@ export const MessageListener: FC = () => {
 	const initDataRaw = useLaunchParams().initDataRaw;
 	const initData = useInitData();
 	const dfUser = useDashFunUser();
+	const game = useDashFunGame();
 
 	const eventListener = (ev: MessageEvent<any>) => {
 		console.log("receive message", ev);
@@ -116,7 +121,7 @@ export const MessageListener: FC = () => {
 		if (data.dashfun) {
 			const { method } = data.dashfun;
 			const f = processors[method];
-			if (f != null) f(new Context(ev.source as Window, data.dashfun, dfUser as DashFunUser, initDataRaw as string));
+			if (f != null) f(new Context(ev.source as Window, data.dashfun, game as GameData, dfUser as DashFunUser, initDataRaw as string));
 		}
 	}
 	useEffect(() => {
@@ -125,7 +130,7 @@ export const MessageListener: FC = () => {
 			window.removeEventListener('message', eventListener);
 		}
 
-	}, [initData, initDataRaw, dfUser]);
+	}, [initData, initDataRaw, dfUser, game]);
 
 	return <></>
 }

@@ -6,6 +6,7 @@ import { Button, Spinner } from "@telegram-apps/telegram-ui";
 import { GameData } from "../DashFunData/GameData";
 import { GameLoadingEvent } from "../Event/Events";
 import "./GameLauncher.css";
+import { useDashFunGame } from "../DashFun/DashFunGame";
 
 export type GLProps = JSX.IntrinsicElements['div'] & {
 	gameId: string | undefined,
@@ -15,26 +16,27 @@ export type GLProps = JSX.IntrinsicElements['div'] & {
 
 export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked }) => {
 
-	const initDataRaw = useLaunchParams().initDataRaw;
-	const [game, setGame] = useState<GameData | null>(null);
+	//const initDataRaw = useLaunchParams().initDataRaw;
+	//const [game, setGame] = useState<GameData | null>(null);
+	const game = useDashFunGame();
 	const [loading, setLoading] = useState(-1);
 	const utils = useUtils();
 
-	const loadGame = async (gameId: string | undefined): Promise<GameData | undefined> => {
-		if (gameId == null) {
-			return undefined;
-		}
+	// const loadGame = async (gameId: string | undefined): Promise<GameData | undefined> => {
+	// 	if (gameId == null) {
+	// 		return undefined;
+	// 	}
 
-		const game = await GameApi.findGame(gameId, initDataRaw as string)
-		if (game != null) {
-			setGame(game);
-			onLoad(game);
-		}
-	}
+	// 	const game = await GameApi.findGame(gameId, initDataRaw as string)
+	// 	if (game != null) {
+	// 		setGame(game);
+	// 		onLoad(game);
+	// 	}
+	// }
 
 	useEffect(() => {
-		loadGame(gameId);
-
+		// loadGame(gameId);
+		onLoad(game as GameData);
 		const onLoading = (value: number) => {
 			console.log("loading....", value)
 			setLoading(value);
@@ -42,7 +44,7 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked }) => 
 
 		GameLoadingEvent.addListener(onLoading);
 		return () => { GameLoadingEvent.removeListener(onLoading); }
-	}, [gameId])
+	}, [gameId, game])
 
 	return <div className="gl-container">
 		<div className="gl-gamepanel">
