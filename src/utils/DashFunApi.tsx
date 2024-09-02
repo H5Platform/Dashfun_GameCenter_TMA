@@ -41,6 +41,27 @@ const UserApi = {
 		const result = await axios.get(api, {
 			headers: {
 				"Authorization": "tma " + tgToken
+			},
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return new DashFunUser(result.data.data)
+			} else {
+				throw result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
+
+	enterGame: async (tgToken: string, gameId: string): Promise<DashFunUser> => {
+		const api = UserApi.apiUrl() + "enter_game"
+		const result = await axios.get(api, {
+			headers: {
+				"Authorization": "tma " + tgToken
+			},
+			params: {
+				game_id: gameId
 			}
 		})
 		if (result.status == 200) {

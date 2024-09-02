@@ -1,12 +1,12 @@
 import { GameData } from '@/components/DashFunData/GameData';
 import { GameLauncher } from '@/components/GameLauncher/GameLauncher';
-import { useInitData, useUtils } from '@telegram-apps/sdk-react';
+import { useInitData, useLaunchParams, useUtils } from '@telegram-apps/sdk-react';
 import { Button, Modal } from '@telegram-apps/telegram-ui';
 import { SectionHeader } from '@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionHeader/SectionHeader';
 import { useState, type FC } from 'react';
 import Iframe from 'react-iframe';
 import "./GameWrapper.css";
-import { TGLink } from '@/utils/DashFunApi';
+import { TGLink, UserApi } from '@/utils/DashFunApi';
 export const GameWrapper: FC = () => {
 
 	const [play, setPlay] = useState(false);
@@ -14,6 +14,8 @@ export const GameWrapper: FC = () => {
 	const [game, setGame] = useState<GameData | null>(null);
 	const util = useUtils();
 	const initData = useInitData();
+	const initDataRaw = useLaunchParams().initDataRaw;
+
 	// const dfUser = useDashFunUser();
 
 	const onShare = () => {
@@ -69,10 +71,15 @@ export const GameWrapper: FC = () => {
 							setGame(g as GameData);
 						}}
 						onPlayClicked={() => {
-							setPlay(true);
-							setTimeout(() => {
-								setShowLoadig(false);
-							}, 2000);
+							//上报enterGame
+							if (game != null) {
+								console.log("report user enter game:", game)
+								UserApi.enterGame(initDataRaw as string, game.id)
+								setPlay(true);
+								setTimeout(() => {
+									setShowLoadig(false);
+								}, 2000);
+							}
 						}} />
 				</Modal>
 			</div>)}
