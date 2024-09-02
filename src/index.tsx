@@ -8,6 +8,7 @@ import './mockEnv.ts';
 
 import '@telegram-apps/telegram-ui/dist/styles.css';
 import './index.css';
+import "tailwindcss/tailwind.css";
 
 // let ts: number | undefined
 // const onTouchStart = (e: TouchEvent) => {

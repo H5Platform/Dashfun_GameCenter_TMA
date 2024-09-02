@@ -34,9 +34,8 @@ export const GameWrapper: FC = () => {
 			paddingBottom: "5px",
 		}}>
 			<div className='game-title'>
-
-				<Button size="s" mode="white" style={{ color: "#000000" }}><i className="fa-brands fa-bitcoin" style={{ color: "#ff8000" }}></i> 0</Button>
-				<div style={{ display: 'flex', gap: 10 }}>
+				<Button size="s" mode="white"><i className="fa-brands fa-bitcoin" style={{ color: "#ff8000" }}></i> 0</Button>
+				<div className='flex gap-1'>
 					<Button size="s" mode="filled" >&nbsp;<i className="fa-solid fa-gamepad" onClick={() => {
 						onBackToCenter();
 					}}>&nbsp;</i></Button>
