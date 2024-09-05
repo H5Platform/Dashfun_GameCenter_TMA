@@ -1,20 +1,27 @@
+import { useDashFunUser } from '@/components/DashFun/DashFunUser';
 import { GameData } from '@/components/DashFunData/GameData';
 import { GameLauncher } from '@/components/GameLauncher/GameLauncher';
+import { TaskList } from '@/components/TaskList/TaskList';
+import { TGLink, UserApi } from '@/utils/DashFunApi';
 import { useInitData, useLaunchParams, useUtils } from '@telegram-apps/sdk-react';
-import { Button, Modal } from '@telegram-apps/telegram-ui';
+import { Avatar, Button, IconButton, Image, Modal, Text } from '@telegram-apps/telegram-ui';
 import { SectionHeader } from '@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionHeader/SectionHeader';
+import { ModalHeader } from '@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalHeader/ModalHeader';
 import { useState, type FC } from 'react';
 import Iframe from 'react-iframe';
 import "./GameWrapper.css";
-import { TGLink, UserApi } from '@/utils/DashFunApi';
-export const GameWrapper: FC = () => {
 
+import dashfunIcon from "../../icons/dashfun-icon-s.png"
+
+export const GameWrapper: FC = () => {
 	const [play, setPlay] = useState(false);
 	const [showLoading, setShowLoadig] = useState(true);
+	const [showTask, setShowTask] = useState(false);
 	const [game, setGame] = useState<GameData | null>(null);
 	const util = useUtils();
 	const initData = useInitData();
 	const initDataRaw = useLaunchParams().initDataRaw;
+	const user = useDashFunUser();
 
 	// const dfUser = useDashFunUser();
 
@@ -28,13 +35,34 @@ export const GameWrapper: FC = () => {
 		util.openTelegramLink(TGLink.centerLink())
 	}
 
+	const openTaskUI = async () => {
+		// if (game != null) {
+		// 	const tasks = await TaskApi.getTaskList(initDataRaw as string, game.id);
+		// 	console.log("tasks:", tasks)
+		// }
+		setShowTask(true);
+	}
+
 	return <div className="game-wrapper">
 		<SectionHeader style={{
 			paddingTop: "5px",
 			paddingBottom: "5px",
 		}}>
 			<div className='game-title'>
-				<Button size="s" mode="white"><i className="fa-brands fa-bitcoin" style={{ color: "#ff8000" }}></i> 0</Button>
+				<Button before={<Avatar src={dashfunIcon} size={24} />}
+					size="s"  onClick={() => {
+						openTaskUI()
+					}} >
+					{/* <div className='flex flex-row items-center '>
+						<div>
+							<Image src={dashfunIcon} className='bg-transparent' size={24} />
+						</div>
+						<div>
+							1230
+						</div>
+					</div> */}
+					1230
+				</Button>
 				<div className='flex gap-1'>
 					<Button size="s" mode="filled" >&nbsp;<i className="fa-solid fa-gamepad" onClick={() => {
 						onBackToCenter();
@@ -82,6 +110,39 @@ export const GameWrapper: FC = () => {
 						}} />
 				</Modal>
 			</div>)}
+
+			{showTask && (
+				<Modal
+					open={showTask}
+					header={<ModalHeader style={{
+						backgroundColor: "var(--tg-theme-secondary-bg-color)"
+					}}>Tasks</ModalHeader>
+						// <div className='flex flex-col bg-gray-200 text-black p-2 w-full items-center justify-center gap-1'>
+						// 	<div className=' w-10 h-1 bg-gray-400 rounded-full mb-2'></div>
+						// 	<Text weight='1'>Tasks</Text>
+						// </div>
+					}
+					onOpenChange={e => {
+						if (e == false) {
+							setShowTask(false);
+						}
+					}}
+					snapPoints={[1]}
+				>
+					<div className='flex flex-col w-full h-full' style={{
+						backgroundColor: "var(--tg-theme-secondary-bg-color)"
+					}}>
+						<div className="pb-4">
+							<TaskList user={user} game={game} onTaskClicked={({ task, save, processed }) => {
+								if (processed) {
+									//关掉list，让用户重新开启以便刷新状态
+									setShowTask(false);
+								}
+							}} />
+						</div>
+					</div>
+				</Modal>
+			)}
 		</div>
 	</div >
 }

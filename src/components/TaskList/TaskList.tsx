@@ -1,0 +1,287 @@
+import { GameData } from "@/components/DashFunData/GameData";
+import { DashFunUser } from "@/components/DashFunData/UserData";
+import { TaskApi, TGLink } from "@/utils/DashFunApi";
+import { useInitData, useLaunchParams, useUtils } from "@telegram-apps/sdk-react";
+import { Avatar, Button, Cell, CircularProgress, List, Section, Text } from "@telegram-apps/telegram-ui";
+import { FC, useEffect, useState } from "react";
+
+import dashfunIcon from "../../icons/dashfun-icon.png";
+
+import "./TaskList.css";
+
+export type TaskListype = {
+	game: GameData | null
+	user: DashFunUser | null
+	onTaskClicked: (params: { task: Task, save: TaskSave, processed: boolean }) => void
+}
+
+export type Task = {
+	id: string
+	game_id: string
+	category: number
+	name: string
+	open: boolean
+	task_type: number
+	require: {
+		condition: string
+		count: number
+		link: string
+		type: number
+	}
+	reward: {
+		amount: number
+		reward_type: number
+	}
+}
+
+export const TaskType = {
+	Normal: 1,
+	Daily: 2,
+	TwoDays: 3
+}
+
+export const TaskCondition = {
+	PlayRandomGame: 1,
+	PlayGame: 2,
+	LevelUp: 3,
+	JoinTGChannel: 4,
+	FollowX: 5
+}
+
+export const TaskStatus = {
+	InProgress: 1,//任务正在进行中
+	Verify_Pending: 2,                       //任务需要验证
+	Completed: 3,                         //任务完成
+	Claimed: 4
+}
+
+export const TaskRewardType = {
+	DashFunToken: 1,//奖励DashFunToken
+	DashFunChainToken: 2
+}
+
+export const TaskCategory = {
+	Challenges: 1,
+	Daily: 2,
+}
+
+export type TaskSave = {
+	progress: number
+	save_data: string
+	status: number
+	task_id: string
+	user_id: string
+	time: number
+}
+
+
+const getTaskLink = (task: Task): string => {
+	if (task.require.link != "") {
+		return task.require.link;
+	}
+	if (task.require.type == TaskCondition.PlayGame) {
+		const link = TGLink.gameLink(task.game_id);
+		console.log(task, link);
+		return link;
+	}
+	return ""
+}
+
+export const getTaskRewardText = (taskRewardType: number) => {
+	switch (taskRewardType) {
+		case TaskRewardType.DashFunChainToken:
+			return "DashFun Coin"
+		default:
+			return "Crystal"
+	}
+}
+
+export const getTaskCategoryText = (taskCategory: number) => {
+	switch (taskCategory) {
+		case TaskCategory.Challenges:
+			return "Challenges";
+		case TaskCategory.Daily:
+			return "Daily Hunt"
+	}
+}
+
+export const getTaskRewardIcon = (rewardType: number) => {
+	switch (rewardType) {
+		case TaskRewardType.DashFunChainToken:
+			return dashfunIcon;
+		default:
+			return dashfunIcon;
+	}
+}
+
+export const TaskList: FC<TaskListype> = (params) => {
+	const { game, user, onTaskClicked } = params;
+	const [tasks, setTasks] = useState([])
+	const [taskSaves, setTaskSaves] = useState<{ [key: string]: TaskSave }>({})
+	const util = useUtils();
+	const initData = useInitData();
+	const initDataRaw = useLaunchParams().initDataRaw;
+
+	const getTasks = async () => {
+		if (game != null) {
+			const r = await TaskApi.getTaskList(initDataRaw as string, game.id);
+			console.log("tasks:", r)
+			setTasks(r.tasks)
+			setTaskSaves(r.user_data)
+		}
+	}
+
+	useEffect(() => {
+		getTasks();
+	}, [game])
+
+
+	const sections = []
+	let items = []
+	let currCategory: number = -1;
+
+	if (tasks != null) {
+		for (let index = 0; index < tasks.length; index++) {
+			const task = tasks[index] as Task;
+			if (currCategory == -1) {
+				currCategory = task.category
+				items = []
+			}
+			if (currCategory != -1 && currCategory != task.category) {
+				//category变化了
+				const section = <Section key={"section_" + currCategory} header={getTaskCategoryText(currCategory)}>
+					{items}
+				</Section>
+				sections.push(section);
+				items = [];
+				currCategory = task.category;
+			}
+			const save = taskSaves[task.id]
+			items.push(<TaskListItem key={task + "_" + task.id} task={task} save={save} game={game as GameData} onClicked={(item) => {
+				if (onTaskClicked != null) {
+					onTaskClicked(item)
+				}
+			}} />)
+		}
+		if (items.length > 0) {
+			const section = <Section key={"section_" + currCategory} header={getTaskCategoryText(currCategory)}>
+				{items}
+			</Section>
+			sections.push(section)
+		}
+	}
+
+	return <List>
+		{sections}
+	</List>
+
+	// console.log("taskpage:", user, game)
+	// return <div className="flex flex-col gap-2">
+	// 	{items}
+	// </div>
+}
+
+const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: (item: { task: Task, save: TaskSave, processed: boolean }) => void }> = ({ task, save, game, onClicked }) => {
+
+	let progress = null;
+	const util = useUtils()
+	const initDataRaw = useLaunchParams().initDataRaw;
+	const [claiming, setClaiming] = useState(false);
+
+	const claim = async () => {
+		if (save.status == TaskStatus.Completed) {
+			setClaiming(true);
+			const r = await TaskApi.claimReward(initDataRaw as string, game.id, task.id)
+			console.log("claim result:", r)
+		}
+	}
+
+	switch (save.status) {
+		case TaskStatus.InProgress:
+		case TaskStatus.Verify_Pending:
+			progress = <div className="flex flex-row gap-1 justify-center items-center">
+				<div className=" relative w-[50px] h-[50px]">
+					<div className=" absolute left-[-3px] top-[-3px]">
+						<CircularProgress
+							progress={save.progress / task.require.count * 100}
+							size="large"
+						/>
+					</div>
+					<div className="w-[50px] h-[50px] absolute top-0 left-0">
+						<Text className=" text-center items-center justify-center flex w-full h-full text-sm font-semibold">
+							{save.progress}/{task.require.count}
+						</Text>
+					</div>
+				</div>
+				{
+					getTaskLink(task) == "" ? <div className="w-[10px]"></div> : <i className="fa-solid fa-chevron-right"></i>
+				}
+			</div>
+			break;
+		case TaskStatus.Completed:
+			progress = <>
+				<Button
+					mode="filled"
+					size="s"
+					onClick={() => {
+						claim()
+					}}
+					loading={claiming}
+				>
+					CLAIM
+				</Button>
+			</>
+			break;
+		case TaskStatus.Claimed:
+			progress = <div className="w-[70px] h-[70px] flex justify-center items-center">
+				<i className="fa-solid fa-circle-check fa-xl" style={{ color: "#63E6BE" }}></i>
+			</div>
+	}
+
+	const onTaskClicked = () => {
+		let processed = false;
+		if (save.status == TaskStatus.InProgress || save.status == TaskStatus.Verify_Pending) {
+			const link = getTaskLink(task);
+			if (link != "") {
+				if (link.startsWith("https://t.me")) {
+					util.openTelegramLink(link)
+				} else {
+					util.openLink(link)
+				}
+				TaskApi.onTaskClicked(initDataRaw as string, game.id, task.id).then(r => {
+					console.log("on task clicked:", r)
+				});
+				processed = true;
+			}
+		}
+		if (onClicked != null) {
+			onClicked({ task, save, processed })
+		}
+	}
+
+
+	return <Cell
+		subtitle={`+${task.reward.amount} ${getTaskRewardText(task.reward.reward_type)}`}
+		before={<Avatar src={getTaskRewardIcon(task.reward.reward_type)} size={40} />}
+		after={progress}
+		onClick={() => {
+			onTaskClicked()
+		}}
+	>
+		{task.name}
+
+	</Cell>
+
+
+	// return <div className="bg-white rounded-xl flex flex-row py-4 px-6 gap-2">
+	// 	<div className="bg-yellow-100 w-[50px] h-[50px]"></div>
+	// 	<div className="flex flex-col justify-between">
+	// 		<div className=" text-black text-lg">{task.name}</div>
+	// 		<div className=" text-gray-400 text-sm">+{task.reward.amount} {getTaskRewardText(task.reward.reward_type)}</div>
+	// 	</div>
+	// 	<div className="flex flex-row flex-1 items-center justify-end">
+
+	// 		{progress}
+	// 	</div>
+	// </div>
+}

@@ -142,6 +142,77 @@ const PaymentApi = {
 	}
 }
 
+const TaskApi = {
+	apiUrl: (): string => {
+		return dashFunApiUrl + "task/"
+	},
+
+	getTaskList: async (tgToken: string, gameId: string) => {
+		const api = TaskApi.apiUrl() + "list"
+		const result = await axios.get(api, {
+			headers: {
+				"Authorization": "tma " + tgToken
+			},
+			params: {
+				game_id: gameId
+			}
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data;
+			} else {
+				return result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
+
+	onTaskClicked: async (tgToken: string, gameId: string, taskId: string) => {
+		const api = TaskApi.apiUrl() + "clicked"
+		const result = await axios.get(api, {
+			headers: {
+				"Authorization": "tma " + tgToken
+			},
+			params: {
+				game_id: gameId,
+				task_id: taskId,
+			}
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data;
+			} else {
+				return result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
+
+	claimReward: async (tgToken: string, gameId: string, taskId: string) => {
+		const api = TaskApi.apiUrl() + "claim"
+		const result = await axios.get(api, {
+			headers: {
+				"Authorization": "tma " + tgToken
+			},
+			params: {
+				game_id: gameId,
+				task_id: taskId,
+			}
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data;
+			} else {
+				return result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	}
+}
+
 const tg_link = () => {
 	let botName = "DashFunBot";
 
@@ -169,4 +240,4 @@ const TGLink = {
 }
 
 
-export { GameApi, PaymentApi, UserApi, TGLink }
+export { GameApi, PaymentApi, UserApi, TGLink, TaskApi }
