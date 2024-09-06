@@ -11,12 +11,13 @@ document {
   overflow: hidden;
 }
 
-
 body {
   background: var(--tg-theme-secondary-bg-color, white);
   padding: 0;
   margin: 0;
   height: 100%;
+  /* overflow: hidden; */
+  overflow-x: hidden;
 }
 
 #root {
@@ -25,4 +26,18 @@ body {
 
 #appRoot {
   height: 100%;
+}
+
+.tgui-8ca550c2fc85eff5 {
+  padding: 0;
+}
+
+/* cell */
+/* .tgui-b8dfba0b5c3d054c {
+  padding: 0;
+} */
+
+.no-padding-cell {
+  padding: 0 !important;
+  gap: 10px !important;
 }
