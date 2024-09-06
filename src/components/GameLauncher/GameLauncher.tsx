@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
 
 import { useUtils } from "@telegram-apps/sdk-react";
-import { Button, Spinner } from "@telegram-apps/telegram-ui";
+import { Button, Image, Spinner } from "@telegram-apps/telegram-ui";
 import { useDashFunGame } from "../DashFun/DashFunGame";
 import { GameData } from "../DashFunData/GameData";
 import { GameLoadingEvent } from "../Event/Events";
@@ -50,7 +50,9 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked }) => 
 			{game == null ? <div className="gl-loading-spinner"><Spinner size="l" /> </div> :
 				<>
 					<div className="gl-gametitle-div">
-						<div className="gl-gameicon"></div>
+						<div className="gl-gameicon">
+							<Image src={game.iconUrl} size={96}></Image>
+						</div>
 						<span className="gl-game-name">{game?.name}</span>
 					</div>
 					<div className="gl-game-desc">

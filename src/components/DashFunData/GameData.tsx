@@ -8,7 +8,8 @@ type GameDataParams = {
 	genre: number[];
 	iconUrl: string;
 	time: number;
-
+	logoUrl: string;
+	mainPicUrl: string;
 }
 
 class GameData {
@@ -16,6 +17,8 @@ class GameData {
 	name: string = "";
 	desc: string = "";
 	url: string = "";
+	logoUrl: string = "";
+	mainPicUrl: string = "";
 	genre: number[] = [];
 	iconUrl: string = "";
 	time: number = 0;
@@ -26,7 +29,7 @@ class GameData {
 	}
 
 	constructor(data: GameDataParams) {
-		const { id, name, desc, url, genre, iconUrl, time } = data;
+		const { id, name, desc, url, genre, iconUrl, time, mainPicUrl, logoUrl } = data;
 		this.id = id;
 		this.name = name;
 		this.desc = desc;
@@ -34,6 +37,8 @@ class GameData {
 		this.genre = genre;
 		this.iconUrl = iconUrl;
 		this.time = time;
+		this.mainPicUrl = mainPicUrl;
+		this.logoUrl = logoUrl
 	}
 }
 

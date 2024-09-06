@@ -1,6 +1,9 @@
+import { Coin } from "@/constats";
 
 const EventTypes = {
 	GameLoading: 1,
+	TaskStatusChanged: 50,
+	CoinChanged: 100,
 }
 
 
@@ -68,98 +71,55 @@ class GameLoadingEvents extends EventBase {
 	}
 }
 
+class TaskStatusChangedEvents extends EventBase {
+	constructor() {
+		super(EventTypes.TaskStatusChanged);
+	}
 
-// class NewUserEvents extends EventBase {
-// 	constructor() {
-// 		super(EventTypes.NewUser);
-// 	}
-// 	/**
-// 	 * @override 
-// 	 * @param {function(User)} listener 
-// 	 */
-// 	addListener(listener) {
-// 		super.addListener(listener);
-// 	}
+	/**
+	 * @overload
+	 * @param listener 
+	 */
+	addListener(listener: ((taskId: string, status: number) => void)): void {
+		super.addListener(listener);
+	}
 
-// 	/**
-// 	 * @override
-// 	 * @param {function(User)} listener 
-// 	 */
-// 	removeListener(listener) {
-// 		super.removeListener(listener);
-// 	}
-// 	/**
-// 	 * @override
-// 	 * @fires EventTypes.NewFirebaseClientEvent
-// 	 * @param {User} user
-// 	 */
-// 	fire(user) {
-// 		super.fire(user);
-// 	}
-// }
+	/**
+	 * 
+	 * @param value range(0-100)
+	 */
+	fire(taskId: string, status: number): void {
+		console.log("fire task status changed event", taskId, status)
+		super.fire(taskId, status)
+	}
 
-// class UserLoginEvents extends EventBase {
-// 	constructor() {
-// 		super(EventTypes.UserLogin);
-// 	}
-// 	/**
-// 	 * @override 
-// 	 * @param {function(User)} listener 
-// 	 */
-// 	addListener(listener) {
-// 		super.addListener(listener);
-// 	}
+}
 
-// 	/**
-// 	 * @override
-// 	 * @param {function(User)} listener 
-// 	 */
-// 	removeListener(listener) {
-// 		super.removeListener(listener);
-// 	}
-// 	/**
-// 	 * @override
-// 	 * @fires EventTypes.NewFirebaseClientEvent
-// 	 * @param {User} user
-// 	 */
-// 	fire(user) {
-// 		super.fire(user);
-// 	}
-// }
+class CoinChangedEvents extends EventBase {
+	constructor() {
+		super(EventTypes.CoinChanged);
+	}
 
-// class UserLogoffEvents extends EventBase {
-// 	constructor() {
-// 		super(EventTypes.UserLogoff);
-// 	}
-// 	/**
-// 	 * @override 
-// 	 * @param {function(User)} listener 
-// 	 */
-// 	addListener(listener) {
-// 		super.addListener(listener);
-// 	}
+	/**
+	 * @overload
+	 * @param listener 
+	 */
+	addListener(listener: (coin: Coin, changed: number) => void): void {
+		super.addListener(listener);
+	}
 
-// 	/**
-// 	 * @override
-// 	 * @param {function(User)} listener 
-// 	 */
-// 	removeListener(listener) {
-// 		super.removeListener(listener);
-// 	}
-// 	/**
-// 	 * @override
-// 	 * @fires EventTypes.NewFirebaseClientEvent
-// 	 * @param {User} user
-// 	 */
-// 	fire(user) {
-// 		super.fire(user);
-// 	}
-// }
-// const NewUserEvent = new NewUserEvents();
-// const UserLoginEvent = new UserLoginEvents();
-// const UserLogoffEvent = new UserLogoffEvents();
-// const UserRefreshedEvent = new UserRefreshedEvents();
+	/**
+	 * 
+	 * @param changed 变化数量,>0增加，<0减少
+	 */
+	fire(coin: Coin, changed: number): void {
+		super.fire(coin, changed)
+	}
+
+}
 
 const GameLoadingEvent = new GameLoadingEvents();
+const CoinChangedEvent = new CoinChangedEvents();
+const TaskStatusChangedEvent = new TaskStatusChangedEvents();
 
-export { GameLoadingEvent }
+export { GameLoadingEvent, CoinChangedEvent, TaskStatusChangedEvent }

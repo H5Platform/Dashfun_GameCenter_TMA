@@ -12,16 +12,15 @@ let env: Env = Env.Test
 
 const api_local = "https://tma-server-test.nexgami.com/api/v1/"
 const api_test = "https://dashfun-server-test.nexgami.com/api/v1/"
-const api_prod = "https://dashfun.nexgami.com/api/v1/"
+const api_prod = "https://tma-server.dashfun.games/api/v1/"
 
 const api_url = () => {
 	const url = window.location.href;
-	console.log("api_url.url===", url);
 	if (url.indexOf("https://dashfun-test") >= 0) {
 		env = Env.Test
 		return api_test;
 	}
-	if (url.indexOf("https://dashfun") >= 0) {
+	if (url.indexOf("https://tma.dashfun.games") >= 0) {
 		env = Env.Prod
 		return api_prod;
 	}
@@ -91,6 +90,8 @@ const GameApi = {
 				id: "ForTest",
 				name: "Test Game",
 				desc: "Only For Test",
+				mainPicUrl: "",
+				logoUrl: "",
 				url: url,
 				genre: [1],
 				iconUrl: "",
@@ -210,6 +211,57 @@ const TaskApi = {
 		} else {
 			throw result.status
 		}
+	},
+
+	/**
+	 * 获取用于当前的任务状态数量
+	 * @param tgToken 
+	 * @param gameId 
+	 * @returns 
+	 */
+	getCount: async (tgToken: string, gameId: string) => {
+		const api = TaskApi.apiUrl() + "count"
+		const result = await axios.get(api, {
+			headers: {
+				"Authorization": "tma " + tgToken
+			},
+			params: {
+				game_id: gameId,
+			}
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data;
+			} else {
+				return result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	}
+}
+
+const CoinApi = {
+	apiUrl: (): string => {
+		return dashFunApiUrl + "coin/"
+	},
+
+	getCoins: async (tgToken: string) => {
+		const api = CoinApi.apiUrl() + "get"
+		const result = await axios.get(api, {
+			headers: {
+				"Authorization": "tma " + tgToken
+			},
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data;
+			} else {
+				return result.data.msg
+			}
+		} else {
+			throw result.status
+		}
 	}
 }
 
@@ -236,8 +288,11 @@ const TGLink = {
 	},
 	centerLink: () => {
 		return `${tg_link()}/Center`
+	},
+	botLink: () => {
+		return `${tg_link()}`
 	}
 }
 
 
-export { GameApi, PaymentApi, UserApi, TGLink, TaskApi }
+export { GameApi, PaymentApi, UserApi, TGLink, TaskApi, CoinApi }

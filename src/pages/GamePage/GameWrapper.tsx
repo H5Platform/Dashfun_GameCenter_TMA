@@ -1,17 +1,19 @@
 import { useDashFunUser } from '@/components/DashFun/DashFunUser';
 import { GameData } from '@/components/DashFunData/GameData';
 import { GameLauncher } from '@/components/GameLauncher/GameLauncher';
-import { TaskList } from '@/components/TaskList/TaskList';
-import { TGLink, UserApi } from '@/utils/DashFunApi';
+import { TaskApi, TGLink, UserApi } from '@/utils/DashFunApi';
 import { useInitData, useLaunchParams, useUtils } from '@telegram-apps/sdk-react';
-import { Avatar, Button, Modal } from '@telegram-apps/telegram-ui';
+import { Avatar, Badge, Button, Modal, Text } from '@telegram-apps/telegram-ui';
 import { SectionHeader } from '@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionHeader/SectionHeader';
 import { ModalHeader } from '@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalHeader/ModalHeader';
-import { useState, type FC } from 'react';
+import { useEffect, useState, type FC } from 'react';
 import Iframe from 'react-iframe';
 import "./GameWrapper.css";
 
-import dashfunIcon from "../../icons/dashfun-icon-s.png";
+import { UseDashFunCoins } from '@/components/DashFun/DashFunCoins';
+import { TaskAndCoin } from '@/components/TaskAndCoin/TaskAndCoin';
+import { getCoinIcon, TaskStatus } from '@/constats';
+import { TaskStatusChangedEvent } from '@/components/Event/Events';
 
 export const GameWrapper: FC = () => {
 	const [play, setPlay] = useState(false);
@@ -22,8 +24,18 @@ export const GameWrapper: FC = () => {
 	const initData = useInitData();
 	const initDataRaw = useLaunchParams().initDataRaw;
 	const user = useDashFunUser();
+	const coins = UseDashFunCoins();
 
-	// const dfUser = useDashFunUser();
+	const [taskCount, setTaskCount] = useState<{ [key: number]: number }>({})
+
+
+	const getTaskCount = async () => {
+		if (game != null) {
+			const count = await TaskApi.getCount(initDataRaw as string, game.id)
+			setTaskCount(count);
+		}
+	}
+
 
 	const onShare = () => {
 		if (game != null) {
@@ -32,16 +44,34 @@ export const GameWrapper: FC = () => {
 	}
 
 	const onBackToCenter = () => {
-		util.openTelegramLink(TGLink.centerLink())
+		//util.openTelegramLink(TGLink.centerLink())
+		util.openTelegramLink(TGLink.botLink())
 	}
 
 	const openTaskUI = async () => {
-		// if (game != null) {
-		// 	const tasks = await TaskApi.getTaskList(initDataRaw as string, game.id);
-		// 	console.log("tasks:", tasks)
-		// }
 		setShowTask(true);
 	}
+
+	useEffect(() => {
+		getTaskCount();
+	}, [game])
+
+	const evtListener = (_taskId: string, _status: number) => {
+		//任务状态变化，重新获取task count
+		console.log("get task count....")
+		getTaskCount();
+	}
+
+	useEffect(() => {
+		TaskStatusChangedEvent.addListener(evtListener)
+		return () => { TaskStatusChangedEvent.removeListener(evtListener) }
+	}, [game]);
+
+	const numb = coins == null ? 0 : coins.findCoinByName("DashFunCoin")?.userData.amount
+	const formatted = numb == null ? "0" : numb.toLocaleString('en-US', { style: "decimal" })
+
+	const tc = taskCount == null || taskCount[TaskStatus.Completed] == null ? 0 : taskCount[TaskStatus.Completed]
+	const tp = taskCount == null || taskCount[TaskStatus.InProgress] == null ? 0 : taskCount[TaskStatus.InProgress]
 
 	return <div className="game-wrapper">
 		<SectionHeader style={{
@@ -49,20 +79,27 @@ export const GameWrapper: FC = () => {
 			paddingBottom: "5px",
 		}}>
 			<div className='game-title'>
-				<Button before={<Avatar src={dashfunIcon} size={24} />}
+				<Button mode="white"
+					before={<Avatar src={getCoinIcon("DashFunCoin")} size={24} > </Avatar>}
 					size="s" onClick={() => {
-						openTaskUI()
+						openTaskUI();
+						getTaskCount();
 					}} >
-					{/* <div className='flex flex-row items-center '>
-						<div>
-							<Image src={dashfunIcon} className='bg-transparent' size={24} />
-						</div>
-						<div>
-							1230
-						</div>
-					</div> */}
-					1230
+					<Text className='text-black'>{formatted}</Text>
+
 				</Button>
+				<div className='flex-1 relative'>
+					{
+						tc > 0 && (<div className=' absolute top-0 left-[-15px]'>
+							<Badge type='number'>{tc}</Badge>
+						</div>)
+					}
+					{
+						tc == 0 && tp > 0 && (<div className=' absolute top-0 left-[-15px]'>
+							<Badge type='number' className='bg-gray-500'>{tp}</Badge>
+						</div>)
+					}
+				</div>
 				<div className='flex gap-1'>
 					<Button size="s" mode="filled" >&nbsp;<i className="fa-solid fa-gamepad" onClick={() => {
 						onBackToCenter();
@@ -87,7 +124,11 @@ export const GameWrapper: FC = () => {
 					visibility: play ? "" : "hidden"
 				}}
 			/>
-			{showLoading && (<div className={`game-loading ${play ? ", game-loading-fadeout" : ""}`} >
+			{showLoading && (<div className={`flex justify-center items-start game-loading ${play ? ", game-loading-fadeout" : ""}`} >
+				{/* <div className='h-[200px] mt-[100px] bg-cover bg-center bg-no-repeat ' style={{
+					backgroundImage: `url('${game?.logoUrl}')`
+				}}></div> */}
+				<img src={game?.logoUrl} className=' object-contain pt-[100px]' style={{ width: "90vw" }} ></img>
 				<Modal
 					dismissible={false}
 					open={play == false}
@@ -133,7 +174,7 @@ export const GameWrapper: FC = () => {
 						backgroundColor: "var(--tg-theme-secondary-bg-color)"
 					}}>
 						<div className="pb-4">
-							<TaskList user={user} game={game} onTaskClicked={({ processed }) => {
+							<TaskAndCoin user={user} game={game} onTaskClicked={({ processed }) => {
 								if (processed) {
 									//关掉list，让用户重新开启以便刷新状态
 									setShowTask(false);

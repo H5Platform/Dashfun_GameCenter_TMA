@@ -34,11 +34,10 @@
 }
 
 .gl-gameicon {
-	width: 64px;
-	height: 64px;
+	width: 96px;
+	height: 96px;
 	border-radius: 10px;
-	background-color: chocolate;
-	margin-right: 15px;
+	margin-right: 10px;
 }
 
 

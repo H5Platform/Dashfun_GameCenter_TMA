@@ -5,8 +5,8 @@ import { useLaunchParams, useUtils } from "@telegram-apps/sdk-react";
 import { Avatar, Button, Cell, CircularProgress, List, Section, Text } from "@telegram-apps/telegram-ui";
 import { FC, useEffect, useState } from "react";
 
-import dashfunIcon from "../../icons/dashfun-icon.png";
-
+import { getCoinIcon, Task, TaskCategoryText, TaskCondition, TaskRewardType, TaskSave, TaskStatus } from "@/constats";
+import { TaskStatusChangedEvent } from "../Event/Events";
 import "./TaskList.css";
 
 export type TaskListype = {
@@ -14,66 +14,6 @@ export type TaskListype = {
 	user: DashFunUser | null
 	onTaskClicked: (params: { task: Task, save: TaskSave, processed: boolean }) => void
 }
-
-export type Task = {
-	id: string
-	game_id: string
-	category: number
-	name: string
-	open: boolean
-	task_type: number
-	require: {
-		condition: string
-		count: number
-		link: string
-		type: number
-	}
-	reward: {
-		amount: number
-		reward_type: number
-	}
-}
-
-export const TaskType = {
-	Normal: 1,
-	Daily: 2,
-	TwoDays: 3
-}
-
-export const TaskCondition = {
-	PlayRandomGame: 1,
-	PlayGame: 2,
-	LevelUp: 3,
-	JoinTGChannel: 4,
-	FollowX: 5
-}
-
-export const TaskStatus = {
-	InProgress: 1,//任务正在进行中
-	Verify_Pending: 2,                       //任务需要验证
-	Completed: 3,                         //任务完成
-	Claimed: 4
-}
-
-export const TaskRewardType = {
-	DashFunToken: 1,//奖励DashFunToken
-	DashFunChainToken: 2
-}
-
-export const TaskCategory = {
-	Challenges: 1,
-	Daily: 2,
-}
-
-export type TaskSave = {
-	progress: number
-	save_data: string
-	status: number
-	task_id: string
-	user_id: string
-	time: number
-}
-
 
 const getTaskLink = (task: Task): string => {
 	if (task.require.link != "") {
@@ -97,20 +37,16 @@ export const getTaskRewardText = (taskRewardType: number) => {
 }
 
 export const getTaskCategoryText = (taskCategory: number) => {
-	switch (taskCategory) {
-		case TaskCategory.Challenges:
-			return "Challenges";
-		case TaskCategory.Daily:
-			return "Daily Hunt"
-	}
+	return TaskCategoryText[taskCategory] || ""
+
 }
 
 export const getTaskRewardIcon = (rewardType: number) => {
 	switch (rewardType) {
 		case TaskRewardType.DashFunChainToken:
-			return dashfunIcon;
+			return getCoinIcon("DashFunCoin");
 		default:
-			return dashfunIcon;
+			return getCoinIcon("DashFunCoin");
 	}
 }
 
@@ -189,8 +125,11 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 	const claim = async () => {
 		if (save.status == TaskStatus.Completed) {
 			setClaiming(true);
-			const r = await TaskApi.claimReward(initDataRaw as string, game.id, task.id)
-			console.log("claim result:", r)
+			const r = await TaskApi.claimReward(initDataRaw as string, game.id, task.id);
+			console.log("claim result:", r);
+			save.status = r.status;
+			setClaiming(false);
+			TaskStatusChangedEvent.fire(task.id, r.status);
 		}
 	}
 
@@ -250,6 +189,7 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 					console.log("on task clicked:", r)
 				});
 				processed = true;
+				TaskStatusChangedEvent.fire(task.id, save.status);
 			}
 		}
 		if (onClicked != null) {
