@@ -1,4 +1,4 @@
-import dashfunIcon from "./icons/dashfun-icon-s.png";
+import dashfunIcon from "./icons/dashfun-icon.svg";
 
 
 //Task

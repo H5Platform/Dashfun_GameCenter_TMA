@@ -96,7 +96,7 @@ export const GameWrapper: FC = () => {
 					}
 					{
 						tc == 0 && tp > 0 && (<div className=' absolute top-0 left-[-15px]'>
-							<Badge type='number' className='bg-gray-500'>{tp}</Badge>
+							<Badge type='number' className=' bg-gray-500' >{tp}</Badge>
 						</div>)
 					}
 				</div>
