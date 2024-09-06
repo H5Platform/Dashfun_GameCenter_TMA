@@ -1,11 +1,15 @@
-import type { ComponentType, JSX } from 'react';
+import type { ComponentType, JSX } from "react";
 
-import { IndexPage } from '@/pages/IndexPage/IndexPage';
-import { InitDataPage } from '@/pages/InitDataPage/InitDataPage';
-import { LaunchParamsPage } from '@/pages/LaunchParamsPage/LaunchParamsPage.tsx';
-import { ThemeParamsPage } from '@/pages/ThemeParamsPage/ThemeParamsPage.tsx';
-import { TONConnectPage } from '@/pages/TONConnectPage/TONConnectPage';
-import { GameWrapper } from '@/pages/GamePage/GameWrapper';
+import { IndexPage } from "@/pages/IndexPage/IndexPage";
+import { InitDataPage } from "@/pages/InitDataPage/InitDataPage";
+import { LaunchParamsPage } from "@/pages/LaunchParamsPage/LaunchParamsPage.tsx";
+import { ThemeParamsPage } from "@/pages/ThemeParamsPage/ThemeParamsPage.tsx";
+import { TONConnectPage } from "@/pages/TONConnectPage/TONConnectPage";
+import { GameWrapper } from "@/pages/GamePage/GameWrapper";
+import GameCenter from "@/pages/GameCenter/GameCenter";
+import GameAllList from "@/pages/GameCenter/GameAllList";
+import ProfilePage from "@/components/Profile/ProfilePage";
+import MainPage from "@/pages/MainPage/MainPage";
 
 interface Route {
   path: string;
@@ -15,15 +19,22 @@ interface Route {
 }
 
 export const routes: Route[] = [
-  { path: '/', Component: IndexPage },
-  { path: '/game', Component: GameWrapper },
-  { path: '/init-data', Component: InitDataPage, title: 'Init Data' },
-  { path: '/theme-params', Component: ThemeParamsPage, title: 'Theme Params' },
-  { path: '/launch-params', Component: LaunchParamsPage, title: 'Launch Params' },
+  { path: "/", Component: IndexPage },
+  { path: "/game", Component: GameWrapper },
+  { path: "/init-data", Component: InitDataPage, title: "Init Data" },
+  { path: "/theme-params", Component: ThemeParamsPage, title: "Theme Params" },
   {
-    path: '/ton-connect',
+    path: "/launch-params",
+    Component: LaunchParamsPage,
+    title: "Launch Params",
+  },
+  { path: "/game-center", Component: MainPage },
+  { path: "/game-genre", Component: GameAllList },
+  { path: "/profile", Component: ProfilePage },
+  {
+    path: "/ton-connect",
     Component: TONConnectPage,
-    title: 'TON Connect',
+    title: "TON Connect",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
