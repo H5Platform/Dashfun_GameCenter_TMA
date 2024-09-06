@@ -1,6 +1,5 @@
-import { FC, useState } from "react";
 import { Tabbar } from "@telegram-apps/telegram-ui";
-import { TaskPage } from "../TaskPage/TaskPage";
+import { FC, useState } from "react";
 import GameCenter from "../GameCenter/GameCenter";
 
 const tabs = [

@@ -6,7 +6,6 @@ import { LaunchParamsPage } from "@/pages/LaunchParamsPage/LaunchParamsPage.tsx"
 import { ThemeParamsPage } from "@/pages/ThemeParamsPage/ThemeParamsPage.tsx";
 import { TONConnectPage } from "@/pages/TONConnectPage/TONConnectPage";
 import { GameWrapper } from "@/pages/GamePage/GameWrapper";
-import GameCenter from "@/pages/GameCenter/GameCenter";
 import GameAllList from "@/pages/GameCenter/GameAllList";
 import ProfilePage from "@/components/Profile/ProfilePage";
 import MainPage from "@/pages/MainPage/MainPage";
