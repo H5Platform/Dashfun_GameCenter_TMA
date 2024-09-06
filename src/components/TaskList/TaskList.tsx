@@ -1,7 +1,7 @@
 import { GameData } from "@/components/DashFunData/GameData";
 import { DashFunUser } from "@/components/DashFunData/UserData";
 import { TaskApi, TGLink } from "@/utils/DashFunApi";
-import { useInitData, useLaunchParams, useUtils } from "@telegram-apps/sdk-react";
+import { useLaunchParams, useUtils } from "@telegram-apps/sdk-react";
 import { Avatar, Button, Cell, CircularProgress, List, Section, Text } from "@telegram-apps/telegram-ui";
 import { FC, useEffect, useState } from "react";
 
@@ -115,11 +115,9 @@ export const getTaskRewardIcon = (rewardType: number) => {
 }
 
 export const TaskList: FC<TaskListype> = (params) => {
-	const { game, user, onTaskClicked } = params;
+	const { game, onTaskClicked } = params;
 	const [tasks, setTasks] = useState([])
 	const [taskSaves, setTaskSaves] = useState<{ [key: string]: TaskSave }>({})
-	const util = useUtils();
-	const initData = useInitData();
 	const initDataRaw = useLaunchParams().initDataRaw;
 
 	const getTasks = async () => {

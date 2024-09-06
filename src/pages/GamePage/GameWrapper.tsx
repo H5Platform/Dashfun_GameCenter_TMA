@@ -4,14 +4,14 @@ import { GameLauncher } from '@/components/GameLauncher/GameLauncher';
 import { TaskList } from '@/components/TaskList/TaskList';
 import { TGLink, UserApi } from '@/utils/DashFunApi';
 import { useInitData, useLaunchParams, useUtils } from '@telegram-apps/sdk-react';
-import { Avatar, Button, IconButton, Image, Modal, Text } from '@telegram-apps/telegram-ui';
+import { Avatar, Button, Modal } from '@telegram-apps/telegram-ui';
 import { SectionHeader } from '@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionHeader/SectionHeader';
 import { ModalHeader } from '@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalHeader/ModalHeader';
 import { useState, type FC } from 'react';
 import Iframe from 'react-iframe';
 import "./GameWrapper.css";
 
-import dashfunIcon from "../../icons/dashfun-icon-s.png"
+import dashfunIcon from "../../icons/dashfun-icon-s.png";
 
 export const GameWrapper: FC = () => {
 	const [play, setPlay] = useState(false);
@@ -50,7 +50,7 @@ export const GameWrapper: FC = () => {
 		}}>
 			<div className='game-title'>
 				<Button before={<Avatar src={dashfunIcon} size={24} />}
-					size="s"  onClick={() => {
+					size="s" onClick={() => {
 						openTaskUI()
 					}} >
 					{/* <div className='flex flex-row items-center '>
@@ -133,7 +133,7 @@ export const GameWrapper: FC = () => {
 						backgroundColor: "var(--tg-theme-secondary-bg-color)"
 					}}>
 						<div className="pb-4">
-							<TaskList user={user} game={game} onTaskClicked={({ task, save, processed }) => {
+							<TaskList user={user} game={game} onTaskClicked={({ processed }) => {
 								if (processed) {
 									//关掉list，让用户重新开启以便刷新状态
 									setShowTask(false);

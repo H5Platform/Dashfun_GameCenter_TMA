@@ -12,6 +12,6 @@ export const TaskPage: FC<TaskPageType> = (params) => {
 	const { game, user } = params;
 
 	return <>
-		<TaskList game={game} user={user} onTaskClicked={(p) => { }} />
+		<TaskList game={game} user={user} onTaskClicked={() => { }} />
 	</>
 }
