@@ -18,10 +18,12 @@ const api_url = () => {
 	const url = window.location.href;
 	if (url.indexOf("https://dashfun-test") >= 0) {
 		env = Env.Test
+		
 		return api_test;
 	}
 	if (url.indexOf("https://tma.dashfun.games") >= 0) {
 		env = Env.Prod
+
 		return api_prod;
 	}
 	env = Env.Dev
