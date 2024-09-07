@@ -13,7 +13,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: release-test
+          ref: release-prod
 
       - name: setup-nodejs
         uses: actions/setup-node@v4
