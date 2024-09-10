@@ -1,15 +1,14 @@
 import type { ComponentType, JSX } from "react";
 
-import { IndexPage } from "@/pages/IndexPage/IndexPage";
+import ProfilePage from "@/components/Profile/ProfilePage";
+import GameAllList from "@/pages/GameCenter/GameAllList";
+import { GameWrapper } from "@/pages/GamePage/GameWrapper";
 import { InitDataPage } from "@/pages/InitDataPage/InitDataPage";
+import { IntroPage } from "@/pages/IntroPage/IntroPage";
 import { LaunchParamsPage } from "@/pages/LaunchParamsPage/LaunchParamsPage.tsx";
+import MainPage from "@/pages/MainPage/MainPage";
 import { ThemeParamsPage } from "@/pages/ThemeParamsPage/ThemeParamsPage.tsx";
 import { TONConnectPage } from "@/pages/TONConnectPage/TONConnectPage";
-import { GameWrapper } from "@/pages/GamePage/GameWrapper";
-import GameAllList from "@/pages/GameCenter/GameAllList";
-import ProfilePage from "@/components/Profile/ProfilePage";
-import MainPage from "@/pages/MainPage/MainPage";
-import { IntroPage } from "@/pages/IntroPage/IntroPage";
 
 interface Route {
   path: string;
