@@ -1,11 +1,13 @@
 import { Link } from "@/components/Link/Link";
 import dashfunIcon from "@/icons/dashfun-icon.svg";
+import { TGLink } from "@/utils/DashFunApi";
+import { useUtils } from "@telegram-apps/sdk-react";
 import { Avatar, Cell, Headline, List, Section } from "@telegram-apps/telegram-ui";
 import { SectionFooter } from "@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionFooter/SectionFooter";
 import { FC } from "react";
 
 export const IntroPage: FC = () => {
-
+	const utils = useUtils();
 	return <List>
 		<div className="w-full flex flex-col justify-center items-center pt-5">
 			<Avatar src={dashfunIcon} size={96}></Avatar>
@@ -16,11 +18,19 @@ export const IntroPage: FC = () => {
 		</SectionFooter>
 
 		<Section header="Follow US">
-			<Link to={"https://t.me/+h79TJSlUaO03ZDdh"}>
+			<Link to="" onClick={() => utils.openTelegramLink(TGLink.groupLink())}>
 				<Cell>Join Our Telegram Group</Cell>
 			</Link>
 			<Link to={"https://x.com/DashFun_Web3"}>
 				<Cell>Follow Us On X</Cell>
+			</Link>
+		</Section>
+
+		<Section header="New Games">
+			<Link to="" onClick={() => utils.openTelegramLink(TGLink.gameLink("9c4r4sdzb40"))}>
+				<Cell
+					before={<Avatar size={48} src="https://res.dashfun.games/icons/3kweb3-512.jpg"></Avatar>}
+					description="Easy and fast Three Kingdomes Idle RPG">War Three Kingdoms</Cell>
 			</Link>
 		</Section>
 	</List>

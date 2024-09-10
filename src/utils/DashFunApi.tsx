@@ -18,7 +18,7 @@ const api_url = () => {
 	const url = window.location.href;
 	if (url.indexOf("https://dashfun-test") >= 0) {
 		env = Env.Test
-		
+
 		return api_test;
 	}
 	if (url.indexOf("https://tma.dashfun.games") >= 0) {
@@ -293,6 +293,21 @@ const TGLink = {
 	},
 	botLink: () => {
 		return `${tg_link()}`
+	},
+	groupLink: () => {
+		let link = "";
+		switch (env) {
+			case Env.Test:
+				link = "https://t.me/+h79TJSlUaO03ZDdh"
+				break;
+			case Env.Dev:
+				link = "https://t.me/+h79TJSlUaO03ZDdh";
+				break;
+			case Env.Prod:
+				link = "https://t.me/+h79TJSlUaO03ZDdh";
+				break;
+		}
+		return link
 	}
 }
 
