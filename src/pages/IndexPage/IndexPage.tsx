@@ -9,6 +9,7 @@ import { TGLink } from "@/utils/DashFunApi";
 
 export const IndexPage: FC = () => {
   const util = useUtils();
+
   return (
     <List>
       <Section
