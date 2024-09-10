@@ -9,6 +9,7 @@ import { GameWrapper } from "@/pages/GamePage/GameWrapper";
 import GameAllList from "@/pages/GameCenter/GameAllList";
 import ProfilePage from "@/components/Profile/ProfilePage";
 import MainPage from "@/pages/MainPage/MainPage";
+import { IntroPage } from "@/pages/IntroPage/IntroPage";
 
 interface Route {
   path: string;
@@ -18,7 +19,7 @@ interface Route {
 }
 
 export const routes: Route[] = [
-  { path: "/", Component: IndexPage },
+  { path: "/", Component: IntroPage },
   { path: "/game", Component: GameWrapper },
   { path: "/init-data", Component: InitDataPage, title: "Init Data" },
   { path: "/theme-params", Component: ThemeParamsPage, title: "Theme Params" },

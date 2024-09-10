@@ -51,6 +51,7 @@ const sendResult = (source: Window, method: string, result: Result) => {
 const onGetUserProfile = (ctx: Context) => {
 	const { method } = ctx.callData;
 	sendResult(ctx.source, method, new Result("success", ctx.dfUser))
+	console.log("send user profile:", ctx.dfUser)
 }
 
 const onOpenTelegramLink = (ctx: Context) => {
