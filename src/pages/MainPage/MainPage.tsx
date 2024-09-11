@@ -24,17 +24,9 @@ const MainPage: FC = () => {
   const [currentTab, setCurrentTab] = useState(tabs[0].id);
 
   return (
-    <div className="overflow-hidden p-3">
-      <div className="mb-[100px]">
-        {currentTab === "game" ? <GameCenter /> : null}
-      </div>
-
-      <Tabbar
-        style={{
-          height: "90px",
-          position: "fixed",
-        }}
-      >
+    <>
+      <div className="p-3">{currentTab === "game" ? <GameCenter /> : null}</div>
+      <Tabbar id="bottomNavigation">
         {tabs.map(({ id, text, Icon }) => (
           <Tabbar.Item
             key={id}
@@ -46,7 +38,7 @@ const MainPage: FC = () => {
           </Tabbar.Item>
         ))}
       </Tabbar>
-    </div>
+    </>
   );
 };
 

@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  scrollbar-color: rgba(90, 90, 90, 0.3) transparent;
+  box-sizing: border-box;
+}
+
 html {
   height: 100%;
 }
@@ -11,21 +16,38 @@ document {
   overflow: hidden;
 }
 
+div {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+div::-webkit-scrollbar {
+  display: none;
+}
+
 body {
-  background: var(--tg-theme-secondary-bg-color, white);
+  /* background: var(--tg-theme-secondary-bg-color, white); */
   padding: 0;
   margin: 0;
   height: 100%;
-  /* overflow: hidden; */
-  overflow-x: hidden;
+  overflow: hidden;
+  /* overflow-x: hidden; */
 }
 
 #root {
-  height: 100%;
+  /* height: 100%; */
+  height: 100dvh;
+  overscroll-behavior-y: contain;
+  padding-bottom: 200px;
+  background: var(--tg-theme-secondary-bg-color, white);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 #appRoot {
-  height: 100%;
+  /* height: 100%; */
+  /* height: var(--full-page-height); */
+  min-height: var(--full-page-height);
 }
 
 .tgui-8ca550c2fc85eff5 {
@@ -40,4 +62,12 @@ body {
 .no-padding-cell {
   padding: 0 !important;
   gap: 10px !important;
+}
+
+#bottomNavigation {
+  padding-bottom: max(
+    0px,
+    calc(100dvh - var(--tg-viewport-height, 100dvh) - 8px)
+  );
+  scrollbar-width: none;
 }

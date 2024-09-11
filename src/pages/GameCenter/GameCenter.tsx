@@ -37,7 +37,7 @@ const GameCenter: FC = () => {
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 h-full">
       <div className="flex justify-between items-center">
         <Title weight="2">Game Center</Title>
         <Avatar
