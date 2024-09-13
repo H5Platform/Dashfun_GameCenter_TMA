@@ -80,7 +80,7 @@ export const GameWrapper: FC = () => {
 		}}>
 			<div className='game-title'>
 				<Button mode="white"
-					before={<Avatar src={getCoinIcon("DashFunCoin")} size={24} > </Avatar>}
+					before={<Avatar src={getCoinIcon("DashFunPoint")} size={24} > </Avatar>}
 					size="s" onClick={() => {
 						openTaskUI();
 						getTaskCount();
