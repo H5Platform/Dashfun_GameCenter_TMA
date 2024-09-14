@@ -29,10 +29,10 @@ const getTaskLink = (task: Task): string => {
 
 export const getTaskRewardText = (taskRewardType: number) => {
 	switch (taskRewardType) {
-		case TaskRewardType.DashFunChainToken:
-			return "DashFun Coin"
+		case TaskRewardType.DashFunPoint:
+			return "DashFun Point"
 		default:
-			return "Crystal"
+			return "Point"
 	}
 }
 
@@ -43,8 +43,8 @@ export const getTaskCategoryText = (taskCategory: number) => {
 
 export const getTaskRewardIcon = (rewardType: number) => {
 	switch (rewardType) {
-		case TaskRewardType.DashFunChainToken:
-			return getCoinIcon("DashFunCoin");
+		case TaskRewardType.DashFunPoint:
+			return getCoinIcon("DashFunPoint");
 		default:
 			return getCoinIcon("DashFunCoin");
 	}

@@ -21,7 +21,7 @@ export const IntroPage: FC = () => {
 			<Link to="" onClick={() => utils.openTelegramLink(TGLink.groupLink())}>
 				<Cell>Join Our Telegram Group</Cell>
 			</Link>
-			<Link to={"https://x.com/DashFun_Web3"}>
+			<Link to={"https://x.com/dashfun_app"}>
 				<Cell>Follow Us On X</Cell>
 			</Link>
 		</Section>

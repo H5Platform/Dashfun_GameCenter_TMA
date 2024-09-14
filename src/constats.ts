@@ -1,4 +1,5 @@
 import dashfunIcon from "./icons/dashfun-icon.svg";
+import dashfunPointIcon from "./icons/dashfun-point-icon.png"
 
 
 //Task
@@ -44,7 +45,7 @@ export const TaskStatus = {
 
 export const TaskRewardType = {
 	DashFunToken: 1,//奖励DashFunToken
-	DashFunChainToken: 2
+	DashFunPoint: 2
 }
 
 export const TaskCategory = {
@@ -89,10 +90,12 @@ export type CoinInfo = {
 	userData: CoinUserData
 }
 
-export const getCoinIcon = (coinName: string) => {
+export const getCoinIcon = (coinName: "DashFunCoin" | "DashFunPoint" | string) => {
 	switch (coinName) {
 		case "DashFunCoin":
 			return dashfunIcon;
+		case "DashFunPoint":
+			return dashfunPointIcon;
 		default:
 			return dashfunIcon;
 	}

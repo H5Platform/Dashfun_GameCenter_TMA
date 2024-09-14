@@ -80,7 +80,7 @@ export const GameWrapper: FC = () => {
 		}}>
 			<div className='game-title'>
 				<Button mode="white"
-					before={<Avatar src={getCoinIcon("DashFunCoin")} size={24} > </Avatar>}
+					before={<Avatar src={getCoinIcon("DashFunPoint")} size={24} > </Avatar>}
 					size="s" onClick={() => {
 						openTaskUI();
 						getTaskCount();
@@ -110,7 +110,7 @@ export const GameWrapper: FC = () => {
 				</div>
 			</div>
 		</SectionHeader >
-		<div className='game-div'>
+		<div className=' flex-1 h-full'>
 			<Iframe
 				id='GameFrame'
 				name='GameFrame'
