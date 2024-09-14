@@ -1,6 +1,7 @@
 import { Tabbar } from "@telegram-apps/telegram-ui";
 import { FC, useState } from "react";
 import GameCenter from "../GameCenter/GameCenter";
+import FriendsPage from "../Friends/FriendsPage";
 
 const tabs = [
   {
@@ -25,7 +26,13 @@ const MainPage: FC = () => {
 
   return (
     <>
-      <div className="p-3">{currentTab === "game" ? <GameCenter /> : null}</div>
+      <div className="p-3">
+        {currentTab === "game" ? (
+          <GameCenter />
+        ) : currentTab === "friends" ? (
+          <FriendsPage />
+        ) : null}
+      </div>
       <Tabbar id="bottomNavigation">
         {tabs.map(({ id, text, Icon }) => (
           <Tabbar.Item
