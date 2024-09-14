@@ -63,6 +63,7 @@ export const App: FC = () => {
       id="appRoot"
       appearance={miniApp.isDark ? "dark" : "light"}
       platform={["macos", "ios"].includes(lp.platform) ? "ios" : "base"}
+      className="h-full"
     >
       <MessageListener />
       <Router location={location} navigator={reactNavigator}>

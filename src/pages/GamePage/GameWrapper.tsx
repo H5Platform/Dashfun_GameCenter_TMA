@@ -110,7 +110,7 @@ export const GameWrapper: FC = () => {
 				</div>
 			</div>
 		</SectionHeader >
-		<div className='game-div'>
+		<div className=' flex-1 h-full'>
 			<Iframe
 				id='GameFrame'
 				name='GameFrame'
