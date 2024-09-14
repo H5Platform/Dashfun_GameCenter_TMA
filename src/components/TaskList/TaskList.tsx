@@ -176,6 +176,7 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 	}
 
 	const onTaskClicked = () => {
+		console.log("tesk clicked", task)
 		let processed = false;
 		if (save.status == TaskStatus.InProgress || save.status == TaskStatus.Verify_Pending) {
 			const link = getTaskLink(task);
