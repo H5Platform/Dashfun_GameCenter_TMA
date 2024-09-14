@@ -15,6 +15,13 @@ export const Coins: FC<{ game: GameData | null, user: DashFunUser | null, onSele
 	}
 
 	const coin = coins.findCoinByName("DashFunPoint")
+	const withdraw = coin?.coin.can_withdraw && coin.coin.min_withdraw > 0 ? <>
+		<ButtonCell
+			className="" disabled={true}
+			before={<i className="fa-solid fa-wallet"></i>}
+		>Withdraw</ButtonCell>
+		<SectionFooter>Minimum withdrawal amount is {coin?.coin.min_withdraw} {coin?.coin.symbol}</SectionFooter></>
+		: <></>
 
 	return <div className=" w-full justify-center items-center p-4">
 		<Section>
@@ -24,7 +31,7 @@ export const Coins: FC<{ game: GameData | null, user: DashFunUser | null, onSele
 			>
 				{coin?.coin.name}
 			</Cell>
-			<ButtonCell
+			{/* <ButtonCell
 				className="" disabled={true}
 				before={<i className="fa-solid fa-wallet"></i>}
 			>Withdraw</ButtonCell>
@@ -33,7 +40,8 @@ export const Coins: FC<{ game: GameData | null, user: DashFunUser | null, onSele
 				coin?.coin.can_withdraw && coin.coin.min_withdraw > 0 && (
 					<SectionFooter>Minimum withdrawal amount is {coin?.coin.min_withdraw} {coin?.coin.symbol}</SectionFooter>
 				)
-			}
+			} */}
+			{withdraw}
 		</Section>
 	</div>
 }
