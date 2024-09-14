@@ -26,7 +26,7 @@ const MainPage: FC = () => {
 
   return (
     <>
-      <div className="p-3">
+      <div className="p-3 pb-[200px]">
         {currentTab === "game" ? (
           <GameCenter />
         ) : currentTab === "friends" ? (

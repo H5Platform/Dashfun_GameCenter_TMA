@@ -53,9 +53,9 @@ const FriendsPage: FC = () => {
 
   return (
     <div>
-      <Button mode="bezeled" size="s" className="px-4" onClick={openPopup}>
+      {/* <Button mode="bezeled" size="s" className="px-4" onClick={openPopup}>
         Friends Page
-      </Button>
+      </Button> */}
       <div className="mt-[10vh] w-full">
         <ShareModal isOpen={isOpen} />
       </div>
