@@ -301,7 +301,7 @@ const TGLink = {
 				link = "https://t.me/+h79TJSlUaO03ZDdh"
 				break;
 			case Env.Dev:
-				link = "https://t.me/+h79TJSlUaO03ZDdh";
+				link = "https://t.me/dashfun_official";
 				break;
 			case Env.Prod:
 				link = "https://t.me/dashfun_official";

@@ -21,7 +21,7 @@ export const Coins: FC<{ game: GameData | null, user: DashFunUser | null, onSele
 			before={<i className="fa-solid fa-wallet"></i>}
 		>Withdraw</ButtonCell>
 		<SectionFooter>Minimum withdrawal amount is {coin?.coin.min_withdraw} {coin?.coin.symbol}</SectionFooter></>
-		: <></>
+		: null
 
 	return <div className=" w-full justify-center items-center p-4">
 		<Section>
