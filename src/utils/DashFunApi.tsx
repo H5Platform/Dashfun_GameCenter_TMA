@@ -83,7 +83,7 @@ const GameApi = {
 	},
 	findGame: async (gameId: string, tgToken: string): Promise<GameData> => {
 
-		if (gameId.startsWith("test-") && env != Env.Prod) {
+		if (gameId.startsWith("test-") /*&& env != Env.Prod*/) {
 			//for test
 			const encoded = gameId.slice("test-".length)
 			const url = atob(encoded)
