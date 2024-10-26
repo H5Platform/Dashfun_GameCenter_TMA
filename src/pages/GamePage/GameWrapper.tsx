@@ -67,49 +67,51 @@ export const GameWrapper: FC = () => {
 		return () => { TaskStatusChangedEvent.removeListener(evtListener) }
 	}, [game]);
 
-	const numb = coins == null ? 0 : coins.findCoinByName("DashFunCoin")?.userData.amount
+	const numb = coins == null ? 0 : coins.findCoinByName("DashFunPoint")?.userData.amount
 	const formatted = numb == null ? "0" : numb.toLocaleString('en-US', { style: "decimal" })
 
 	const tc = taskCount == null || taskCount[TaskStatus.Completed] == null ? 0 : taskCount[TaskStatus.Completed]
 	const tp = taskCount == null || taskCount[TaskStatus.InProgress] == null ? 0 : taskCount[TaskStatus.InProgress]
 
-	return <div className="game-wrapper">
-		<SectionHeader style={{
-			paddingTop: "5px",
-			paddingBottom: "5px",
-		}}>
-			<div className='game-title'>
-				<Button mode="white"
-					before={<Avatar src={getCoinIcon("DashFunPoint")} size={24} > </Avatar>}
-					size="s" onClick={() => {
-						openTaskUI();
-						getTaskCount();
-					}} >
-					<Text className='text-black'>{formatted}</Text>
+	const header = <SectionHeader style={{
+		paddingTop: "5px",
+		paddingBottom: "5px",
+	}}>
+		<div className='game-title'>
+			<Button mode="white"
+				before={<Avatar src={getCoinIcon("DashFunPoint")} size={24} > </Avatar>}
+				size="s" onClick={() => {
+					openTaskUI();
+					getTaskCount();
+				}} >
+				<Text className='text-black'>{formatted}</Text>
 
-				</Button>
-				<div className='flex-1 relative'>
-					{
-						tc > 0 && (<div className=' absolute top-0 left-[-15px]'>
-							<Badge type='number'>{tc}</Badge>
-						</div>)
-					}
-					{
-						tc == 0 && tp > 0 && (<div className=' absolute top-0 left-[-15px]'>
-							<Badge type='number' className=' bg-gray-500' >{tp}</Badge>
-						</div>)
-					}
-				</div>
-				<div className='flex gap-1'>
-					<Button size="s" mode="filled" >&nbsp;<i className="fa-solid fa-gamepad" onClick={() => {
-						onBackToCenter();
-					}}>&nbsp;</i></Button>
-					<Button size="s" mode="white" style={{ color: "#000000" }} onClick={() => {
-						onShare();
-					}}>&nbsp;<i className="fa-solid fa-paper-plane"></i>&nbsp;</Button>
-				</div>
+			</Button>
+			<div className='flex-1 relative'>
+				{
+					tc > 0 && (<div className=' absolute top-0 left-[-15px]'>
+						<Badge type='number'>{tc}</Badge>
+					</div>)
+				}
+				{
+					tc == 0 && tp > 0 && (<div className=' absolute top-0 left-[-15px]'>
+						<Badge type='number' className=' bg-gray-500' >{tp}</Badge>
+					</div>)
+				}
 			</div>
-		</SectionHeader >
+			<div className='flex gap-1'>
+				<Button size="s" mode="filled" >&nbsp;<i className="fa-solid fa-gamepad" onClick={() => {
+					onBackToCenter();
+				}}>&nbsp;</i></Button>
+				<Button size="s" mode="white" style={{ color: "#000000" }} onClick={() => {
+					onShare();
+				}}>&nbsp;<i className="fa-solid fa-paper-plane"></i>&nbsp;</Button>
+			</div>
+		</div>
+	</SectionHeader >
+
+	return <div className="game-wrapper">
+		{header}
 		<div className=' flex-1 h-full'>
 			<Iframe
 				id='GameFrame'
@@ -133,7 +135,13 @@ export const GameWrapper: FC = () => {
 					dismissible={false}
 					open={play == false}
 					style={{ backgroundColor: "transparent" }}
+					overlayComponent={
+						<div className=' bg-[#21212164] pointer-events-auto fixed left-0 top-0 right-0 bottom-0 z-[var(--tgui--z-index--overlay)]'>
+							{header}
+						</div>
+					}
 				>
+
 					<GameLauncher gameId={initData?.startParam}
 						onLoad={g => {
 							setGame(g as GameData);
@@ -149,7 +157,9 @@ export const GameWrapper: FC = () => {
 								}, 2000);
 							}
 						}} />
+
 				</Modal>
+
 			</div>)}
 
 			{showTask && (

@@ -21,7 +21,8 @@
 .game-loading {
 	position: fixed;
 	left: 0;
-	top: 0;
+	top: 0px;
+	/* top: 44px; */
 	width: 100%;
 	height: 100%;
 	background-color: var(--tgui--secondary_bg_color);
