@@ -1,11 +1,6 @@
 import { Button, Cell } from "@telegram-apps/telegram-ui";
 
-export type GameLIstItemParam = {
-  img: string,
-  name: string
-}
-
-export default function GameListItem(_p: GameLIstItemParam) {
+export default function GameListItem({ img, name }) {
   return (
     <Cell
       before={
@@ -21,6 +16,7 @@ export default function GameListItem(_p: GameLIstItemParam) {
         </Button>
       }
       subtitle="Game Description"
+      //   style={{ padding: 0, gap: 10 }}
       className="no-padding-cell"
     >
       Game Name

@@ -2,6 +2,7 @@ import { Tabbar } from "@telegram-apps/telegram-ui";
 import { FC, useState } from "react";
 import GameCenter from "../GameCenter/GameCenter";
 import FriendsPage from "../Friends/FriendsPage";
+import SpinWheel from "@/components/SpinWheel/SpinWheel";
 
 const tabs = [
   {
@@ -31,7 +32,9 @@ const MainPage: FC = () => {
           <GameCenter />
         ) : currentTab === "friends" ? (
           <FriendsPage />
-        ) : null}
+        ) : (
+          <SpinWheel />
+        )}
       </div>
       <Tabbar id="bottomNavigation">
         {tabs.map(({ id, text, Icon }) => (
