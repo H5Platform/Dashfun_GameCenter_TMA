@@ -1,4 +1,4 @@
-export default function PrizePage({ prize }) {
+export default function PrizePage({ prize }: { prize: number }) {
   return (
     <div className="mx-auto">
       <img src="/img/dashfun-point-icon.png" alt="prize" />

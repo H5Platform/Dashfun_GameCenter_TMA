@@ -1,6 +1,11 @@
 import { Button, Cell } from "@telegram-apps/telegram-ui";
+export type GameListItemInfo = {
+  img: string,
+  name: string
+}
 
-export default function GameListItem({ img, name }) {
+export default function GameListItem({ img, name }: GameListItemInfo) {
+  console.log(img, name)
   return (
     <Cell
       before={
