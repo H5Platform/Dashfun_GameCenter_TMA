@@ -44,8 +44,8 @@ export const GameWrapper: FC = () => {
 	}
 
 	const onBackToCenter = () => {
-		//util.openTelegramLink(TGLink.centerLink())
-		util.openTelegramLink(TGLink.botLink())
+		util.openTelegramLink(TGLink.centerLink())
+		//util.openTelegramLink(TGLink.botLink())
 	}
 
 	const openTaskUI = async () => {

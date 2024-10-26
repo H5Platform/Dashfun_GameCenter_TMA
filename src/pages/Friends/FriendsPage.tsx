@@ -2,13 +2,12 @@ import { Button, Modal, Placeholder } from "@telegram-apps/telegram-ui";
 import { ModalClose } from "@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalClose/ModalClose";
 import { ModalHeader } from "@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalHeader/ModalHeader";
 import { FC, useState } from "react";
-import CloseIcon from "@mui/icons-material/Close";
 
 type ShareModalProps = {
   isOpen: boolean;
 };
 
-const ShareModal: FC<ShareModalProps> = ({ isOpen }) => {
+const ShareModal: FC<ShareModalProps> = () => {
   return (
     <Modal
       //   open={isOpen}
@@ -45,11 +44,11 @@ const ShareModal: FC<ShareModalProps> = ({ isOpen }) => {
 };
 
 const FriendsPage: FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen/*, setIsOpen*/] = useState(false);
 
-  const openPopup = () => {
-    setIsOpen(true);
-  };
+  // const openPopup = () => {
+  //   setIsOpen(true);
+  // };
 
   return (
     <div>

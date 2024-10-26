@@ -83,7 +83,7 @@ const GameApi = {
 	},
 	findGame: async (gameId: string, tgToken: string): Promise<GameData> => {
 
-		if (gameId.startsWith("test-") && env != Env.Prod) {
+		if (gameId.startsWith("test-") /*&& env != Env.Prod*/) {
 			//for test
 			const encoded = gameId.slice("test-".length)
 			const url = atob(encoded)
@@ -301,7 +301,7 @@ const TGLink = {
 				link = "https://t.me/+h79TJSlUaO03ZDdh"
 				break;
 			case Env.Dev:
-				link = "https://t.me/+h79TJSlUaO03ZDdh";
+				link = "https://t.me/dashfun_official";
 				break;
 			case Env.Prod:
 				link = "https://t.me/dashfun_official";
