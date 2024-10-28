@@ -11,10 +11,9 @@ import Iframe from 'react-iframe';
 import "./GameWrapper.css";
 
 import { UseDashFunCoins } from '@/components/DashFun/DashFunCoins';
+import { TaskStatusChangedEvent } from '@/components/Event/Events';
 import { TaskAndCoin } from '@/components/TaskAndCoin/TaskAndCoin';
 import { getCoinIcon, TaskStatus } from '@/constats';
-import { TaskStatusChangedEvent } from '@/components/Event/Events';
-import { useDashFunSpinWheel } from '@/components/DashFun/DashFunSpinWheel';
 
 export const GameWrapper: FC = () => {
 	const [play, setPlay] = useState(false);
@@ -26,8 +25,6 @@ export const GameWrapper: FC = () => {
 	const initDataRaw = useLaunchParams().initDataRaw;
 	const user = useDashFunUser();
 	const coins = UseDashFunCoins();
-
-	const [spinwheel, spin, claim] = useDashFunSpinWheel();
 
 	const [taskCount, setTaskCount] = useState<{ [key: number]: number }>({})
 
@@ -89,7 +86,6 @@ export const GameWrapper: FC = () => {
 				size="s" onClick={() => {
 					openTaskUI();
 					getTaskCount();
-					spin();
 				}} >
 				<Text className='text-black'>{formatted}</Text>
 
