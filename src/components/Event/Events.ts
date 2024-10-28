@@ -115,7 +115,6 @@ class CoinChangedEvents extends EventBase {
 	fire(coin: Coin, changed: number): void {
 		super.fire(coin, changed)
 	}
-
 }
 
 const GameLoadingEvent = new GameLoadingEvents();

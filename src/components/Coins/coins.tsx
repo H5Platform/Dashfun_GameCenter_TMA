@@ -6,15 +6,15 @@ import { UseDashFunCoins } from "../DashFun/DashFunCoins";
 import { GameData } from "../DashFunData/GameData";
 import { DashFunUser } from "../DashFunData/UserData";
 
-export const Coins: FC<{ game: GameData | null, user: DashFunUser | null, onSelected: (coin: Coin) => void }> = () => {
+export const Coins: FC<{ game: GameData | null, user: DashFunUser | null, onSelected: (coin: Coin) => void }> = ({ game }) => {
 	const coins = UseDashFunCoins();
 	console.log(coins, coins.findCoinByName("DashFunPoint"))
 
-	if (coins == null) {
+	if (coins == null || game == null) {
 		return null;
 	}
 
-	const coin = coins.findCoinByName("DashFunPoint")
+	const coin = coins.findCoinByGameId(game.id)
 	const withdraw = coin?.coin.can_withdraw && coin.coin.min_withdraw > 0 ? <>
 		<ButtonCell
 			className="" disabled={true}

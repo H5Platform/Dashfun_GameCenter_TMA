@@ -97,7 +97,8 @@ const GameApi = {
 				url: url,
 				genre: [1],
 				iconUrl: "",
-				time: 0
+				time: 0,
+				openTime: 0,
 			});
 		}
 
@@ -267,6 +268,76 @@ const CoinApi = {
 	}
 }
 
+const SpinWheelApi = {
+	apiUrl: (): string => {
+		return dashFunApiUrl + "spinwheel/"
+	},
+
+	getInfo: async (tgToken: string, gameId: string) => {
+		const api = SpinWheelApi.apiUrl() + "get"
+		const result = await axios.get(api, {
+			headers: {
+				"Authorization": "tma " + tgToken
+			},
+			params: {
+				game_id: gameId,
+			}
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data;
+			} else {
+				return result.data.msg;
+			}
+		} else {
+			throw result.status
+		}
+	},
+
+	spin: async (tgToken: string, gameId: string) => {
+		const api = SpinWheelApi.apiUrl() + "spin"
+		const result = await axios.get(api, {
+			headers: {
+				"Authorization": "tma " + tgToken
+			},
+			params: {
+				game_id: gameId,
+			}
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data;
+			} else {
+				return result.data.msg;
+			}
+		} else {
+			throw result.status
+		}
+	},
+
+	claim: async (tgToken: string, gameId: string) => {
+		const api = SpinWheelApi.apiUrl() + "claim"
+		const result = await axios.get(api, {
+			headers: {
+				"Authorization": "tma " + tgToken
+			},
+			params: {
+				game_id: gameId,
+			}
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data;
+			} else {
+				return result.data.msg;
+			}
+		} else {
+			throw result.status
+		}
+	}
+
+}
+
 const tg_link = () => {
 	let botName = "DashFunBot";
 
@@ -312,4 +383,4 @@ const TGLink = {
 }
 
 
-export { GameApi, PaymentApi, UserApi, TGLink, TaskApi, CoinApi }
+export { GameApi, PaymentApi, UserApi, TGLink, TaskApi, CoinApi, SpinWheelApi }

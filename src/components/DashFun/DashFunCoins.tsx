@@ -1,5 +1,5 @@
 import { Coin, CoinInfo, CoinUserData, TaskStatus } from "@/constats"
-import { CoinApi } from "@/utils/DashFunApi"
+import { CoinApi, SpinWheelApi } from "@/utils/DashFunApi"
 import { useLaunchParams } from "@telegram-apps/sdk-react"
 import { useEffect, useState } from "react"
 import { TaskStatusChangedEvent } from "../Event/Events"
@@ -7,6 +7,7 @@ import { TaskStatusChangedEvent } from "../Event/Events"
 export type DashFunCoins = {
 	findCoinById: (id: string) => CoinInfo | null
 	findCoinByName: (name: string) => CoinInfo | null
+	findCoinByGameId: (gameId: string) => CoinInfo | null
 }
 
 
@@ -41,10 +42,10 @@ export const UseDashFunCoins = (): DashFunCoins => {
 
 	}, [coins]);
 
-	const findCoin = (s: string, p: "id" | "name" = "id") => {
+	const findCoin = (s: string, p: "id" | "name" | "gameId" = "id") => {
 		for (let i = 0; i < coins.length; i++) {
 			const c = coins[i];
-			const pc = p == "id" ? c.id : c.name
+			const pc = p == "id" ? c.id : p == "name" ? c.name : c.bind_game_id
 			if (pc == s) {
 				return c;
 			}
@@ -52,7 +53,15 @@ export const UseDashFunCoins = (): DashFunCoins => {
 		return null;
 	}
 
+	const toCoinInfo = (coin: Coin) => {
+		if (userData == null) { return null; }
+		const save = userData[coin.id];
 
+		return {
+			coin: coin,
+			userData: save
+		}
+	}
 
 	const ret: DashFunCoins = {
 		findCoinById: function (id: string) {
@@ -61,25 +70,25 @@ export const UseDashFunCoins = (): DashFunCoins => {
 			if (coin == null) {
 				return null;
 			}
-			const save = userData[coin.id];
-
-			return {
-				coin: coin,
-				userData: save
-			}
+			return toCoinInfo(coin)
 		},
+
 		findCoinByName: function (name: string) {
 			if (coins == null || userData == null) return null;
 			const coin = findCoin(name, "name");
 			if (coin == null) {
 				return null;
 			}
-			const save = userData[coin.id];
+			return toCoinInfo(coin)
+		},
 
-			return {
-				coin: coin,
-				userData: save
+		findCoinByGameId: (gameId: string) => {
+			if (coins == null || userData == null) return null;
+			const coin = findCoin(gameId, "gameId")
+			if (coin == null) {
+				return coin;
 			}
+			return toCoinInfo(coin)
 		}
 	}
 

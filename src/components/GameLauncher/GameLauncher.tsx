@@ -6,6 +6,7 @@ import { useDashFunGame } from "../DashFun/DashFunGame";
 import { GameData } from "../DashFunData/GameData";
 import { GameLoadingEvent } from "../Event/Events";
 import "./GameLauncher.css";
+import { toTimeString } from "@/utils/Utils";
 
 export type GLProps = JSX.IntrinsicElements['div'] & {
 	gameId: string | undefined,
@@ -20,6 +21,7 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked }) => 
 	const game = useDashFunGame();
 	const [loading, setLoading] = useState(-1);
 	const utils = useUtils();
+	const [playText, setPlayText] = useState("Play")
 
 	// const loadGame = async (gameId: string | undefined): Promise<GameData | undefined> => {
 	// 	if (gameId == null) {
@@ -44,6 +46,24 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked }) => 
 		GameLoadingEvent.addListener(onLoading);
 		return () => { GameLoadingEvent.removeListener(onLoading); }
 	}, [gameId, game])
+
+	const openTime = game?.openTime || 0;
+	const now = Date.now()
+	if (openTime > now) {
+		setTimeout(() => {
+			const t = (openTime - now) / 1000;
+			const d = Math.floor(t / 86400);
+			const h = Math.floor((t % 86400) / 3600);
+			const m = Math.floor((t % 3600) / 60);
+			const s = Math.floor(t % 60);
+
+			setPlayText(toTimeString(d, h, m, s))
+		}, 1000)
+	} else {
+		if (playText != "Play") {
+			setPlayText("Play")
+		}
+	}
 
 	return <div className="gl-container">
 		<div className="gl-gamepanel">
@@ -120,10 +140,13 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked }) => 
 		</div>
 		<div className="gl-playbutton">
 			<Button size="m" stretched disabled={loading == -1} loading={loading >= 0 && loading < 100} onClick={_ => {
+				if (openTime > now) {
+					return;
+				}
 				if (loading >= 100) {
 					onPlayClicked?.call([]);
 				}
-			}}>Play</Button>
+			}}>{playText}</Button>
 		</div>
 	</div>
 }

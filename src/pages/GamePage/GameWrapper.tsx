@@ -14,6 +14,7 @@ import { UseDashFunCoins } from '@/components/DashFun/DashFunCoins';
 import { TaskAndCoin } from '@/components/TaskAndCoin/TaskAndCoin';
 import { getCoinIcon, TaskStatus } from '@/constats';
 import { TaskStatusChangedEvent } from '@/components/Event/Events';
+import { useDashFunSpinWheel } from '@/components/DashFun/DashFunSpinWheel';
 
 export const GameWrapper: FC = () => {
 	const [play, setPlay] = useState(false);
@@ -25,6 +26,8 @@ export const GameWrapper: FC = () => {
 	const initDataRaw = useLaunchParams().initDataRaw;
 	const user = useDashFunUser();
 	const coins = UseDashFunCoins();
+
+	const [spinwheel, spin, claim] = useDashFunSpinWheel();
 
 	const [taskCount, setTaskCount] = useState<{ [key: number]: number }>({})
 
@@ -67,7 +70,10 @@ export const GameWrapper: FC = () => {
 		return () => { TaskStatusChangedEvent.removeListener(evtListener) }
 	}, [game]);
 
-	const numb = coins == null ? 0 : coins.findCoinByName("DashFunPoint")?.userData.amount
+
+	const coin = (coins == null || game == null) ? null : coins.findCoinByGameId(game.id);
+
+	const numb = coin == null ? 0 : coin.userData.amount
 	const formatted = numb == null ? "0" : numb.toLocaleString('en-US', { style: "decimal" })
 
 	const tc = taskCount == null || taskCount[TaskStatus.Completed] == null ? 0 : taskCount[TaskStatus.Completed]
@@ -79,10 +85,11 @@ export const GameWrapper: FC = () => {
 	}}>
 		<div className='game-title'>
 			<Button mode="white"
-				before={<Avatar src={getCoinIcon("DashFunPoint")} size={24} > </Avatar>}
+				before={<Avatar src={getCoinIcon(coin?.coin.name || "")} size={24} > </Avatar>}
 				size="s" onClick={() => {
 					openTaskUI();
 					getTaskCount();
+					spin();
 				}} >
 				<Text className='text-black'>{formatted}</Text>
 

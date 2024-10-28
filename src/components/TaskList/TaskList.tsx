@@ -8,6 +8,7 @@ import { FC, useEffect, useState } from "react";
 import { getCoinIcon, Task, TaskCategoryText, TaskCondition, TaskRewardType, TaskSave, TaskStatus } from "@/constats";
 import { TaskStatusChangedEvent } from "../Event/Events";
 import "./TaskList.css";
+import { UseDashFunCoins } from "../DashFun/DashFunCoins";
 
 export type TaskListype = {
 	game: GameData | null
@@ -27,14 +28,14 @@ const getTaskLink = (task: Task): string => {
 	return ""
 }
 
-export const getTaskRewardText = (taskRewardType: number) => {
-	switch (taskRewardType) {
-		case TaskRewardType.DashFunPoint:
-			return "DashFun Point"
-		default:
-			return "Point"
-	}
-}
+// export const getTaskRewardText = (taskRewardType: number) => {
+// 	switch (taskRewardType) {
+// 		case TaskRewardType.DashFunPoint:
+// 			return "DashFun Point"
+// 		default:
+// 			return "Point"
+// 	}
+// }
 
 export const getTaskCategoryText = (taskCategory: number) => {
 	return TaskCategoryText[taskCategory] || ""
@@ -118,7 +119,8 @@ export const TaskList: FC<TaskListype> = (params) => {
 const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: (item: { task: Task, save: TaskSave, processed: boolean }) => void }> = ({ task, save, game, onClicked }) => {
 
 	let progress = null;
-	const util = useUtils()
+	const util = useUtils();
+	const coins = UseDashFunCoins();
 	const initDataRaw = useLaunchParams().initDataRaw;
 	const [claiming, setClaiming] = useState(false);
 
@@ -198,10 +200,23 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 		}
 	}
 
+	let coin = null;
+
+	switch (task.reward.reward_type) {
+		case TaskRewardType.DashFunPoint:
+			coin = coins.findCoinByName("DashFunPoint");
+			break;
+		case TaskRewardType.DashFunToken:
+			coin = coins.findCoinByName("DashFunCoin");
+			break;
+		case TaskRewardType.GamePoint:
+			coin = coins.findCoinByGameId(game.id);
+			break;
+	}
 
 	return <Cell
-		subtitle={`+${task.reward.amount} ${getTaskRewardText(task.reward.reward_type)}`}
-		before={<Avatar src={getTaskRewardIcon(task.reward.reward_type)} size={40} />}
+		subtitle={`+${task.reward.amount} ${coin?.coin.symbol}`}
+		before={<Avatar src={getCoinIcon(coin?.coin.name || "")} size={40} />}
 		after={progress}
 		onClick={() => {
 			onTaskClicked()

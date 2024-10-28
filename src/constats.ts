@@ -1,5 +1,6 @@
 import dashfunIcon from "./icons/dashfun-icon.svg";
 import dashfunPointIcon from "./icons/dashfun-point-icon.png"
+import w3kPointIcon from "./icons/dashfun-point-icon.png"
 
 
 //Task
@@ -45,7 +46,8 @@ export const TaskStatus = {
 
 export const TaskRewardType = {
 	DashFunToken: 1,//奖励DashFunToken
-	DashFunPoint: 2
+	DashFunPoint: 2,
+	GamePoint: 3, //奖励游戏对应的点数
 }
 
 export const TaskCategory = {
@@ -73,8 +75,9 @@ export type Coin = {
 	name: string
 	symbol: string
 	desc: string
-	can_withdraw: boolean                //是否可以提取
-	min_withdraw: number             //最低提取金额
+	bind_game_id: string 				//绑定的游戏id
+	can_withdraw: boolean				//是否可以提取
+	min_withdraw: number             	//最低提取金额
 	chain_addr: { [key: string]: string }      //链上地址，chainName->address
 }
 
@@ -90,12 +93,14 @@ export type CoinInfo = {
 	userData: CoinUserData
 }
 
-export const getCoinIcon = (coinName: "DashFunCoin" | "DashFunPoint" | string) => {
+export const getCoinIcon = (coinName: "DashFunCoin" | "DashFunPoint" | "W3KPoint" | string) => {
 	switch (coinName) {
 		case "DashFunCoin":
 			return dashfunIcon;
 		case "DashFunPoint":
 			return dashfunPointIcon;
+		case "W3KPoint":
+			return w3kPointIcon;
 		default:
 			return dashfunIcon;
 	}
