@@ -1,7 +1,7 @@
+import { GameApi } from "@/utils/DashFunApi";
+import { useInitData, useLaunchParams } from "@telegram-apps/sdk-react";
 import { useEffect, useState } from "react";
 import { GameData } from "../DashFunData/GameData";
-import { useInitData, useLaunchParams } from "@telegram-apps/sdk-react";
-import { GameApi, SpinWheelApi } from "@/utils/DashFunApi";
 
 const useDashFunGame = (): GameData | null => {
 	const [game, setGame] = useState<GameData | null>(null)
@@ -24,4 +24,4 @@ const useDashFunGame = (): GameData | null => {
 	return game;
 }
 
-export { useDashFunGame }
+export { useDashFunGame };
