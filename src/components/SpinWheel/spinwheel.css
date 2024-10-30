@@ -15,23 +15,19 @@
 }
 
 .wheel {
-  width: 90%;
-  height: 90%;
+  width: 100%;
+  height: 100%;
   position: absolute;
-  top: 5%;
-  left: 5%;
   transition: transform 3s ease-out; /* 平滑旋转效果，持续时间与JS一致 */
 }
 
 .pointer {
-  width: 40px;
-  height: 40px;
+  width: 60%;
+  height: 60%;
   position: absolute;
-  top: -10px;
-  /* top: 50%;
-  transform: translateY(-70%);
-  left: calc(50% - 20px);  */
-  left: calc(50% - 20px);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   z-index: 10;
 }
 
