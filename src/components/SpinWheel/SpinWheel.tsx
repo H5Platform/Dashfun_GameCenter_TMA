@@ -1,11 +1,15 @@
 import { useState } from "react";
 import "./spinwheel.css";
 import PrizePage from "./PrizePage";
+// import { useDashFunSpinWheel } from "../DashFun/DashFunSpinWheel";
 
 export default function SpinWheel() {
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
   const [rotationAngle, setRotationAngle] = useState<number>(0); // 当前旋转角度
   const [prize, setPrize] = useState<number | null>(null); // 当前的得分
+
+  // const [spinWheel, spin, claim] = useDashFunSpinWheel();
+  // console.log("======spinWheel:", spinWheel, spin);
 
   // 定义转盘分区，每个分区对应的得分
   const scores = [100, 10, 20, 30, 40, 50, 60, 70, 80, 90];
@@ -88,19 +92,19 @@ export default function SpinWheel() {
         <>
           <div className="spin-wheel-container">
             <div className="wheelRing">
-              <img src="/img/ring.png" alt="Spin Wheel" />
+              <img src="/img/wheel_ring.png" alt="Spin Wheel" />
             </div>
             {/* 旋转的转盘 */}
             <div
               className="wheel"
               style={{ transform: `rotate(${rotationAngle}deg)` }}
             >
-              <img src="/img/wheel_2.png" alt="Spin Wheel" />
+              <img src="/img/wheel.png" alt="Spin Wheel" />
             </div>
 
             {/* 固定的指针 */}
             <div className="pointer">
-              <img src="/img/pointer.png" alt="Pointer" />
+              <img src="/img/wheel_pointer.png" alt="Pointer" />
             </div>
 
             {/* 显示得分 */}
