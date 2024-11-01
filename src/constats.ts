@@ -1,6 +1,6 @@
 import dashfunIcon from "./icons/dashfun-icon.svg";
-import dashfunPointIcon from "./icons/dashfun-point-icon.png"
-import w3kPointIcon from "./icons/dashfun-point-icon.png"
+import dashfunPointIcon from "./icons/dashfun-point-icon.png";
+import w3kPointIcon from "./icons/w3k-point-icon.png";
 
 
 //Task
