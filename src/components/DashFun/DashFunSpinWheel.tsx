@@ -14,6 +14,8 @@ export const useDashFunSpinWheel = (): [spinwheel: SpinWheelData, spin: () => Pr
 		if (game == null || initData == null) return;
 		const sw = await SpinWheelApi.getInfo(initDataRaw as string as string, game?.id as string);
 		const d = new SpinWheelData(sw.spinwheel_id, sw.game_id, sw.status)
+		// 不加的话用户切换到其他页面再切回来，会丢失已经转到的位置
+		d.rewardIndex = sw.reward_index;
 
 		if (sw.rewards) {
 			for (const key in sw.rewards) {

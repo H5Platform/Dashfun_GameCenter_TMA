@@ -1,28 +1,28 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./spinwheel.css";
 import PrizePage from "./PrizePage";
-// import { useDashFunSpinWheel } from "../DashFun/DashFunSpinWheel";
+import { useDashFunSpinWheel } from "../DashFun/DashFunSpinWheel";
+import { SpinWheelConstants } from "../DashFunData/SpinWheelData";
 
 export default function SpinWheel() {
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
   const [rotationAngle, setRotationAngle] = useState<number>(0); // 当前旋转角度
-  const [prize, setPrize] = useState<number | null>(null); // 当前的得分
 
-  // const [spinWheel, spin, claim] = useDashFunSpinWheel();
-  // console.log("======spinWheel:", spinWheel, spin);
+  const [canClaim, setCanClaim] = useState<boolean>(false);
 
-  // 定义转盘分区，每个分区对应的得分
-  const scores = [100, 10, 20, 30, 40, 50, 60, 70, 80, 90];
-  const numSegments = scores.length;
-  const segmentAngle = 360 / numSegments; // 每个分区的角度是 36°
+  const [spinWheel, spin] = useDashFunSpinWheel();
 
-  // 模拟从服务器获取得分
-  const getPrizeFromServer = async (): Promise<number> => {
-    return new Promise((resolve) => {
-      const randomPrizeIndex = Math.floor(Math.random() * numSegments);
-      setTimeout(() => resolve(scores[randomPrizeIndex]), 500); // 模拟网络延迟
-    });
-  };
+  useEffect(() => {
+    if (spinWheel?.canClaim()) {
+      setCanClaim(true);
+    }
+  }, [spinWheel]);
+
+  // console.log("can claim: ", canClaim);
+
+  // console.log("======spin wheel", spinWheel);
+
+  const segmentAngle = 360 / 10; // 每个分区的角度是 36°
 
   const handleSpin = async () => {
     if (isSpinning) return; // 防止多次点击
@@ -32,25 +32,26 @@ export default function SpinWheel() {
     setRotationAngle(0);
 
     // 从服务器获取得分
-    const prizeScore = await getPrizeFromServer();
+    const spinRes = await spin();
+    if (spinRes) {
+      const { rewardIndex } = spinRes;
 
-    // 根据得分找到对应的奖品索引
-    const prizeIndex = scores.indexOf(prizeScore);
+      // 计算分区中心，确保转盘停在分区正中间
+      const fullRotations = 5 * 360; // 至少旋转5圈
+      // const finalSegmentAngle = prizeIndex * segmentAngle; // 得分对应的分区角度
+      const finalSegmentAngle = rewardIndex * segmentAngle; // 得分对应的分区角度
 
-    // 计算分区中心，确保转盘停在分区正中间
-    const fullRotations = 5 * 360; // 至少旋转5圈
-    const finalSegmentAngle = prizeIndex * segmentAngle; // 得分对应的分区角度
+      // 计算分区的中心位置 (加上分区的一半 18度)
+      const targetAngle =
+        fullRotations + (360 - finalSegmentAngle - segmentAngle / 2);
 
-    // 计算分区的中心位置 (加上分区的一半 18度)
-    const targetAngle =
-      fullRotations + (360 - finalSegmentAngle) + segmentAngle / 2;
+      const spinDuration = 3000; // 动画时长3秒
 
-    const spinDuration = 3000; // 动画时长3秒
-
-    animateSpin(targetAngle, spinDuration, () => {
-      setPrize(prizeScore); // 显示得分
-      setIsSpinning(false); // 允许再次旋转
-    });
+      animateSpin(targetAngle, spinDuration, () => {
+        setCanClaim(true);
+        setIsSpinning(false); // 允许再次旋转
+      });
+    }
   };
 
   // 旋转动画函数，逐渐减速停止
@@ -60,7 +61,7 @@ export default function SpinWheel() {
     onComplete: () => void
   ) => {
     const startTime = performance.now();
-    let currentAngle = rotationAngle; // 从当前角度开始旋转
+    const currentAngle = rotationAngle; // 从当前角度开始旋转
 
     const step = (timestamp: number) => {
       const elapsedTime = timestamp - startTime;
@@ -85,9 +86,9 @@ export default function SpinWheel() {
   const easeOutQuad = (t: number): number => t * (2 - t);
 
   return (
-    <div className="h-screen flex flex-wrap items-center content-evenly">
-      {prize ? (
-        <PrizePage prize={prize} />
+    <div className="h-screen max-h-screen flex flex-wrap items-center content-evenly">
+      {canClaim && !isSpinning ? (
+        <PrizePage />
       ) : (
         <>
           <div className="spin-wheel-container">
@@ -106,17 +107,20 @@ export default function SpinWheel() {
             <div className="pointer">
               <img src="/img/wheel_pointer.png" alt="Pointer" />
             </div>
-
-            {/* 显示得分 */}
-            {/* {prize !== null && <div className="prize-result">You won: {prize}!</div>} */}
           </div>
-          {/* 旋转按钮 */}
+
           <button
             className={`${
-              isSpinning ? "bg-gray-500" : "bg-blue-500"
+              isSpinning ||
+              spinWheel?.status == SpinWheelConstants.Status.Claimed
+                ? "bg-gray-500"
+                : "bg-blue-500"
             } w-full text-xl font-bold text-white py-2 rounded-md`}
             onClick={handleSpin}
-            disabled={isSpinning}
+            disabled={
+              isSpinning ||
+              spinWheel?.status == SpinWheelConstants.Status.Claimed
+            }
           >
             {isSpinning ? "SPINNING..." : "SPIN"}
           </button>
