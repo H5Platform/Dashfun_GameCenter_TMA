@@ -27,12 +27,13 @@ const MainPage: FC = () => {
 
   return (
     <>
-      <div className="p-3 pb-[200px]">
+      <div className="p-3 pb-[200px] min-h-[100vh]">
         {currentTab === "game" ? (
           <GameCenter />
         ) : currentTab === "friends" ? (
           <FriendsPage />
         ) : (
+          // <SpinWheelHomePage />
           <SpinWheel />
         )}
       </div>
