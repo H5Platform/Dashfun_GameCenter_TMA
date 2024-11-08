@@ -194,6 +194,28 @@ const TaskApi = {
 		}
 	},
 
+	verifyTask: async (tgToken: string, gameId: string, taskId: string) => {
+		const api = TaskApi.apiUrl() + "verify"
+		const result = await axios.get(api, {
+			headers: {
+				"Authorization": "tma " + tgToken
+			},
+			params: {
+				game_id: gameId,
+				task_id: taskId,
+			}
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data;
+			} else {
+				return result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
+
 	claimReward: async (tgToken: string, gameId: string, taskId: string) => {
 		const api = TaskApi.apiUrl() + "claim"
 		const result = await axios.get(api, {

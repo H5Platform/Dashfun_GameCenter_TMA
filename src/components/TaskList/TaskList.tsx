@@ -123,6 +123,7 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 	const coins = UseDashFunCoins();
 	const initDataRaw = useLaunchParams().initDataRaw;
 	const [claiming, setClaiming] = useState(false);
+	const [verifying, setVerifying] = useState(false);
 
 	const claim = async () => {
 		if (save.status == TaskStatus.Completed) {
@@ -135,9 +136,28 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 		}
 	}
 
+	const verify = async () => {
+		if (save.status == TaskStatus.Verify_Pending) {
+			setVerifying(true);
+			try {
+				const r = await TaskApi.verifyTask(initDataRaw as string, game.id, task.id);
+				save.status = r.status;
+				const time = Math.random() * 2000 + 4000
+				console.log("verify result:", r, time);
+				setTimeout(() => {
+					setVerifying(false);
+					TaskStatusChangedEvent.fire(task.id, r.status);
+				}, time);
+			} finally {
+				setTimeout(() => {
+					setVerifying(false);
+				}, 5000);
+			}
+		}
+	}
+
 	switch (save.status) {
 		case TaskStatus.InProgress:
-		case TaskStatus.Verify_Pending:
 			progress = <div className="flex flex-row gap-1 justify-center items-center">
 				<div className=" relative w-[50px] h-[50px]">
 					<div className=" absolute left-[-3px] top-[-3px]">
@@ -157,12 +177,29 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 				}
 			</div>
 			break;
+		case TaskStatus.Verify_Pending:
+			progress = <>
+				<Button
+					mode="filled"
+					size="s"
+					onClick={(evt) => {
+						evt.stopPropagation()
+						console.log("vvvvvvvvvveirify")
+						verify()
+					}}
+					loading={verifying}
+				>
+					VERIFY
+				</Button>
+			</>
+			break;
 		case TaskStatus.Completed:
 			progress = <>
 				<Button
 					mode="filled"
 					size="s"
-					onClick={() => {
+					onClick={(evt) => {
+						evt.stopPropagation()
 						claim()
 					}}
 					loading={claiming}
