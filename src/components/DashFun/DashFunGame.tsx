@@ -1,4 +1,4 @@
-import { GameApi } from "@/utils/DashFunApi";
+import { Env, GameApi, getEnv } from "@/utils/DashFunApi";
 import { useInitData, useLaunchParams } from "@telegram-apps/sdk-react";
 import { useEffect, useState } from "react";
 import { GameData } from "../DashFunData/GameData";
@@ -18,7 +18,13 @@ const useDashFunGame = (): GameData | null => {
 	}
 
 	useEffect(() => {
-		loadGame(initData?.startParam);
+		let gameId = initData?.startParam;
+		if (getEnv() != Env.Prod) {
+			if (gameId == null) {
+				gameId = "LocalTest"
+			}
+		}
+		loadGame(gameId);
 	}, [initData?.startParam, initDataRaw])
 
 	return game;
