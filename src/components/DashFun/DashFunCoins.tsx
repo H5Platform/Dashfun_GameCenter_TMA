@@ -58,8 +58,20 @@ export const UseDashFunCoins = (): DashFunCoins => {
 	const findCoin = (s: string, p: "id" | "name" | "gameId" = "id") => {
 		for (let i = 0; i < coins.length; i++) {
 			const c = coins[i];
-			const pc = p == "id" ? c.id : p == "name" ? c.name : c.bind_game_id
-			if (pc == s) {
+			let pc = "";
+			switch (p) {
+				case "id":
+					pc = c.id;
+					break;
+				case "name":
+					pc = c.name;
+					break;
+				case "gameId":
+					pc = c.bind_game_id
+					break;
+			}
+
+			if (pc == s && s != "") {
 				return c;
 			}
 		}

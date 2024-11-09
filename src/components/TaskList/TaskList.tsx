@@ -184,7 +184,6 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 					size="s"
 					onClick={(evt) => {
 						evt.stopPropagation()
-						console.log("vvvvvvvvvveirify")
 						verify()
 					}}
 					loading={verifying}

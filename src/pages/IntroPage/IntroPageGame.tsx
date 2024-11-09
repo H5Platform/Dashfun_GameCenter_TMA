@@ -1,10 +1,10 @@
-import { CoinInfo, getCoinIcon, TaskStatus } from "@/constats"
-import { TaskApi, TGLink } from "@/utils/DashFunApi"
-import { Section, Cell, Avatar, Button, Text, Badge, Navigation } from "@telegram-apps/telegram-ui"
-import { Link } from "@/components/Link/Link";
-import { useLaunchParams, useUtils } from "@telegram-apps/sdk-react";
-import { FC, useEffect, useState } from "react";
 import { GameData } from "@/components/DashFunData/GameData";
+import { Link } from "@/components/Link/Link";
+import { CoinInfo, getCoinIcon, TaskStatus } from "@/constats";
+import { TaskApi, TGLink } from "@/utils/DashFunApi";
+import { useLaunchParams, useUtils } from "@telegram-apps/sdk-react";
+import { Avatar, Badge, Button, Cell, Section } from "@telegram-apps/telegram-ui";
+import { FC, useEffect, useState } from "react";
 
 export type GameSectionProps = JSX.IntrinsicElements['div'] & {
 	game: GameData,

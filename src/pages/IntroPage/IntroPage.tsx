@@ -1,11 +1,11 @@
 import { UseDashFunCoins } from "@/components/DashFun/DashFunCoins";
 import { GameData } from "@/components/DashFunData/GameData";
 import { Link } from "@/components/Link/Link";
-import { CoinInfo, getCoinIcon } from "@/constats";
+import { CoinInfo } from "@/constats";
 import dashfunIcon from "@/icons/dashfun-icon.svg";
 import { Env, getEnv, TGLink } from "@/utils/DashFunApi";
 import { useUtils } from "@telegram-apps/sdk-react";
-import { Avatar, Button, Cell, Headline, List, Section } from "@telegram-apps/telegram-ui";
+import { Avatar, Cell, Headline, List, Section } from "@telegram-apps/telegram-ui";
 import { SectionFooter } from "@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionFooter/SectionFooter";
 import { FC } from "react";
 import { IntroPageGameSection } from "./IntroPageGame";

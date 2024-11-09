@@ -102,9 +102,9 @@ const SpinWheel: FC<{ game: GameData | null, user: DashFunUser | null }> = ({ ga
 
 
   if (canClaim && !isSpinning) {
-    page = <PrizePage coins={coins} setCanClaim={setCanClaim}/>
-    // } else if (spinWheel != null) {
-  } else {
+    page = <PrizePage coins={coins} setCanClaim={setCanClaim} />
+  } else if (spinWheel != null) {
+  // } else {
     page = <>
       <div className="spin-wheel-container">
         <div className="wheelRing">
@@ -149,7 +149,7 @@ const SpinWheel: FC<{ game: GameData | null, user: DashFunUser | null }> = ({ ga
       }} />
       <div className="w-full flex justify-center items-center">
         <LargeTitle weight="3">
-          Spin & Win
+          Spin & Win Daily
         </LargeTitle>
       </div>
       {page}

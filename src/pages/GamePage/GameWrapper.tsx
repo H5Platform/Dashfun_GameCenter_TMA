@@ -11,10 +11,12 @@ import Iframe from 'react-iframe';
 import "./GameWrapper.css";
 
 import { UseDashFunCoins } from '@/components/DashFun/DashFunCoins';
-import { TaskStatusChangedEvent } from '@/components/Event/Events';
+import { SpinWheelStatusChangedEvent, TaskStatusChangedEvent } from '@/components/Event/Events';
 import { TaskAndCoin } from '@/components/TaskAndCoin/TaskAndCoin';
 import { getCoinIcon, TaskStatus } from '@/constats';
 import SpinWheel from '@/components/SpinWheel/SpinWheel';
+import { useDashFunSpinWheel } from '@/components/DashFun/DashFunSpinWheel';
+import { SpinWheelConstants } from '@/components/DashFunData/SpinWheelData';
 
 
 export const GameWrapper: FC = () => {
@@ -27,6 +29,8 @@ export const GameWrapper: FC = () => {
 	const initDataRaw = useLaunchParams().initDataRaw;
 	const user = useDashFunUser();
 	const coins = UseDashFunCoins();
+	const [spinWheel, _1, _2] = useDashFunSpinWheel();
+	const [spinStatus, setSpinStatus] = useState(0);
 
 	const [taskCount, setTaskCount] = useState<{ [key: number]: number }>({})
 
@@ -58,15 +62,27 @@ export const GameWrapper: FC = () => {
 		getTaskCount();
 	}, [game])
 
+	useEffect(() => {
+		setSpinStatus(spinWheel?.status || 0);
+	}, [spinWheel])
+
 	const evtListener = (_taskId: string, _status: number) => {
 		//任务状态变化，重新获取task count
 		console.log("get task count....")
 		getTaskCount();
 	}
 
+	const spinListener = (_spinId: string, status: number) => {
+		setSpinStatus(status)
+	}
+
 	useEffect(() => {
-		TaskStatusChangedEvent.addListener(evtListener)
-		return () => { TaskStatusChangedEvent.removeListener(evtListener) }
+		TaskStatusChangedEvent.addListener(evtListener);
+		SpinWheelStatusChangedEvent.addListener(spinListener);
+		return () => {
+			TaskStatusChangedEvent.removeListener(evtListener);
+			SpinWheelStatusChangedEvent.removeListener(spinListener);
+		}
 	}, [game]);
 
 
@@ -106,7 +122,19 @@ export const GameWrapper: FC = () => {
 		{
 			id: "spin",
 			text: "Spin",
-			Icon: () => <i className="fa-regular fa-life-ring text-2xl"></i>,
+			Icon: () => <div>
+				<div className=' relative w-[24px] h-[1px]'>
+					<div className=' absolute left-[12px] top-[-5px]'>
+						{
+							spinStatus == SpinWheelConstants.Status.CanClaim && <Badge type='number'>{1}</Badge>
+						}
+						{
+							spinStatus == SpinWheelConstants.Status.Spin && <Badge type='number' className=' bg-gray-500' >{1}</Badge>
+						}
+					</div>
+				</div>
+				<i className="fa-regular fa-life-ring text-2xl"></i>
+			</div>,
 			component: <SpinWheel user={user} game={game} />
 		},
 	];

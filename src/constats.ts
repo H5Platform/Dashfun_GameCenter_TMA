@@ -57,7 +57,8 @@ export const TaskCategory = {
 
 export const TaskCategoryText: { [key: number]: string } = {
 	1: "Challenges",
-	2: "Daily Hunt"
+	2: "Daily Hunt",
+	3: "7 Days Challenges"
 }
 
 export type TaskSave = {
@@ -94,6 +95,7 @@ export type CoinInfo = {
 }
 
 export const getCoinIcon = (coinName: "DashFunCoin" | "DashFunPoint" | "W3KPoint" | string) => {
+	console.log("get coin icon:", coinName)
 	switch (coinName) {
 		case "DashFunCoin":
 			return dashfunIcon;
