@@ -56,7 +56,7 @@ const SpinWheel: FC<{ game: GameData | null, user: DashFunUser | null }> = ({ ga
       const targetAngle =
         fullRotations + (360 - finalSegmentAngle - segmentAngle / 2);
 
-      const spinDuration = 3000; // 动画时长3秒
+      const spinDuration = 5000; // 动画时长5秒
 
       animateSpin(targetAngle, spinDuration, () => {
         setCanClaim(true);
@@ -79,11 +79,11 @@ const SpinWheel: FC<{ game: GameData | null, user: DashFunUser | null }> = ({ ga
 
       if (elapsedTime >= duration) {
         setRotationAngle(targetAngle); // 动画结束，设置最终角度
-        setTimeout(() => onComplete(), 5000); // 等待 3000ms 显示得分
+        setTimeout(() => onComplete(), 7000); // 5s动画结束，再等待两秒
         // onComplete();
       } else {
         const progress = elapsedTime / duration;
-        const easedProgress = easeOutQuad(progress); // 使用缓动函数减速
+        const easedProgress = easeInOutQuint(progress); // 使用缓动函数减速
         const currentSpinAngle =
           currentAngle + easedProgress * (targetAngle - currentAngle);
         setRotationAngle(currentSpinAngle); // 更新当前旋转角度
@@ -94,8 +94,16 @@ const SpinWheel: FC<{ game: GameData | null, user: DashFunUser | null }> = ({ ga
   };
 
   // 缓动函数，模拟减速效果
-  const easeOutQuad = (t: number): number => t * (2 - t);
-
+  // const easeOutQuad = (t: number): number => t * (2 - t);
+  const easeInOutQuint = (t: number): number =>
+    t === 0
+  ? 0
+  : t === 1
+  ? 1
+  : t < 0.5
+  ? (Math.pow(2, 20 * t - 10)) / 2
+  : (2 - Math.pow(2, -20 * t + 10)) / 2;
+  
   let page = <div className="flex w-full h-full items-center justify-center">
     <Spinner size="l" />
   </div>
