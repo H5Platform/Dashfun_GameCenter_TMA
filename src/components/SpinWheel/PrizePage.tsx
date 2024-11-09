@@ -5,7 +5,7 @@ import { useDashFunSpinWheel } from "../DashFun/DashFunSpinWheel";
 import { SpinWheelConstants } from "../DashFunData/SpinWheelData";
 import { SpinWheelStatusChangedEvent } from "../Event/Events";
 
-const PrizePage: FC<{ coins: DashFunCoins }> = ({ coins }) => {
+const PrizePage: FC<{ coins: DashFunCoins, setCanClaim: (value: boolean) => void }> = ({ coins, setCanClaim }) => {
   const [loading, setLoading] = useState(false);
 
   const [spinWheel, _, claim] = useDashFunSpinWheel();
@@ -23,6 +23,9 @@ const PrizePage: FC<{ coins: DashFunCoins }> = ({ coins }) => {
       const claimRes = await claim();
       SpinWheelStatusChangedEvent.fire(spinWheel.id, SpinWheelConstants.Status.Claimed);
       console.log("claim res", claimRes);
+      setTimeout(() => {
+        setCanClaim(false);
+      }, 5000);
     } catch (e) {
       console.log(e);
     }

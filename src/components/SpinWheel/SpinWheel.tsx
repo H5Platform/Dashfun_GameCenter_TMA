@@ -79,7 +79,7 @@ const SpinWheel: FC<{ game: GameData | null, user: DashFunUser | null }> = ({ ga
 
       if (elapsedTime >= duration) {
         setRotationAngle(targetAngle); // 动画结束，设置最终角度
-        setTimeout(() => onComplete(), 3000); // 等待 3000ms 显示得分
+        setTimeout(() => onComplete(), 5000); // 等待 3000ms 显示得分
         // onComplete();
       } else {
         const progress = elapsedTime / duration;
@@ -102,7 +102,7 @@ const SpinWheel: FC<{ game: GameData | null, user: DashFunUser | null }> = ({ ga
 
 
   if (canClaim && !isSpinning) {
-    page = <PrizePage coins={coins} />
+    page = <PrizePage coins={coins} setCanClaim={setCanClaim}/>
     // } else if (spinWheel != null) {
   } else {
     page = <>
@@ -126,14 +126,14 @@ const SpinWheel: FC<{ game: GameData | null, user: DashFunUser | null }> = ({ ga
 
       <button
         className={`${isSpinning ||
-          spinWheel?.status == SpinWheelConstants.Status.Claimed
+          spinWheel?.status !== SpinWheelConstants.Status.Spin
           ? "bg-gray-500"
           : "bg-blue-500"
           } w-full text-xl font-bold text-white py-2 rounded-md`}
         onClick={handleSpin}
         disabled={
           isSpinning ||
-          spinWheel?.status == SpinWheelConstants.Status.Claimed
+          spinWheel?.status !== SpinWheelConstants.Status.Spin
         }
       >
         {isSpinning ? "SPINNING..." : "SPIN"}
