@@ -2,7 +2,8 @@ import { Coin, CoinInfo, CoinUserData, TaskStatus } from "@/constats"
 import { CoinApi } from "@/utils/DashFunApi"
 import { useLaunchParams } from "@telegram-apps/sdk-react"
 import { useEffect, useState } from "react"
-import { TaskStatusChangedEvent } from "../Event/Events"
+import { SpinWheelStatusChangedEvent, TaskStatusChangedEvent } from "../Event/Events"
+import { SpinWheelConstants } from "../DashFunData/SpinWheelData"
 
 export type DashFunCoins = {
 	findCoinById: (id: string) => CoinInfo | null
@@ -37,8 +38,20 @@ export const UseDashFunCoins = (): DashFunCoins => {
 			}
 		}
 
+		const spinListener = (spinId: string, status: number) => {
+			console.log(spinId)
+			if (status == SpinWheelConstants.Status.Claimed) {
+				//用户Claim了奖励
+				getCoins();
+			}
+		}
+
 		TaskStatusChangedEvent.addListener(evtListener);
-		return () => TaskStatusChangedEvent.removeListener(evtListener);
+		SpinWheelStatusChangedEvent.addListener(spinListener);
+		return () => {
+			TaskStatusChangedEvent.removeListener(evtListener);
+			SpinWheelStatusChangedEvent.removeListener(spinListener);
+		}
 
 	}, [coins]);
 

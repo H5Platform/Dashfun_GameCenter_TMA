@@ -26,7 +26,7 @@ export const Coins: FC<{ game: GameData | null, user: DashFunUser | null, onSele
 	return <div className=" w-full justify-center items-center p-4">
 		<Section>
 			<Cell
-				subtitle={"total balance " + coin?.userData.amount.toLocaleString('en-US', { style: "decimal" }) + " " + coin?.coin.symbol}
+				subtitle={"Your Earning: " + coin?.userData.amount.toLocaleString('en-US', { style: "decimal" }) + " " + coin?.coin.symbol}
 				before={<Avatar src={getCoinIcon(coin?.coin.name as string)} size={40} />}
 			>
 				{coin?.coin.name}

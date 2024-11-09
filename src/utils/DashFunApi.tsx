@@ -368,7 +368,7 @@ const tg_link = () => {
 			botName = "DashFunTestBot";
 			break;
 		case Env.Dev:
-			botName = "DashFunBot";
+			botName = "LocalTestBot";
 			break;
 		case Env.Prod:
 			botName = "DashFunBot";
@@ -404,5 +404,9 @@ const TGLink = {
 	}
 }
 
+const getEnv = () => {
+	return env
+}
 
-export { GameApi, PaymentApi, UserApi, TGLink, TaskApi, CoinApi, SpinWheelApi }
+
+export { GameApi, PaymentApi, UserApi, TGLink, TaskApi, CoinApi, SpinWheelApi, getEnv, Env }

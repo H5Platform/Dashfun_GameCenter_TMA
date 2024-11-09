@@ -3,7 +3,7 @@ import { GameData } from '@/components/DashFunData/GameData';
 import { GameLauncher } from '@/components/GameLauncher/GameLauncher';
 import { TaskApi, TGLink, UserApi } from '@/utils/DashFunApi';
 import { useInitData, useLaunchParams, useUtils } from '@telegram-apps/sdk-react';
-import { Avatar, Badge, Button, Modal, Text } from '@telegram-apps/telegram-ui';
+import { Avatar, Badge, Button, Modal, Tabbar, Text } from '@telegram-apps/telegram-ui';
 import { SectionHeader } from '@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionHeader/SectionHeader';
 import { ModalHeader } from '@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalHeader/ModalHeader';
 import { useEffect, useState, type FC } from 'react';
@@ -14,6 +14,8 @@ import { UseDashFunCoins } from '@/components/DashFun/DashFunCoins';
 import { TaskStatusChangedEvent } from '@/components/Event/Events';
 import { TaskAndCoin } from '@/components/TaskAndCoin/TaskAndCoin';
 import { getCoinIcon, TaskStatus } from '@/constats';
+import SpinWheel from '@/components/SpinWheel/SpinWheel';
+
 
 export const GameWrapper: FC = () => {
 	const [play, setPlay] = useState(false);
@@ -75,6 +77,42 @@ export const GameWrapper: FC = () => {
 
 	const tc = taskCount == null || taskCount[TaskStatus.Completed] == null ? 0 : taskCount[TaskStatus.Completed]
 	const tp = taskCount == null || taskCount[TaskStatus.InProgress] == null ? 0 : taskCount[TaskStatus.InProgress]
+
+
+	const tabs = [
+		{
+			id: "tasks",
+			text: "Tasks",
+			Icon: () => <div>
+				<div className=' relative w-[24px] h-[1px]'>
+					<div className=' absolute left-[12px] top-[-5px]'>
+						{
+							tc > 0 && <Badge type='number'>{tc}</Badge>
+						}
+						{
+							tc == 0 && tp > 0 && <Badge type='number' className=' bg-gray-500' >{tp}</Badge>
+						}
+					</div>
+				</div>
+				<i className="fa-solid fa-gift text-2xl" />
+			</div>,
+			component: <TaskAndCoin user={user} game={game} onTaskClicked={({ processed }) => {
+				if (processed) {
+					//关掉list，让用户重新开启以便刷新状态
+					setShowTask(false);
+				}
+			}} />
+		},
+		{
+			id: "spin",
+			text: "Spin",
+			Icon: () => <i className="fa-regular fa-life-ring text-2xl"></i>,
+			component: <SpinWheel user={user} game={game} />
+		},
+	];
+
+
+	const [currentTab, setCurrentTab] = useState(tabs[0].id);
 
 	const header = <SectionHeader style={{
 		paddingTop: "5px",
@@ -146,6 +184,7 @@ export const GameWrapper: FC = () => {
 				>
 
 					<GameLauncher gameId={initData?.startParam}
+						footer={null}
 						onLoad={g => {
 							setGame(g as GameData);
 						}}
@@ -170,7 +209,7 @@ export const GameWrapper: FC = () => {
 					open={showTask}
 					header={<ModalHeader style={{
 						backgroundColor: "var(--tg-theme-secondary-bg-color)"
-					}}>Tasks</ModalHeader>
+					}}></ModalHeader>
 						// <div className='flex flex-col bg-gray-200 text-black p-2 w-full items-center justify-center gap-1'>
 						// 	<div className=' w-10 h-1 bg-gray-400 rounded-full mb-2'></div>
 						// 	<Text weight='1'>Tasks</Text>
@@ -186,14 +225,22 @@ export const GameWrapper: FC = () => {
 					<div className='flex flex-col w-full h-full' style={{
 						backgroundColor: "var(--tg-theme-secondary-bg-color)"
 					}}>
-						<div className="pb-4">
-							<TaskAndCoin user={user} game={game} onTaskClicked={({ processed }) => {
-								if (processed) {
-									//关掉list，让用户重新开启以便刷新状态
-									setShowTask(false);
-								}
-							}} />
+						<div className="pb-[70px]">
+							{tabs.find((t) => t.id == currentTab)?.component}
 						</div>
+
+						<Tabbar id="bottomNavigation">
+							{tabs.map(({ id, text, Icon }) => (
+								<Tabbar.Item
+									key={id}
+									text={text}
+									selected={id === currentTab}
+									onClick={() => setCurrentTab(id)}
+								>
+									<Icon />
+								</Tabbar.Item>
+							))}
+						</Tabbar>
 					</div>
 				</Modal>
 			)}

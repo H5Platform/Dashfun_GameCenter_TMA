@@ -4,6 +4,7 @@ const EventTypes = {
 	GameLoading: 1,
 	TaskStatusChanged: 50,
 	CoinChanged: 100,
+	SpinWheelStatusChanged: 150,
 }
 
 
@@ -95,6 +96,30 @@ class TaskStatusChangedEvents extends EventBase {
 
 }
 
+class SpinWheelStatusChangedEvents extends EventBase {
+	constructor() {
+		super(EventTypes.SpinWheelStatusChanged);
+	}
+
+	/**
+	 * @overload
+	 * @param listener 
+	 */
+	addListener(listener: ((spinwheelId: string, status: number) => void)): void {
+		super.addListener(listener);
+	}
+
+	/**
+	 * 
+	 * @param value range(0-100)
+	 */
+	fire(spinwheelId: string, status: number): void {
+		console.log("fire spinwheelId status changed event", spinwheelId, status)
+		super.fire(spinwheelId, status)
+	}
+
+}
+
 class CoinChangedEvents extends EventBase {
 	constructor() {
 		super(EventTypes.CoinChanged);
@@ -120,5 +145,6 @@ class CoinChangedEvents extends EventBase {
 const GameLoadingEvent = new GameLoadingEvents();
 const CoinChangedEvent = new CoinChangedEvents();
 const TaskStatusChangedEvent = new TaskStatusChangedEvents();
+const SpinWheelStatusChangedEvent = new SpinWheelStatusChangedEvents();
 
-export { GameLoadingEvent, CoinChangedEvent, TaskStatusChangedEvent }
+export { GameLoadingEvent, CoinChangedEvent, TaskStatusChangedEvent, SpinWheelStatusChangedEvent }

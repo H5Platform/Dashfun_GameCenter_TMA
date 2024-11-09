@@ -102,6 +102,6 @@ export const getCoinIcon = (coinName: "DashFunCoin" | "DashFunPoint" | "W3KPoint
 		case "W3KPoint":
 			return w3kPointIcon;
 		default:
-			return dashfunIcon;
+			return "";
 	}
 }

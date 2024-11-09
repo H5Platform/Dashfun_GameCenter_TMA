@@ -10,11 +10,12 @@ import { toTimeString } from "@/utils/Utils";
 
 export type GLProps = JSX.IntrinsicElements['div'] & {
 	gameId: string | undefined,
-	onLoad: (game: GameData) => void
-	onPlayClicked: () => void;
+	onLoad: (game: GameData) => void,
+	onPlayClicked: () => void,
+	footer: JSX.Element | null
 };
 
-export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked }) => {
+export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked, footer }) => {
 
 	//const initDataRaw = useLaunchParams().initDataRaw;
 	//const [game, setGame] = useState<GameData | null>(null);
@@ -85,7 +86,6 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked }) => 
 							stretched
 							onClick={() => {
 								if (game != null) {
-									console.log(game.tgLink());
 									utils.shareURL(game.tgLink());
 								}
 							}}
@@ -148,5 +148,6 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked }) => 
 				}
 			}}>{playText}</Button>
 		</div>
+		{footer}
 	</div>
 }

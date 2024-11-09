@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { getCoinIcon } from "@/constats";
+import { FC, useState } from "react";
+import { DashFunCoins } from "../DashFun/DashFunCoins";
 import { useDashFunSpinWheel } from "../DashFun/DashFunSpinWheel";
 import { SpinWheelConstants } from "../DashFunData/SpinWheelData";
+import { SpinWheelStatusChangedEvent } from "../Event/Events";
 
-export default function PrizePage() {
+const PrizePage: FC<{ coins: DashFunCoins }> = ({ coins }) => {
   const [loading, setLoading] = useState(false);
 
   const [spinWheel, _, claim] = useDashFunSpinWheel();
@@ -11,10 +14,14 @@ export default function PrizePage() {
 
   const spinWheelStatus = spinWheel?.status;
 
+  //目前奖励只有一种类型，奖励对应的游戏币
+  const coin = coins.findCoinByGameId(spinWheel?.gameId || "");
+
   const onClaim = async () => {
     setLoading(true);
     try {
       const claimRes = await claim();
+      SpinWheelStatusChangedEvent.fire(spinWheel.id, SpinWheelConstants.Status.Claimed);
       console.log("claim res", claimRes);
     } catch (e) {
       console.log(e);
@@ -23,26 +30,28 @@ export default function PrizePage() {
   };
 
   return (
-    <div className="flex flex-wrap justify-center items-center h-screen max-h-[100vh] w-full">
-      <img src="/img/dashfun-point-icon.png" alt="prize" className="self-end" />
+    <div className="flex flex-col flex-wrap justify-center items-center w-full">
+      <img src={coin == null ? "" : getCoinIcon(coin.coin.name)} alt="prize" />
       {spinWheelStatus == SpinWheelConstants.Status.CanClaim ? (
         <div className="self-start w-full">
-          <p className="text-xl text-center">You won {reward?.value}!</p>
+          <p className="text-xl text-center">{reward?.value} {coin?.coin.name}</p>
           <button
-            className={`${
-              loading ? "bg-gray-500" : "bg-blue-500"
-            } w-full text-xl font-bold text-white py-2 rounded-md block`}
+            className={`${loading ? "bg-gray-500" : "bg-blue-500"
+              } w-full text-xl font-bold text-white py-2 rounded-md block`}
             onClick={onClaim}
             disabled={loading}
           >
-            {loading ? "CLAIMING..." : "CLAIM"}
+            {loading ? "Grabing..." : "Grab the prize"}
           </button>
         </div>
       ) : (
         <p className="text-xl self-start">
-          You have successfully claimed {reward?.value}!
+          You got {reward?.value} {coin?.coin.name}!
         </p>
       )}
     </div>
   );
 }
+
+
+export default PrizePage

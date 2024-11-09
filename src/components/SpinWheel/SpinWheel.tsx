@@ -1,16 +1,24 @@
-import { useEffect, useState } from "react";
-import "./spinwheel.css";
-import PrizePage from "./PrizePage";
+import { LargeTitle, Spinner } from "@telegram-apps/telegram-ui";
+import { FC, useEffect, useState } from "react";
+import { Coins } from "../Coins/coins";
+import { UseDashFunCoins } from "../DashFun/DashFunCoins";
 import { useDashFunSpinWheel } from "../DashFun/DashFunSpinWheel";
+import { GameData } from "../DashFunData/GameData";
 import { SpinWheelConstants } from "../DashFunData/SpinWheelData";
+import { DashFunUser } from "../DashFunData/UserData";
+import PrizePage from "./PrizePage";
+import "./spinwheel.css";
+import { SpinWheelStatusChangedEvent } from "../Event/Events";
 
-export default function SpinWheel() {
+const SpinWheel: FC<{ game: GameData | null, user: DashFunUser | null }> = ({ game, user }) => {
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
   const [rotationAngle, setRotationAngle] = useState<number>(0); // 当前旋转角度
 
   const [canClaim, setCanClaim] = useState<boolean>(false);
 
   const [spinWheel, spin] = useDashFunSpinWheel();
+
+  const coins = UseDashFunCoins();
 
   useEffect(() => {
     if (spinWheel?.canClaim()) {
@@ -34,6 +42,9 @@ export default function SpinWheel() {
     // 从服务器获取得分
     const spinRes = await spin();
     if (spinRes) {
+
+      SpinWheelStatusChangedEvent.fire(spinRes.id, spinRes.status);
+
       const { rewardIndex } = spinRes;
 
       // 计算分区中心，确保转盘停在分区正中间
@@ -85,47 +96,65 @@ export default function SpinWheel() {
   // 缓动函数，模拟减速效果
   const easeOutQuad = (t: number): number => t * (2 - t);
 
+  let page = <div className="flex w-full h-full items-center justify-center">
+    <Spinner size="l" />
+  </div>
+
+
+  if (canClaim && !isSpinning) {
+    page = <PrizePage coins={coins} />
+  } else if (spinWheel != null) {
+    page = <>
+      <div className="spin-wheel-container">
+        <div className="wheelRing">
+          <img src="/img/wheel_ring.png" alt="Spin Wheel" />
+        </div>
+        {/* 旋转的转盘 */}
+        <div
+          className="wheel"
+          style={{ transform: `rotate(${rotationAngle}deg)` }}
+        >
+          <img src="/img/wheel.png" alt="Spin Wheel" />
+        </div>
+
+        {/* 固定的指针 */}
+        <div className="pointer">
+          <img src="/img/wheel_pointer.png" alt="Pointer" />
+        </div>
+      </div>
+
+      <button
+        className={`${isSpinning ||
+          spinWheel?.status == SpinWheelConstants.Status.Claimed
+          ? "bg-gray-500"
+          : "bg-blue-500"
+          } w-full text-xl font-bold text-white py-2 rounded-md`}
+        onClick={handleSpin}
+        disabled={
+          isSpinning ||
+          spinWheel?.status == SpinWheelConstants.Status.Claimed
+        }
+      >
+        {isSpinning ? "SPINNING..." : "SPIN"}
+      </button>
+    </>
+  }
+
+
   return (
-    <div className="h-screen max-h-screen flex flex-wrap items-center content-evenly">
-      {canClaim && !isSpinning ? (
-        <PrizePage />
-      ) : (
-        <>
-          <div className="spin-wheel-container">
-            <div className="wheelRing">
-              <img src="/img/wheel_ring.png" alt="Spin Wheel" />
-            </div>
-            {/* 旋转的转盘 */}
-            <div
-              className="wheel"
-              style={{ transform: `rotate(${rotationAngle}deg)` }}
-            >
-              <img src="/img/wheel.png" alt="Spin Wheel" />
-            </div>
-
-            {/* 固定的指针 */}
-            <div className="pointer">
-              <img src="/img/wheel_pointer.png" alt="Pointer" />
-            </div>
-          </div>
-
-          <button
-            className={`${
-              isSpinning ||
-              spinWheel?.status == SpinWheelConstants.Status.Claimed
-                ? "bg-gray-500"
-                : "bg-blue-500"
-            } w-full text-xl font-bold text-white py-2 rounded-md`}
-            onClick={handleSpin}
-            disabled={
-              isSpinning ||
-              spinWheel?.status == SpinWheelConstants.Status.Claimed
-            }
-          >
-            {isSpinning ? "SPINNING..." : "SPIN"}
-          </button>
-        </>
-      )}
+    <div className="h-full flex flex-wrap items-center content-evenly">
+      <Coins game={game} user={user} onSelected={c => {
+        console.log(c);
+      }} />
+      <div className="w-full flex justify-center items-center">
+        <LargeTitle weight="3">
+          Spin & Win
+        </LargeTitle>
+      </div>
+      {page}
     </div>
   );
 }
+
+
+export default SpinWheel
