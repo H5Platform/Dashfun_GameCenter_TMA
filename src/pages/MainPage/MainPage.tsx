@@ -3,6 +3,8 @@ import { FC, useState } from "react";
 import GameCenter from "../GameCenter/GameCenter";
 import FriendsPage from "../Friends/FriendsPage";
 import SpinWheel from "@/components/SpinWheel/SpinWheel";
+import { useDashFunUser } from "@/components/DashFun/DashFunUser";
+import { GameData } from "@/components/DashFunData/GameData";
 
 const tabs = [
   {
@@ -24,6 +26,19 @@ const tabs = [
 
 const MainPage: FC = () => {
   const [currentTab, setCurrentTab] = useState(tabs[0].id);
+  const user = useDashFunUser()
+  const game = new GameData({
+    id: "LocalTest",
+    iconUrl: "https://res.dashfun.games/icons/3kweb3-512.jpg",
+    name: "Local Test",
+    desc: "Local Test",
+    url: "",
+    genre: [],
+    time: 0,
+    openTime: 0,
+    logoUrl: "",
+    mainPicUrl: "",
+  });
 
   return (
     <>
@@ -33,7 +48,7 @@ const MainPage: FC = () => {
         ) : currentTab === "friends" ? (
           <FriendsPage />
         ) : (
-          <SpinWheel />
+          <SpinWheel game={game} user={user} />
         )}
       </div>
       <Tabbar id="bottomNavigation">

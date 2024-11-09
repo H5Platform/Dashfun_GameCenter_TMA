@@ -45,7 +45,7 @@ const PrizePage: FC<{ coins: DashFunCoins }> = ({ coins }) => {
           </button>
         </div>
       ) : (
-        <p className="text-xl self-start">
+        <p className="text-xl self-center">
           You got {reward?.value} {coin?.coin.name}!
         </p>
       )}

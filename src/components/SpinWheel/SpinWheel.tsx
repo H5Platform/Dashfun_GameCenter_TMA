@@ -103,7 +103,8 @@ const SpinWheel: FC<{ game: GameData | null, user: DashFunUser | null }> = ({ ga
 
   if (canClaim && !isSpinning) {
     page = <PrizePage coins={coins} />
-  } else if (spinWheel != null) {
+    // } else if (spinWheel != null) {
+  } else {
     page = <>
       <div className="spin-wheel-container">
         <div className="wheelRing">
@@ -114,7 +115,7 @@ const SpinWheel: FC<{ game: GameData | null, user: DashFunUser | null }> = ({ ga
           className="wheel"
           style={{ transform: `rotate(${rotationAngle}deg)` }}
         >
-          <img src="/img/wheel.png" alt="Spin Wheel" />
+          <img src="/img/wheel2.png" alt="Spin Wheel" />
         </div>
 
         {/* 固定的指针 */}

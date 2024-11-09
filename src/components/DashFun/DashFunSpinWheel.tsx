@@ -11,6 +11,7 @@ export const useDashFunSpinWheel = (): [spinwheel: SpinWheelData, spin: () => Pr
 	const game = useDashFunGame();
 
 	const getSpinwheel = async () => {
+		console.log("getSpinwheel", game, initData)
 		if (game == null || initData == null) return;
 		const sw = await SpinWheelApi.getInfo(initDataRaw as string as string, game?.id as string);
 		const d = new SpinWheelData(sw.spinwheel_id, sw.game_id, sw.status)
@@ -28,6 +29,7 @@ export const useDashFunSpinWheel = (): [spinwheel: SpinWheelData, spin: () => Pr
 	}
 
 	const spin = async (): Promise<SpinWheelData | null> => {
+		console.log("spin:", spinwheel)
 		if (game == null || initData == null || spinwheel == null || spinwheel.canSpin() == false) return null;
 
 		const r = await SpinWheelApi.spin(initDataRaw as string as string, game?.id as string);
