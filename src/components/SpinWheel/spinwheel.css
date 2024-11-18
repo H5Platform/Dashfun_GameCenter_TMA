@@ -18,7 +18,7 @@
   width: 100%;
   height: 100%;
   position: absolute;
-  transition: transform 5s ease-out; /* 平滑旋转效果，持续时间与JS一致 */
+  /*transition: transform 5s ease-out;*/ /* 平滑旋转效果，持续时间与JS一致 */
 }
 
 .pointer {

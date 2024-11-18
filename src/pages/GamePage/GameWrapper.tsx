@@ -3,7 +3,7 @@ import { GameData } from '@/components/DashFunData/GameData';
 import { GameLauncher } from '@/components/GameLauncher/GameLauncher';
 import { TaskApi, TGLink, UserApi } from '@/utils/DashFunApi';
 import { useInitData, useLaunchParams, useUtils } from '@telegram-apps/sdk-react';
-import { Avatar, Badge, Button, Modal, Tabbar, Text } from '@telegram-apps/telegram-ui';
+import { Avatar, Badge, Button, LargeTitle, Modal, Tabbar, Text } from '@telegram-apps/telegram-ui';
 import { SectionHeader } from '@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionHeader/SectionHeader';
 import { ModalHeader } from '@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalHeader/ModalHeader';
 import { useEffect, useState, type FC } from 'react';
@@ -17,6 +17,7 @@ import { getCoinIcon, TaskStatus } from '@/constats';
 import SpinWheel from '@/components/SpinWheel/SpinWheel';
 import { useDashFunSpinWheel } from '@/components/DashFun/DashFunSpinWheel';
 import { SpinWheelConstants } from '@/components/DashFunData/SpinWheelData';
+import { Coins } from '@/components/Coins/coins';
 
 
 export const GameWrapper: FC = () => {
@@ -135,7 +136,18 @@ export const GameWrapper: FC = () => {
 				</div>
 				<i className="fa-regular fa-life-ring text-2xl"></i>
 			</div>,
-			component: <SpinWheel user={user} game={game} />
+			component: <>
+				<Coins game={game} user={user} onSelected={c => {
+					console.log("ccc", c);
+				}} />
+				<div className="w-full flex justify-center items-center">
+					<LargeTitle weight="3">
+						Spin & Win Daily
+					</LargeTitle>
+				</div>
+				<SpinWheel user={user} game={game} />
+			</>
+
 		},
 	];
 
