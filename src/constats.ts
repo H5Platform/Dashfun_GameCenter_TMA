@@ -41,7 +41,8 @@ export const TaskStatus = {
 	InProgress: 1,//任务正在进行中
 	Verify_Pending: 2,                       //任务需要验证
 	Completed: 3,                         //任务完成
-	Claimed: 4
+	Claimed: 4,
+	ReturnInProgress: 5,//专门给follow x类型使用的状态，视为InProgress
 }
 
 export const TaskRewardType = {

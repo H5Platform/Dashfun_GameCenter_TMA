@@ -158,6 +158,7 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 
 	switch (save.status) {
 		case TaskStatus.InProgress:
+		case TaskStatus.ReturnInProgress:
 			progress = <div className="flex flex-row gap-1 justify-center items-center">
 				<div className=" relative w-[50px] h-[50px]">
 					<div className=" absolute left-[-3px] top-[-3px]">
@@ -216,7 +217,7 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 	const onTaskClicked = () => {
 		console.log("tesk clicked", task)
 		let processed = false;
-		if (save.status == TaskStatus.InProgress || save.status == TaskStatus.Verify_Pending) {
+		if (save.status == TaskStatus.InProgress || save.status == TaskStatus.ReturnInProgress || save.status == TaskStatus.Verify_Pending) {
 			const link = getTaskLink(task);
 			if (link != "") {
 				if (link.startsWith("https://t.me")) {
