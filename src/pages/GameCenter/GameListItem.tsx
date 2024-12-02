@@ -1,18 +1,20 @@
+import { GameData } from "@/components/DashFunData/GameData";
+import { getImageUrl } from "@/utils/DashFunApi";
 import { Button, Cell } from "@telegram-apps/telegram-ui";
 export type GameListItemInfo = {
   img: string,
   name: string
 }
 
-export default function GameListItem({ img, name }: GameListItemInfo) {
-  console.log(img, name)
+export default function GameListItem({ data }: { data: GameData }) {
+
   return (
     <Cell
       before={
         <img
-          src="https://picsum.photos/50"
+          src={getImageUrl(data.id, data.iconUrl)}
           alt="game image"
-          className="rounded-lg"
+          className="rounded-lg w-[50px] object-contain aspect-cover"
         />
       }
       after={
@@ -20,11 +22,11 @@ export default function GameListItem({ img, name }: GameListItemInfo) {
           PLAY
         </Button>
       }
-      subtitle="Game Description"
+      subtitle={data.desc}
       //   style={{ padding: 0, gap: 10 }}
       className="no-padding-cell"
     >
-      Game Name
+      {data.name}
     </Cell>
   );
 }

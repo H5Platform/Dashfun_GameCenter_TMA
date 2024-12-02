@@ -45,5 +45,19 @@ class GameData {
 	}
 }
 
-export { GameData }
+class GameDataList {
+	data: GameData[] = [];
+	page: number = 0;
+	size: number = 0;
+	total_pages: number = 0;
+
+	constructor(data: GameData[], page: number, size: number, total_pages: number) {
+		this.data = data;
+		this.page = page;
+		this.size = size;
+		this.total_pages = total_pages;
+	}
+}
+
+export { GameData, GameDataList }
 export type { GameDataParams }
