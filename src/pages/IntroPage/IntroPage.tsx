@@ -9,6 +9,7 @@ import { Avatar, Cell, Headline, List, Section } from "@telegram-apps/telegram-u
 import { SectionFooter } from "@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionFooter/SectionFooter";
 import { FC } from "react";
 import { IntroPageGameSection } from "./IntroPageGame";
+import GameCenter from "../GameCenter/GameCenter";
 
 export const IntroPage: FC = () => {
 	const utils = useUtils();
@@ -70,6 +71,9 @@ export const IntroPage: FC = () => {
 			</Link>
 			<Link to={"https://x.com/dashfun_app"}>
 				<Cell>Follow Us On X</Cell>
+			</Link>
+			<Link to={"/game-center"}>
+				<Cell>Game Center</Cell>
 			</Link>
 		</Section>
 

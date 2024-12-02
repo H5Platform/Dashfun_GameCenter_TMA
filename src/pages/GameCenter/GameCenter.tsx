@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 // import GameGenreCard from "./GameGenreCard";
 import { Avatar, Input, Tappable, Title } from "@telegram-apps/telegram-ui";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +6,9 @@ import SearchPage from "./SearchPage";
 // import PromotionCard from "./PromotionCard";
 import GameChipList from "./GameChipList";
 import GameList from "./GameList";
+import { GameApi } from "@/utils/DashFunApi";
+import { useLaunchParams } from "@telegram-apps/sdk-react";
+import { GameData } from "@/components/DashFunData/GameData";
 
 const GameCenter: FC = () => {
   const navigate = useNavigate();
@@ -14,13 +17,15 @@ const GameCenter: FC = () => {
 
   const [searchValue, setSearchValue] = useState("");
 
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState<GameData[]>([]);
+
+  const [searchLoading, setSearchLoading] = useState(false);
 
   // const [gameData, setGameData] = useState<GameData[]>([]);
 
   // const [loading, setLoading] = useState(false);
 
-  // const initDataRaw = useLaunchParams().initDataRaw;
+  const initDataRaw = useLaunchParams().initDataRaw;
 
   // useEffect(() => {
   //   GameApi.gameSearch(initDataRaw as string).then((res) => {
@@ -52,6 +57,50 @@ const GameCenter: FC = () => {
     setSearchResults([]);
     setShowSearchPage(false);
   };
+
+
+  useEffect(() => {
+    const delay = 1000; // debounce delay in milliseconds
+    let timeoutId: NodeJS.Timeout | null = null;
+
+    const debounceSearch = () => {
+      if (searchValue !== "") {
+        setSearchLoading(true);
+        GameApi.gameSearch(initDataRaw as string, searchValue)
+          .then((res) => {
+            if (res) {
+              const { data } = res;
+              console.log("res: ", res);
+              setSearchResults(data);
+            } else {
+              setSearchResults([]);
+            }
+          })
+          .catch((err) => {
+            console.error("Error fetching game data", err);
+          }).finally(() => {
+            setSearchLoading(false);
+          });
+      }
+    };
+
+    const handleSearch = () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+
+      timeoutId = setTimeout(debounceSearch, delay);
+    };
+
+    handleSearch();
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [searchValue]);
+
 
   return (
     <div className="flex flex-col gap-3 h-full">
@@ -90,7 +139,7 @@ const GameCenter: FC = () => {
       </div>
 
       {showSearchPage ? (
-        <SearchPage searchResults={searchResults} />
+        <SearchPage searchResults={searchResults} searchLoading={searchLoading} />
       ) : (
         <>
 

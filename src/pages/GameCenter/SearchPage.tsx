@@ -1,7 +1,9 @@
 import { FC } from "react";
-import GameItem, { GameItemProps } from "./GameItem";
-import { Divider } from "@telegram-apps/telegram-ui";
+import GameItem from "./GameItem";
+import { Divider, List, Spinner } from "@telegram-apps/telegram-ui";
 import { Player } from "@lottiefiles/react-lottie-player";
+import { GameData } from "@/components/DashFunData/GameData";
+import GameListItem from "./GameListItem";
 
 const recommendedGameData = [
   {
@@ -30,19 +32,33 @@ const recommendedGameData = [
   },
 ];
 
-interface SearchPageProps {
-  // searchResults: GameItemProps['game'][];
-  searchResults: Array<GameItemProps["game"]>;
-}
+// interface SearchPageProps {
+//   // searchResults: GameItemProps['game'][];
+//   searchResults: Array<GameItemProps["game"]>;
+// }
 
-const SearchPage: FC<SearchPageProps> = ({ searchResults }) => {
+const SearchPage = ({ searchResults, searchLoading }: { searchResults: GameData[], searchLoading: boolean }) => {
   return (
     <div>
       <p className="text-sm uppercase font-bold">Recommended</p>
-      {searchResults.length ? <></> : <></>}
       <RecommendedGameList />
       <Divider className="my-5" />
-      <NotFoundInfo />
+      {searchResults.length ?
+        <div>
+          <List
+            style={{
+              padding: 0,
+            }}
+          >
+            {searchResults.map((game, index) => (
+              <GameListItem key={index} data={game} />
+            ))}
+          </List>
+        </div>
+        : searchLoading ? <div className="flex justify-center">
+          <Spinner size="m" />
+        </div> :
+          <NotFoundInfo />}
     </div>
   );
 };
