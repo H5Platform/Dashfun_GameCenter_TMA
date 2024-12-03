@@ -5,6 +5,31 @@ import { GameData } from "@/components/DashFunData/GameData";
 import { GameApi } from "@/utils/DashFunApi";
 import { useLaunchParams } from "@telegram-apps/sdk-react";
 
+/*
+const dummyGameData: GameData[] = [
+  { id: 1, name: 'Game One', iconUrl: 'icon1.png', desc: 'An action-packed adventure.' },
+  { id: 2, name: 'Game Two', iconUrl: 'icon2.png', desc: 'A thrilling puzzle game.' },
+  { id: 3, name: 'Game Three', iconUrl: 'icon3.png', desc: 'An exciting adventure game.' },
+  { id: 4, name: 'Game Four', iconUrl: 'icon4.png', desc: 'A fun and engaging game.' },
+  { id: 5, name: 'Game Five', iconUrl: 'icon5.png', desc: 'A challenging strategy game.' },
+  { id: 6, name: 'Game Six', iconUrl: 'icon6.png', desc: 'A fast-paced racing game.' },
+  { id: 7, name: 'Game Seven', iconUrl: 'icon7.png', desc: 'A relaxing puzzle game.' },
+  { id: 8, name: 'Game Eight', iconUrl: 'icon8.png', desc: 'An immersive RPG game.' },
+  { id: 9, name: 'Game Nine', iconUrl: 'icon9.png', desc: 'A thrilling action game.' },
+  { id: 10, name: 'Game Ten', iconUrl: 'icon10.png', desc: 'A fun and addictive game.' },
+  { id: 11, name: 'Game Eleven', iconUrl: 'icon11.png', desc: 'A captivating adventure game.' },
+  { id: 12, name: 'Game Twelve', iconUrl: 'icon12.png', desc: 'A strategic board game.' },
+  { id: 13, name: 'Game Thirteen', iconUrl: 'icon13.png', desc: 'A challenging puzzle game.' },
+  { id: 14, name: 'Game Fourteen', iconUrl: 'icon14.png', desc: 'An exciting sports game.' },
+  { id: 15, name: 'Game Fifteen', iconUrl: 'icon15.png', desc: 'A fun and interactive game.' },
+  { id: 16, name: 'Game Sixteen', iconUrl: 'icon16.png', desc: 'A fast-paced arcade game.' },
+  { id: 17, name: 'Game Seventeen', iconUrl: 'icon17.png', desc: 'A relaxing simulation game.' },
+  { id: 18, name: 'Game Eighteen', iconUrl: 'icon18.png', desc: 'An immersive strategy game.' },
+  { id: 19, name: 'Game Nineteen', iconUrl: 'icon19.png', desc: 'A thrilling adventure game.' },
+  { id: 20, name: 'Game Twenty', iconUrl: 'icon20.png', desc: 'A fun and engaging puzzle game.' },
+];
+*/
+
 export default function GameList() {
   const [loading, setLoading] = useState(false);
 
@@ -27,7 +52,7 @@ export default function GameList() {
       console.log("res: ", res);
       setCurrentPage(page);
       setTotalPages(total_pages);
-      setGameData(data);
+      setGameData((pre) => [...pre, ...data]);
     }).catch((err) => {
       console.error("Error fetching game data", err);
 
@@ -35,7 +60,6 @@ export default function GameList() {
       setLoading(false);
     });
   };
-
 
   useEffect(() => {
     fetchGameData(currentPage);
@@ -79,6 +103,9 @@ export default function GameList() {
             <GameListItem key={game.id} data={game} />
           ))
         }
+        {/* {dummyGameData.map((game) => (
+          <GameListItem key={game.id} data={game} />
+        ))} */}
       </List>
       {
         loading && (
