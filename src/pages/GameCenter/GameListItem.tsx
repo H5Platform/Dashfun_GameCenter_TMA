@@ -14,7 +14,7 @@ export default function GameListItem({ data }: { data: GameData }) {
         <img
           src={getImageUrl(data.id, data.iconUrl)}
           alt="game image"
-          className="rounded-lg w-[50px] object-contain aspect-cover"
+          className="rounded-lg w-[50px] object-contain aspect-contain"
         />
       }
       after={

@@ -145,6 +145,8 @@ const GameApi = {
 				if (result.data.data && result.data.data.data) {
 					const data = result.data.data.data.map((item: GameDataParams) => new GameData(item));
 					return new GameDataList(data, result.data.page, result.data.size, result.data.total_pages);
+				} else {
+					throw result.data.msg
 				}
 			} else {
 				throw result.data.msg
