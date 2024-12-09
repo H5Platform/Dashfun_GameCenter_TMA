@@ -181,7 +181,7 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 				<div className="flex flex-row gap-1 justify-center items-center">
 					{
 						task.require.type == TaskCondition.BindWallet && task.require.condition == "Ton" ?
-							<Button mode="filled" size="m"><img src="/public/ton-toncoin-logo-1.svg" /></Button> :
+							<Button mode="filled" size="m"><img src="/ton-toncoin-logo-1.svg" /></Button> :
 							<div className=" relative w-[50px] h-[50px]">
 								<div className=" absolute left-[-3px] top-[-3px]">
 									<CircularProgress
