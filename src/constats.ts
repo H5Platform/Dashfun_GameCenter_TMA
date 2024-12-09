@@ -109,4 +109,12 @@ export const getCoinIcon = (coinName: "DashFunCoin" | "DashFunPoint" | "W3KPoint
 		default:
 			return "";
 	}
-}
+};
+
+export const GameGenre = {
+	New: 1,
+	Popular: 2,
+	RPG: 1001,
+	Card: 1002,
+	Strategy: 1003,
+};

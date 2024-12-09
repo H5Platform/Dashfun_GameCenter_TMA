@@ -26,44 +26,46 @@ export const IntroPage: FC = () => {
 
 	const games: GameData[] = [];
 
-	games.push(new GameData({
-		id: "9c4r4sdzb40",
-		name: "War Three Kingdoms",
-		desc: "Easy and fast Idle RPG",
-		iconUrl: "https://res.dashfun.games/icons/3kweb3-512.jpg",
-		url: "",
-		genre: [],
-		time: 0,
-		openTime: 0,
-		logoUrl: "",
-		mainPicUrl: "",
-	}))
-
-	if (getEnv() == Env.Dev) {
-		//开发环境下增加LocalTest
-		games.push(new GameData({
-			id: "LocalTest",
+	games.push(
+		new GameData({
+			id: "9c4r4sdzb40",
+			name: "War Three Kingdoms",
+			desc: "Easy and fast Idle RPG",
 			iconUrl: "https://res.dashfun.games/icons/3kweb3-512.jpg",
-			name: "Local Test",
-			desc: "Local Test",
 			url: "",
 			genre: [],
 			time: 0,
 			openTime: 0,
 			logoUrl: "",
 			mainPicUrl: "",
-		}));
+		})
+	);
+
+	if (getEnv() == Env.Dev) {
+		//开发环境下增加LocalTest
+		games.push(
+			new GameData({
+				id: "LocalTest",
+				iconUrl: "https://res.dashfun.games/icons/3kweb3-512.jpg",
+				name: "Local Test",
+				desc: "Local Test",
+				url: "",
+				genre: [],
+				time: 0,
+				openTime: 0,
+				logoUrl: "",
+				mainPicUrl: "",
+			})
+		);
 	}
 
+	const gamesDom: JSX.Element[] = [];
 
-
-	const gamesDom: JSX.Element[] = []
-
-	games.forEach(g => {
-		const coin = coins.findCoinByGameId(g.id)
-		const dom = <IntroPageGameSection game={g} coin={coin as CoinInfo} />
-		gamesDom.push(dom)
-	})
+	games.forEach((g) => {
+		const coin = coins.findCoinByGameId(g.id);
+		const dom = <IntroPageGameSection game={g} coin={coin as CoinInfo} />;
+		gamesDom.push(dom);
+	});
 
 	return <List>
 		<div className="w-full flex flex-col justify-center items-center pt-5">

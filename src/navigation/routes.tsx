@@ -9,6 +9,7 @@ import { LaunchParamsPage } from "@/pages/LaunchParamsPage/LaunchParamsPage.tsx"
 import MainPage from "@/pages/MainPage/MainPage";
 import { ThemeParamsPage } from "@/pages/ThemeParamsPage/ThemeParamsPage.tsx";
 import { TONConnectPage } from "@/pages/TONConnectPage/TONConnectPage";
+import GameDetails from "@/pages/GameCenter/GameDetails";
 
 interface Route {
   path: string;
@@ -29,6 +30,7 @@ export const routes: Route[] = [
   },
   { path: "/game-center", Component: MainPage },
   { path: "/game-genre", Component: GameAllList },
+  { path: "/game-details/:id", Component: GameDetails },
   { path: "/profile", Component: ProfilePage },
   {
     path: "/ton-connect",

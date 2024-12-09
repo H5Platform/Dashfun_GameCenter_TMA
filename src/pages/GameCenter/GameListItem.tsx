@@ -1,30 +1,36 @@
+import { GameData } from "@/components/DashFunData/GameData";
+import { getImageUrl } from "@/utils/DashFunApi";
 import { Button, Cell } from "@telegram-apps/telegram-ui";
+import { useNavigate } from "react-router-dom";
 export type GameListItemInfo = {
   img: string,
   name: string
 }
 
-export default function GameListItem({ img, name }: GameListItemInfo) {
-  console.log(img, name)
+export default function GameListItem({ data }: { data: GameData }) {
+
+  const navigate = useNavigate();
+
   return (
     <Cell
       before={
         <img
-          src="https://picsum.photos/50"
+          src={getImageUrl(data.id, data.iconUrl)}
           alt="game image"
-          className="rounded-lg"
+          className="rounded-lg w-[50px] object-contain aspect-contain"
         />
       }
       after={
-        <Button size="s" mode="bezeled" className="px-4">
+        <Button size="s" mode="bezeled" className="px-4" onClick={(e) => e.stopPropagation()}>
           PLAY
         </Button>
       }
-      subtitle="Game Description"
+      subtitle={data.desc}
       //   style={{ padding: 0, gap: 10 }}
       className="no-padding-cell"
+      onClick={() => navigate(`/game-details/${data.id}`)}
     >
-      Game Name
+      {data.name}
     </Cell>
   );
 }

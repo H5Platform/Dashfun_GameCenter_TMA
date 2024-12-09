@@ -1,4 +1,4 @@
-import { GameData } from "@/components/DashFunData/GameData"
+import { GameData, GameDataList, GameDataParams } from "@/components/DashFunData/GameData"
 import { DashFunUser } from "@/components/DashFunData/UserData"
 import axios from "axios"
 
@@ -14,6 +14,10 @@ const api_local = "https://tma-server-test.nexgami.com/api/v1/"
 const api_test = "https://dashfun-server-test.nexgami.com/api/v1/"
 const api_prod = "https://tma-server.dashfun.games/api/v1/"
 
+export const getImageUrl = (id: string | undefined, url: string | undefined) =>
+	`https://res.dashfun.games/images/${id}/${url}`;
+
+
 const api_url = () => {
 	const url = window.location.href;
 	if (url.indexOf("https://dashfun-test") >= 0) {
@@ -27,7 +31,8 @@ const api_url = () => {
 		return api_prod;
 	}
 	env = Env.Dev
-	return api_local;
+	// return api_local;
+	return api_test;
 }
 
 const dashFunApiUrl = api_url()
@@ -133,6 +138,37 @@ const GameApi = {
 		if (result.status == 200) {
 			if (result.data.code == 0) {
 				return new GameData(result.data.data);
+			} else {
+				throw result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
+
+	gameSearch: async (tgToken: string, keyword: string = "", page: number = 1, genre: number[] = [], size: number = 10): Promise<GameDataList> => {
+		const api = GameApi.apiUrl() + "search"
+		const result = await axios.post(api, {
+			keyword,
+			genre,
+			size,
+			page
+
+		}, {
+			headers: {
+				"Authorization": "tma " + tgToken
+			},
+		},
+		)
+		console.log("gameSearch:", result)
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				if (result.data.data && result.data.data.data) {
+					const data = result.data.data.data.map((item: GameDataParams) => new GameData(item));
+					return new GameDataList(data, result.data.page, result.data.size, result.data.total_pages);
+				} else {
+					throw result.data.msg
+				}
 			} else {
 				throw result.data.msg
 			}
