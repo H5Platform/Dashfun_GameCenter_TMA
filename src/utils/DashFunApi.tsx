@@ -31,8 +31,8 @@ const api_url = () => {
 		return api_prod;
 	}
 	env = Env.Dev
-	// return api_local;
-	return api_test;
+	return api_local;
+	// return api_test;
 }
 
 const dashFunApiUrl = api_url()
