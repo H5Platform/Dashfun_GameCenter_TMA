@@ -1,14 +1,15 @@
 import { GameData } from "@/components/DashFunData/GameData";
 import { DashFunUser } from "@/components/DashFunData/UserData";
-import { TaskApi, TGLink } from "@/utils/DashFunApi";
+import { TaskApi, TGLink, UserApi } from "@/utils/DashFunApi";
 import { useLaunchParams, useUtils } from "@telegram-apps/sdk-react";
 import { Avatar, Button, Cell, CircularProgress, List, Section, Text } from "@telegram-apps/telegram-ui";
 import { FC, useEffect, useState } from "react";
 
 import { getCoinIcon, Task, TaskCategoryText, TaskCondition, TaskRewardType, TaskSave, TaskStatus } from "@/constats";
+import { useTonConnectModal, useTonConnectUI } from "@tonconnect/ui-react";
+import { UseDashFunCoins } from "../DashFun/DashFunCoins";
 import { TaskStatusChangedEvent } from "../Event/Events";
 import "./TaskList.css";
-import { UseDashFunCoins } from "../DashFun/DashFunCoins";
 
 export type TaskListype = {
 	game: GameData | null
@@ -24,6 +25,9 @@ const getTaskLink = (task: Task): string => {
 		const link = TGLink.gameLink(task.game_id);
 		console.log(task, link);
 		return link;
+	}
+	if (task.require.type == TaskCondition.BindWallet) {
+		return "openwallet:ton"
 	}
 	return ""
 }
@@ -124,6 +128,19 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 	const initDataRaw = useLaunchParams().initDataRaw;
 	const [claiming, setClaiming] = useState(false);
 	const [verifying, setVerifying] = useState(false);
+	const { state, open, close } = useTonConnectModal();
+
+	if (task.require.type == TaskCondition.BindWallet) {
+		const [ui] = useTonConnectUI();
+		ui.onStatusChange(w => {
+			if (w != null) {
+				UserApi.bindWalletAddress(initDataRaw as string, w.account.address)
+				if (state.status == 'opened') {
+					close();
+				}
+			}
+		})
+	}
 
 	const claim = async () => {
 		if (save.status == TaskStatus.Completed) {
@@ -156,26 +173,33 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 		}
 	}
 
+
 	switch (save.status) {
 		case TaskStatus.InProgress:
 		case TaskStatus.ReturnInProgress:
-			progress = <div className="flex flex-row gap-1 justify-center items-center">
-				<div className=" relative w-[50px] h-[50px]">
-					<div className=" absolute left-[-3px] top-[-3px]">
-						<CircularProgress
-							progress={save.progress / task.require.count * 100}
-							size="large"
-						/>
-					</div>
-					<div className="w-[50px] h-[50px] absolute top-0 left-0">
-						<Text className=" text-center items-center justify-center flex w-full h-full text-sm font-semibold">
-							{save.progress}/{task.require.count}
-						</Text>
-					</div>
+			progress = <div className="flex flex-col w-full justify-center items-center">
+				<div className="flex flex-row gap-1 justify-center items-center">
+					{
+						task.require.type == TaskCondition.BindWallet && task.require.condition == "Ton" ?
+							<Button mode="filled" size="m"><img src="/public/ton-toncoin-logo-1.svg" /></Button> :
+							<div className=" relative w-[50px] h-[50px]">
+								<div className=" absolute left-[-3px] top-[-3px]">
+									<CircularProgress
+										progress={save.progress / task.require.count * 100}
+										size="large"
+									/>
+								</div>
+								<div className="w-[50px] h-[50px] absolute top-0 left-0">
+									<Text className=" text-center items-center justify-center flex w-full h-full text-sm font-semibold">
+										{save.progress}/{task.require.count}
+									</Text>
+								</div>
+							</div>
+					}
+					{
+						getTaskLink(task) == "" || task.require.type == TaskCondition.BindWallet ? <div className="w-[10px]"></div> : <i className="fa-solid fa-chevron-right"></i>
+					}
 				</div>
-				{
-					getTaskLink(task) == "" ? <div className="w-[10px]"></div> : <i className="fa-solid fa-chevron-right"></i>
-				}
 			</div>
 			break;
 		case TaskStatus.Verify_Pending:
@@ -222,6 +246,8 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 			if (link != "") {
 				if (link.startsWith("https://t.me")) {
 					util.openTelegramLink(link)
+				} else if (link.startsWith("openwallet")) {
+					open();
 				} else {
 					util.openLink(link)
 				}

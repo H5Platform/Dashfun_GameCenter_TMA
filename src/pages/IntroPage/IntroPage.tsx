@@ -3,16 +3,26 @@ import { GameData } from "@/components/DashFunData/GameData";
 import { Link } from "@/components/Link/Link";
 import { CoinInfo } from "@/constats";
 import dashfunIcon from "@/icons/dashfun-icon.svg";
-import { Env, getEnv, TGLink } from "@/utils/DashFunApi";
-import { useUtils } from "@telegram-apps/sdk-react";
+import { Env, getEnv, TGLink, UserApi } from "@/utils/DashFunApi";
+import { useLaunchParams, useUtils } from "@telegram-apps/sdk-react";
 import { Avatar, Cell, Headline, List, Section } from "@telegram-apps/telegram-ui";
 import { SectionFooter } from "@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionFooter/SectionFooter";
 import { FC } from "react";
 import { IntroPageGameSection } from "./IntroPageGame";
+import { TonConnectButton, useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
 
 export const IntroPage: FC = () => {
 	const utils = useUtils();
 	const coins = UseDashFunCoins();
+	const wallet = useTonWallet();
+	const initDataRaw = useLaunchParams().initDataRaw;
+
+	const [ui] = useTonConnectUI()
+	ui.onStatusChange(w => {
+		if (w != null) {
+			UserApi.bindWalletAddress(initDataRaw as string, w.account.address)
+		}
+	})
 
 	const games: GameData[] = [];
 
@@ -71,6 +81,15 @@ export const IntroPage: FC = () => {
 			<Link to={"https://x.com/dashfun_app"}>
 				<Cell>Follow Us On X</Cell>
 			</Link>
+		</Section>
+
+		<Section header="Connect Wallet">
+			{
+				wallet == null ? <div className="flex justify-center items-center w-full py-4">
+					<TonConnectButton className="py-2" />
+				</div> : <Cell after={<TonConnectButton />}>Your wallet: </Cell>
+			}
+
 		</Section>
 
 		<Section header="New Games">

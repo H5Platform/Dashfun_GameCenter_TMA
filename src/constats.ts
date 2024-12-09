@@ -34,7 +34,9 @@ export const TaskCondition = {
 	PlayGame: 2,
 	LevelUp: 3,
 	JoinTGChannel: 4,
-	FollowX: 5
+	FollowX: 5,
+	SpendStars: 6,
+	BindWallet: 7,
 }
 
 export const TaskStatus = {

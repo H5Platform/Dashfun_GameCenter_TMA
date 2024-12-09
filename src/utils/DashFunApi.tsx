@@ -74,6 +74,27 @@ const UserApi = {
 		} else {
 			throw result.status
 		}
+	},
+
+	bindWalletAddress: async (tgToken: string, address: string): Promise<any> => {
+		const api = UserApi.apiUrl() + "bind_wallet"
+		const result = await axios.post(api, {
+			chain: "Ton",
+			address
+		}, {
+			headers: {
+				"Authorization": "tma " + tgToken
+			}
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data
+			} else {
+				throw result.data.msg
+			}
+		} else {
+			throw result.status
+		}
 	}
 }
 
