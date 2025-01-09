@@ -1,5 +1,8 @@
 import { PaymentApi } from "@/utils/DashFunApi";
-import { InitData, initInitData, initInvoice, initUtils, useInitData, useLaunchParams, Utils } from "@telegram-apps/sdk-react";
+import {
+	InitData, initInitData, initInvoice, initUtils, useInitData, useLaunchParams, Utils, subscribe, unsubscribe
+
+} from "@telegram-apps/sdk-react";
 import { FC, useEffect } from "react";
 import { useDashFunUser } from "../DashFun/DashFunUser";
 import { DashFunUser } from "../DashFunData/UserData";
@@ -128,7 +131,11 @@ export const MessageListener: FC = () => {
 	}
 	useEffect(() => {
 		window.addEventListener('message', eventListener)
+		const us = subscribe((ev) => {
+			console.log("receive event", ev);
+		})
 		return () => {
+			us();
 			window.removeEventListener('message', eventListener);
 		}
 
