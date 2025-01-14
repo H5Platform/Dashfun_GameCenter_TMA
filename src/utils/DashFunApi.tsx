@@ -146,6 +146,61 @@ const GameApi = {
 		}
 	},
 
+	/**
+	 * 保存数据接口，供游戏将本地数据保存到dashfun服务器
+	 * @param gameId 
+	 * @param tgToken 
+	 * @param saveData 
+	 * @returns 
+	 */
+	setData: async (gameId: string, tgToken: string, key: string, data: any) => {
+		const api = GameApi.apiUrl() + gameId + "/data"
+		const result = await axios.post(api, {
+			key, data: JSON.stringify(data)
+		}, {
+			headers: {
+				"Authorization": "tma " + tgToken
+			}
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data
+			} else {
+				throw result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
+
+	/**
+	 * 读取数据接口，供游戏从dashfun服务器读取数据
+	 * @param gameId 
+	 * @param tgToken 
+	 * @param key 
+	 * @returns 
+	 */
+	getData: async (gameId: string, tgToken: string, key: string) => {
+		const api = GameApi.apiUrl() + gameId + "/data"
+		const result = await axios.get(api, {
+			headers: {
+				"Authorization": "tma " + tgToken
+			},
+			params: {
+				key
+			} 
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data
+			} else {
+				throw result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
+
 	gameSearch: async (tgToken: string, keyword: string = "", page: number = 1, genre: number[] = [], size: number = 10): Promise<GameDataList> => {
 		const api = GameApi.apiUrl() + "search"
 		const result = await axios.post(api, {
