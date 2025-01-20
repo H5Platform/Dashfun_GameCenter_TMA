@@ -1,4 +1,4 @@
-import { PaymentApi } from "@/utils/DashFunApi";
+import { GameApi, PaymentApi } from "@/utils/DashFunApi";
 import {
 	InitData, initInitData, initInvoice, initUtils, useInitData, useLaunchParams, Utils, subscribe
 } from "@telegram-apps/sdk-react";
@@ -95,6 +95,34 @@ const onRequestPayment = (ctx: Context) => {
 	})
 }
 
+const onSetData = (ctx: Context) => {
+	const { method, payload } = ctx.callData
+	const { key, data } = payload
+	GameApi.setData(ctx.dfGame.id, ctx.initDataRaw, key, data)
+		.then(result => {
+			const r = new Result("success", result);
+			sendResult(ctx.source, method, r)
+		}).catch(e => {
+			console.error(e);
+			const r = new Result("error", e);
+			sendResult(ctx.source, method, r)
+		})
+}
+
+const onGetData = (ctx: Context) => {
+	const { method, payload } = ctx.callData
+	const { key } = payload
+	GameApi.getData(ctx.dfGame.id, ctx.initDataRaw, key)
+		.then(result => {
+			const r = new Result("success", result);
+			sendResult(ctx.source, method, r)
+		}).catch(e => {
+			console.error(e);
+			const r = new Result("error", e);
+			sendResult(ctx.source, method, r)
+		})
+}
+
 const onLoading = (ctx: Context) => {
 	const { payload } = ctx.callData
 	let { value } = payload;
@@ -112,6 +140,8 @@ processors[DashFunMessages.openTelegramLink] = onOpenTelegramLink;
 processors[DashFunMessages.openInvoice] = onOpenInvoice;
 processors[DashFunMessages.requestPayment] = onRequestPayment;
 processors[DashFunMessages.loading] = onLoading;
+processors[DashFunMessages.getData] = onGetData;
+processors[DashFunMessages.setData] = onSetData;
 
 export const MessageListener: FC = () => {
 	const initDataRaw = useLaunchParams().initDataRaw;
@@ -130,11 +160,7 @@ export const MessageListener: FC = () => {
 	}
 	useEffect(() => {
 		window.addEventListener('message', eventListener)
-		const us = subscribe((ev) => {
-			console.log("receive event", ev);
-		})
 		return () => {
-			us();
 			window.removeEventListener('message', eventListener);
 		}
 

@@ -65,4 +65,29 @@ export const DashFunMessages = {
 	 * 
 	 */
 	requestPayment: "requestPayment",
+
+	/**
+	 * payload:{
+	 * 	key:string,
+	 * 	data:object
+	 * }
+	 * 
+	 * result:{
+	 * 	state:"success"|"error",
+	 * 	data: string
+	 * }
+	 */
+	setData: "setData",
+
+	/**
+	 * payload:{
+	 * 	key:string,
+	 * }
+	 * 
+	 * result:{
+	 * 	state:"success"|"error",
+	 * 	data: string
+	 * }
+	 */
+	getData: "getData",
 }

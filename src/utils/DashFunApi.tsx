@@ -113,6 +113,7 @@ const GameApi = {
 			//for test
 			const encoded = gameId.slice("test-".length)
 			const url = atob(encoded)
+
 			console.log("encoded url::::", url);
 			return new GameData({
 				id: "ForTest",
@@ -155,8 +156,20 @@ const GameApi = {
 	 */
 	setData: async (gameId: string, tgToken: string, key: string, data: any) => {
 		const api = GameApi.apiUrl() + gameId + "/data"
+
+		let strToEncode = "";
+		if (typeof (data) == "string") {
+			strToEncode = data;
+		} else {
+			strToEncode = JSON.stringify(data);
+		}
+
+		// const encoded = btoa(strToEncode);
+
+		console.log(typeof (data), strToEncode)
+
 		const result = await axios.post(api, {
-			key, data: JSON.stringify(data)
+			key, data: strToEncode
 		}, {
 			headers: {
 				"Authorization": "tma " + tgToken
@@ -182,13 +195,15 @@ const GameApi = {
 	 */
 	getData: async (gameId: string, tgToken: string, key: string) => {
 		const api = GameApi.apiUrl() + gameId + "/data"
+
+
 		const result = await axios.get(api, {
 			headers: {
 				"Authorization": "tma " + tgToken
 			},
 			params: {
 				key
-			} 
+			}
 		})
 		if (result.status == 200) {
 			if (result.data.code == 0) {

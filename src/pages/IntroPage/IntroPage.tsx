@@ -3,7 +3,7 @@ import { GameData } from "@/components/DashFunData/GameData";
 import { Link } from "@/components/Link/Link";
 import { CoinInfo } from "@/constats";
 import dashfunIcon from "@/icons/dashfun-icon.svg";
-import { Env, getEnv, TGLink, UserApi } from "@/utils/DashFunApi";
+import { Env, GameApi, getEnv, TGLink, UserApi } from "@/utils/DashFunApi";
 import { useLaunchParams, useUtils } from "@telegram-apps/sdk-react";
 import { Avatar, Cell, Headline, List, Section } from "@telegram-apps/telegram-ui";
 import { SectionFooter } from "@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionFooter/SectionFooter";
@@ -84,6 +84,31 @@ export const IntroPage: FC = () => {
 				<Cell>Follow Us On X</Cell>
 			</Link>
 		</Section>
+
+		{
+			(
+				(getEnv() == Env.Dev || getEnv() == Env.Test) &&
+				<Section header="Test Functions">
+					<Link to="" onClick={async () => {
+						const testData = {
+							data1: "data1",
+							data2: "data2",
+							test: true
+						}
+
+						await GameApi.setData("LocalTest", initDataRaw as string, "test_savedata", testData);
+						await GameApi.setData("LocalTest", initDataRaw as string, "test_savedata_number", 12345);
+
+						const s1 = await GameApi.getData("LocalTest", initDataRaw as string, "test_savedata");
+						const s2 = await GameApi.getData("LocalTest", initDataRaw as string, "test_savedata_number");
+
+						console.log("test_savedata", JSON.parse(s1), "test_savedata_number", s2);
+					}}>
+						<Cell>Test Save Function</Cell>
+					</Link>
+				</Section>
+			)
+		}
 
 		<Section header="Connect Wallet">
 			{
