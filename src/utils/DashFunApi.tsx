@@ -194,7 +194,7 @@ const GameApi = {
 	 * @returns 
 	 */
 	getData: async (gameId: string, tgToken: string, key: string) => {
-		console.log("GetData:", gameId, tgToken, key)
+		console.log("GetData:", gameId, key)
 		const api = GameApi.apiUrl() + gameId + "/data"
 
 
