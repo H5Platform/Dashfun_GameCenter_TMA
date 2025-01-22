@@ -208,7 +208,7 @@ const GameApi = {
 		})
 		if (result.status == 200) {
 			if (result.data.code == 0) {
-				return result.data.code
+				return result.data.data
 			} else {
 				throw result.data.msg
 			}
