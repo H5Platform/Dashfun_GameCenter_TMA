@@ -207,7 +207,8 @@ const GameApi = {
 		})
 		if (result.status == 200) {
 			if (result.data.code == 0) {
-				return result.data.data
+				const data = result.data.data.replace("\\\"","\"")
+				return data
 			} else {
 				throw result.data.msg
 			}
