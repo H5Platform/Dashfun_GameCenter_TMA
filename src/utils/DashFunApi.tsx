@@ -194,6 +194,7 @@ const GameApi = {
 	 * @returns 
 	 */
 	getData: async (gameId: string, tgToken: string, key: string) => {
+		console.log("GetData:", gameId, tgToken, key)
 		const api = GameApi.apiUrl() + gameId + "/data"
 
 
@@ -207,8 +208,7 @@ const GameApi = {
 		})
 		if (result.status == 200) {
 			if (result.data.code == 0) {
-				const data = result.data.data.replace("\\\"","\"")
-				return data
+				return result.data.code
 			} else {
 				throw result.data.msg
 			}
