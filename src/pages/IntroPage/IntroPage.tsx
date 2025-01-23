@@ -28,10 +28,10 @@ export const IntroPage: FC = () => {
 
 	games.push(
 		new GameData({
-			id: "9c4r4sdzb40",
-			name: "War Three Kingdoms",
-			desc: "Easy and fast Idle RPG",
-			iconUrl: "https://res.dashfun.games/icons/3kweb3-512.jpg",
+			id: "n12u83sdngg",
+			name: "Bass Tournament",
+			desc: "A revolutionary Web3 fishing game",
+			iconUrl: "https://res.dashfun.games/images/mzvaa3ga134/mzvy5c10cg0.png",
 			url: "",
 			genre: [],
 			time: 0,
