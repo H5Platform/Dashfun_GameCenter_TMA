@@ -1,5 +1,4 @@
 import { GameData } from "@/components/DashFunData/GameData";
-import { getImageUrl } from "@/utils/DashFunApi";
 import { Button, Cell } from "@telegram-apps/telegram-ui";
 import { useNavigate } from "react-router-dom";
 export type GameListItemInfo = {
@@ -15,7 +14,7 @@ export default function GameListItem({ data }: { data: GameData }) {
     <Cell
       before={
         <img
-          src={getImageUrl(data.id, data.iconUrl)}
+          src={data.getIconUrl()}
           alt="game image"
           className="rounded-lg w-[50px] object-contain aspect-contain"
         />

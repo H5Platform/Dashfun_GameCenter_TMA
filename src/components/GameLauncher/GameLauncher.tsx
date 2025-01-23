@@ -72,7 +72,7 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked, foote
 				<>
 					<div className="gl-gametitle-div">
 						<div className="gl-gameicon">
-							<Image src={game.iconUrl} size={96}></Image>
+							<Image src={game.getIconUrl()} size={96}></Image>
 						</div>
 						<span className="gl-game-name">{game?.name}</span>
 					</div>

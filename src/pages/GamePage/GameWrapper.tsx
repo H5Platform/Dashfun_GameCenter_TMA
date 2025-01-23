@@ -211,7 +211,7 @@ export const GameWrapper: FC = () => {
 				{/* <div className='h-[200px] mt-[100px] bg-cover bg-center bg-no-repeat ' style={{
 					backgroundImage: `url('${game?.logoUrl}')`
 				}}></div> */}
-				<img src={game?.logoUrl} className=' object-contain pt-[100px]' style={{ width: "90vw" }} ></img>
+				<img src={game?.getLogoUrl()} className=' object-contain pt-[100px]' style={{ width: "90vw" }} ></img>
 				<Modal
 					dismissible={false}
 					open={play == false}

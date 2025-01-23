@@ -18,16 +18,35 @@ class GameData {
 	name: string = "";
 	desc: string = "";
 	url: string = "";
-	logoUrl: string = "";
-	mainPicUrl: string = "";
+	logoUrl1: string = "";
+	mainPicUrl1: string = "";
 	genre: number[] = [];
-	iconUrl: string = "";
+	iconUrl1: string = "";
 	time: number = 0;
 	openTime: number = 0;
 
 	tgLink(): string {
 		// return "https://t.me/DashFunBot/Games?startapp=" + this.id;
 		return TGLink.gameLink(this.id)
+	}
+
+	getImageUrl(url: string): string {
+		if (url.startsWith("http")) {
+			return url;
+		} else {
+			return `https://res.dashfun.games/images/${this.id}/${url}`;
+		}
+	}
+
+	getIconUrl(): string {
+		return this.getImageUrl(this.iconUrl1);
+	}
+
+	getLogoUrl(): string {
+		return this.getImageUrl(this.logoUrl1);
+	}
+	getMainPicUrl(): string {
+		return this.getImageUrl(this.mainPicUrl1);
 	}
 
 	constructor(data: GameDataParams) {
@@ -37,10 +56,10 @@ class GameData {
 		this.desc = desc;
 		this.url = url;
 		this.genre = genre;
-		this.iconUrl = iconUrl;
+		this.iconUrl1 = iconUrl;
 		this.time = time;
-		this.mainPicUrl = mainPicUrl;
-		this.logoUrl = logoUrl;
+		this.mainPicUrl1 = mainPicUrl;
+		this.logoUrl1 = logoUrl;
 		this.openTime = openTime;
 	}
 }

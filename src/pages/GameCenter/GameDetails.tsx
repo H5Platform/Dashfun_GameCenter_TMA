@@ -1,6 +1,6 @@
 import { GameData } from "@/components/DashFunData/GameData";
 import { GameGenre } from "@/constats";
-import { GameApi, getImageUrl } from "@/utils/DashFunApi";
+import { GameApi } from "@/utils/DashFunApi";
 import { useLaunchParams } from "@telegram-apps/sdk-react";
 import { Button, Spinner } from "@telegram-apps/telegram-ui";
 import { FC, useEffect, useState } from "react";
@@ -77,7 +77,7 @@ const GameDetails: FC = () => {
           <div className="flex items-center gap-2 p-3">
             <img
               className="w-[50px] aspect-square object-cover rounded-full"
-              src={getImageUrl(gameData?.id, gameData?.logoUrl)}
+              src={gameData?.getLogoUrl()}
               alt="icon"
             />
             <div className="text-2xl">{gameData?.name}</div>
@@ -85,7 +85,7 @@ const GameDetails: FC = () => {
 
           <img
             className="w-full aspect-video object-cover"
-            src={getImageUrl(gameData?.id, gameData?.mainPicUrl)}
+            src={gameData?.getMainPicUrl()}
             alt="main image"
           />
           <div className="p-3 flex flex-col gap-2">

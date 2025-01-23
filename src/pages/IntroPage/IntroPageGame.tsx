@@ -36,7 +36,7 @@ export const IntroPageGameSection: FC<GameSectionProps> = ({ game, coin }) => {
 	return <Section>
 		<Link to="" onClick={() => utils.openTelegramLink(TGLink.gameLink(game.id))}>
 			<Cell
-				before={<Avatar size={48} src={game.iconUrl}></Avatar>}
+				before={<Avatar size={48} src={game.getIconUrl()}></Avatar>}
 				description={game.desc}
 				after={<Button
 					mode="filled"
