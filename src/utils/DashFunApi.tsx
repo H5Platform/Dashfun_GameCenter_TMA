@@ -187,7 +187,7 @@ const GameApi = {
 	},
 
 	/**
-	 * 读取数据接口，供游戏从dashfun服务器读取数据
+	 * 读取数据接口，供游戏从dashfun服务器读取数据,返回的数据是data:string
 	 * @param gameId 
 	 * @param tgToken 
 	 * @param key 
@@ -196,6 +196,38 @@ const GameApi = {
 	getData: async (gameId: string, tgToken: string, key: string) => {
 		console.log("GetData:", gameId, key)
 		const api = GameApi.apiUrl() + gameId + "/data"
+
+
+		const result = await axios.get(api, {
+			headers: {
+				"Authorization": "tma " + tgToken
+			},
+			params: {
+				key
+			}
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data
+			} else {
+				throw result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
+
+	
+	/**
+	 * 读取数据接口，供游戏从dashfun服务器读取数据，返回的数据是{key:string, data:string}
+	 * @param gameId 
+	 * @param tgToken 
+	 * @param key 
+	 * @returns 
+	 */
+	getDataV2: async (gameId: string, tgToken: string, key: string) => {
+		console.log("GetData:", gameId, key)
+		const api = GameApi.apiUrl() + gameId + "/data_v2"
 
 
 		const result = await axios.get(api, {

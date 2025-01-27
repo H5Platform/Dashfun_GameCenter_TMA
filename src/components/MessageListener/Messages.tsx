@@ -74,7 +74,7 @@ export const DashFunMessages = {
 	 * 
 	 * result:{
 	 * 	state:"success"|"error",
-	 * 	data: string
+	 * 	data: string -- key
 	 * }
 	 */
 	setData: "setData",
@@ -89,5 +89,21 @@ export const DashFunMessages = {
 	 * 	data: string
 	 * }
 	 */
-	getData: "getData",
+	getData: "getData",	
+	
+	/**
+	 *  
+	* payload:{
+	* 	key:string,
+	* }
+	* 
+	* result:{
+	* 	state:"success"|"error",
+	* 	data: {
+	* 		key:string,
+	* 		value:object
+	* }
+	* }
+	*/
+   getDataV2: "getDataV2",
 }

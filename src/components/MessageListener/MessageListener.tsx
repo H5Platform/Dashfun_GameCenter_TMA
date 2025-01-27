@@ -123,6 +123,20 @@ const onGetData = (ctx: Context) => {
 		})
 }
 
+const onGetDataV2 = (ctx: Context) => {
+	const { method, payload } = ctx.callData
+	const { key } = payload
+	GameApi.getDataV2(ctx.dfGame.id, ctx.initDataRaw, key)
+		.then(result => {
+			const r = new Result("success", result);
+			sendResult(ctx.source, method, r)
+		}).catch(e => {
+			console.error(e);
+			const r = new Result("error", e);
+			sendResult(ctx.source, method, r)
+		})
+}
+
 const onLoading = (ctx: Context) => {
 	const { payload } = ctx.callData
 	let { value } = payload;
@@ -141,6 +155,7 @@ processors[DashFunMessages.openInvoice] = onOpenInvoice;
 processors[DashFunMessages.requestPayment] = onRequestPayment;
 processors[DashFunMessages.loading] = onLoading;
 processors[DashFunMessages.getData] = onGetData;
+processors[DashFunMessages.getDataV2] = onGetDataV2;
 processors[DashFunMessages.setData] = onSetData;
 
 export const MessageListener: FC = () => {
