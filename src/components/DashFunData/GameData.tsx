@@ -11,6 +11,7 @@ type GameDataParams = {
 	openTime: number;
 	logoUrl: string;
 	mainPicUrl: string;
+	status: number;
 }
 
 class GameData {
@@ -24,6 +25,7 @@ class GameData {
 	iconUrl1: string = "";
 	time: number = 0;
 	openTime: number = 0;
+	status: number = 0;
 
 	tgLink(): string {
 		// return "https://t.me/DashFunBot/Games?startapp=" + this.id;
@@ -50,7 +52,7 @@ class GameData {
 	}
 
 	constructor(data: GameDataParams) {
-		const { id, name, desc, url, genre, iconUrl, time, openTime, mainPicUrl, logoUrl } = data;
+		const { id, name, desc, url, genre, iconUrl, time, openTime, mainPicUrl, logoUrl, status } = data;
 		this.id = id;
 		this.name = name;
 		this.desc = desc;
@@ -61,6 +63,7 @@ class GameData {
 		this.mainPicUrl1 = mainPicUrl;
 		this.logoUrl1 = logoUrl;
 		this.openTime = openTime;
+		this.status = status;
 	}
 }
 
