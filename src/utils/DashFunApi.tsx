@@ -148,6 +148,24 @@ const GameApi = {
 		}
 	},
 
+	getTestingGames: async (tgToken: string) => {
+		const api = GameApi.apiUrl() + "testing"
+		const result = await axios.get(api, {
+			headers: {
+				"Authorization": "tma " + tgToken
+			}
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data;
+			} else {
+				throw result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
+
 	/**
 	 * 保存数据接口，供游戏将本地数据保存到dashfun服务器
 	 * @param gameId 

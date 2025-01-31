@@ -10,6 +10,7 @@ import MainPage from "@/pages/MainPage/MainPage";
 import { ThemeParamsPage } from "@/pages/ThemeParamsPage/ThemeParamsPage.tsx";
 import { TONConnectPage } from "@/pages/TONConnectPage/TONConnectPage";
 import GameDetails from "@/pages/GameCenter/GameDetails";
+import { TestingPage } from "@/pages/TestingPage/TestingPage";
 
 interface Route {
   path: string;
@@ -20,6 +21,7 @@ interface Route {
 
 export const routes: Route[] = [
   { path: "/", Component: IntroPage },
+  { path: "/testing", Component: TestingPage },
   { path: "/game", Component: GameWrapper },
   { path: "/init-data", Component: InitDataPage, title: "Init Data" },
   { path: "/theme-params", Component: ThemeParamsPage, title: "Theme Params" },
