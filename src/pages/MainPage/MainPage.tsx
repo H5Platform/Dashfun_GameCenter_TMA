@@ -38,6 +38,7 @@ const MainPage: FC = () => {
     openTime: 0,
     logoUrl: "",
     mainPicUrl: "",
+    status: 1,
   });
 
   return (

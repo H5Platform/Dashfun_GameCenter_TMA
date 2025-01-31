@@ -38,6 +38,7 @@ export const IntroPage: FC = () => {
 			openTime: 0,
 			logoUrl: "",
 			mainPicUrl: "",
+			status: 2,
 		})
 	);
 
@@ -55,6 +56,7 @@ export const IntroPage: FC = () => {
 				openTime: 0,
 				logoUrl: "",
 				mainPicUrl: "",
+				status: 1,
 			})
 		);
 	}

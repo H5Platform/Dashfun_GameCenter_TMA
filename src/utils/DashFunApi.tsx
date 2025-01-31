@@ -126,6 +126,7 @@ const GameApi = {
 				iconUrl: "",
 				time: 0,
 				openTime: 0,
+				status: 1
 			});
 		}
 
@@ -217,7 +218,7 @@ const GameApi = {
 		}
 	},
 
-	
+
 	/**
 	 * 读取数据接口，供游戏从dashfun服务器读取数据，返回的数据是{key:string, data:string}
 	 * @param gameId 
