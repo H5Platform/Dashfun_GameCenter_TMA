@@ -120,10 +120,10 @@ const GameApi = {
 				name: "Test Game",
 				desc: "Only For Test",
 				mainPicUrl: "",
-				logoUrl: "",
+				logoUrl: "logo.png",
 				url: url,
 				genre: [1],
-				iconUrl: "",
+				iconUrl: "icon.png",
 				time: 0,
 				openTime: 0,
 				status: 1
