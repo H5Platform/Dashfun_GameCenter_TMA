@@ -1,5 +1,4 @@
 import { FC } from "react";
-import FacebookIcon from "@mui/icons-material/Facebook";
 
 const ConnectSocialMedia: FC = () => {
   return (
@@ -16,7 +15,6 @@ const ConnectSocialMedia: FC = () => {
 const SocialMediaButton: FC = () => {
   return (
     <div className="bg-section-bg-color w-[50%] p-2 flex items-center justify-center rounded-lg">
-      <FacebookIcon />
     </div>
   );
 };

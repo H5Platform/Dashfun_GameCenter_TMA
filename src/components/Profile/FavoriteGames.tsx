@@ -1,7 +1,6 @@
 import GameItem from "@/pages/GameCenter/GameItem";
 import { Button } from "@telegram-apps/telegram-ui";
 import { FC } from "react";
-import FavoriteIcon from "@mui/icons-material/Favorite";
 
 const favoritesGamesData = [
   {
@@ -37,11 +36,6 @@ const FavoriteGames: FC = () => {
     <div className="rounded-lg bg-section-bg-color p-3">
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-1">
-          <FavoriteIcon
-            style={{
-              color: "#FF0000",
-            }}
-          />
           <p className="text-md font-bold">Favorites</p>
         </div>
 
