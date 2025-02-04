@@ -1,12 +1,13 @@
 import { Env, GameApi, getEnv } from "@/utils/DashFunApi";
-import { useInitData, useLaunchParams } from "@telegram-apps/sdk-react";
+import { initData, useLaunchParams, useSignal } from "@telegram-apps/sdk-react";
 import { useEffect, useState } from "react";
 import { GameData } from "../DashFunData/GameData";
 
-const useDashFunGame = (): GameData | null => {
+export const useDashFunGame = (): GameData | null => {
 	const [game, setGame] = useState<GameData | null>(null)
-	const initData = useInitData();
-	const initDataRaw = useLaunchParams().initDataRaw;
+	let gameId = useSignal(initData?.startParam);
+	const lp = useLaunchParams();
+	const initDataRaw = lp.initDataRaw;
 
 	const loadGame = async (gameId: string | undefined): Promise<GameData | undefined> => {
 		if (gameId == null) {
@@ -18,16 +19,14 @@ const useDashFunGame = (): GameData | null => {
 	}
 
 	useEffect(() => {
-		let gameId = initData?.startParam;
 		if (getEnv() != Env.Prod) {
 			if (gameId == null) {
 				gameId = "LocalTest"
 			}
 		}
 		loadGame(gameId);
-	}, [initData?.startParam, initDataRaw])
+	}, [initData?.startParam, initDataRaw, gameId])
 
 	return game;
 }
 
-export { useDashFunGame };

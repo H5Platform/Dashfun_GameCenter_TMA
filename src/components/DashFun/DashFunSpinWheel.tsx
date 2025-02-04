@@ -1,12 +1,11 @@
 import { SpinWheelApi } from "@/utils/DashFunApi";
-import { useInitData, useLaunchParams } from "@telegram-apps/sdk-react";
+import { initData, useLaunchParams } from "@telegram-apps/sdk-react";
 import { useEffect, useState } from "react"
 import { useDashFunGame } from "./DashFunGame";
 import { SpinWheelConstants, SpinWheelData, SpinWheelReward } from "../DashFunData/SpinWheelData";
 
 export const useDashFunSpinWheel = (): [spinwheel: SpinWheelData, spin: () => Promise<SpinWheelData | null>, claim: () => Promise<SpinWheelReward | null>] => {
 	const [spinwheel, setSpinwheel] = useState<SpinWheelData | null>(null)
-	const initData = useInitData();
 	const initDataRaw = useLaunchParams().initDataRaw;
 	const game = useDashFunGame();
 

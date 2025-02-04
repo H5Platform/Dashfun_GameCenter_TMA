@@ -1,4 +1,4 @@
-import { SDKProvider, useLaunchParams } from '@telegram-apps/sdk-react';
+import { useLaunchParams } from '@telegram-apps/sdk-react';
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import { type FC, useEffect, useMemo } from 'react';
 
@@ -35,15 +35,13 @@ const Inner: FC = () => {
 
   return (
     <TonConnectUIProvider manifestUrl={manifestUrl}>
-      <SDKProvider acceptCustomStyles debug={debug}>
-        <App/>
-      </SDKProvider>
+      <App />
     </TonConnectUIProvider>
   );
 };
 
 export const Root: FC = () => (
   <ErrorBoundary fallback={ErrorBoundaryError}>
-    <Inner/>
+    <Inner />
   </ErrorBoundary>
 );

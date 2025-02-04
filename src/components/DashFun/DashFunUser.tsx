@@ -1,17 +1,24 @@
 import { UserApi } from "@/utils/DashFunApi"
-import { useInitData, useLaunchParams } from "@telegram-apps/sdk-react"
-import { useEffect, useState } from "react"
+import { initData, useSignal } from "@telegram-apps/sdk-react";
+import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react"
 import { DashFunUser } from "../DashFunData/UserData"
+import { Spinner } from "@telegram-apps/telegram-ui";
 
-const useDashFunUser = (): DashFunUser | null => {
+
+const UserContext = createContext<{
+	user: DashFunUser | null,
+} | null>(null);
+
+
+export const UserProvider = ({ children }: PropsWithChildren<{}>) => {
 	const [user, setUser] = useState<DashFunUser | null>(null)
-	const initData = useInitData();
-	const initDataRaw = useLaunchParams().initDataRaw;
+	const initDataRaw = useSignal(initData.raw)
+	const initDataState = useSignal(initData.state)
 
 	const loginUser = async () => {
 		if (initDataRaw == null) return;
 		const dfUser = await UserApi.tgLogin(initDataRaw as string);
-		dfUser.language = initData?.user?.languageCode as string
+		dfUser.language = initDataState?.user?.languageCode as string
 		setUser(dfUser);
 	}
 
@@ -19,13 +26,19 @@ const useDashFunUser = (): DashFunUser | null => {
 		if (initData == null || initData.user == null) {
 			return;
 		}
-		if (user == null || user.channelId != initData.user.id.toString()) {
+		if (user == null || user.channelId != initDataState?.user?.id.toString()) {
 			loginUser();
 		}
 
-	}, [initData?.user?.id, initDataRaw])
+	}, [initDataState?.user?.id, initDataRaw])
 
-	return user;
+	return <UserContext.Provider value={{ user }}>
+		{user == null ? <div className="w-full h-full items-center justify-center flex"><Spinner size={"l"} /></div> : children}
+	</UserContext.Provider>
 }
 
-export { useDashFunUser }
+
+export const useDashFunUser = (): DashFunUser | null | undefined => {
+	const context = useContext(UserContext);
+	return context?.user;
+}

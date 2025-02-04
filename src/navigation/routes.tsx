@@ -2,35 +2,33 @@ import type { ComponentType, JSX } from "react";
 
 import ProfilePage from "@/components/Profile/ProfilePage";
 import GameAllList from "@/pages/GameCenter/GameAllList";
+import GameDetails from "@/pages/GameCenter/GameDetails";
+import { GameCenterPage } from "@/pages/GameCenterPage/GameCenterPage";
 import { GameWrapper } from "@/pages/GamePage/GameWrapper";
 import { InitDataPage } from "@/pages/InitDataPage/InitDataPage";
 import { IntroPage } from "@/pages/IntroPage/IntroPage";
 import { LaunchParamsPage } from "@/pages/LaunchParamsPage/LaunchParamsPage.tsx";
-import MainPage from "@/pages/MainPage/MainPage";
+import { TestingPage } from "@/pages/TestingPage/TestingPage";
 import { ThemeParamsPage } from "@/pages/ThemeParamsPage/ThemeParamsPage.tsx";
 import { TONConnectPage } from "@/pages/TONConnectPage/TONConnectPage";
-import GameDetails from "@/pages/GameCenter/GameDetails";
-import { TestingPage } from "@/pages/TestingPage/TestingPage";
 
 interface Route {
   path: string;
   Component: ComponentType;
   title?: string;
   icon?: JSX.Element;
+  allowYScroll?: boolean;
+  back?: boolean;
 }
 
 export const routes: Route[] = [
-  { path: "/", Component: IntroPage },
-  { path: "/testing", Component: TestingPage },
-  { path: "/game", Component: GameWrapper },
+  { path: "/", Component: IntroPage, allowYScroll: true, back: false },
+  { path: "/testing", Component: TestingPage, allowYScroll: true },
+  { path: "/game", Component: GameWrapper, back: false, allowYScroll: false },
   { path: "/init-data", Component: InitDataPage, title: "Init Data" },
   { path: "/theme-params", Component: ThemeParamsPage, title: "Theme Params" },
-  {
-    path: "/launch-params",
-    Component: LaunchParamsPage,
-    title: "Launch Params",
-  },
-  { path: "/game-center", Component: MainPage },
+  { path: "/launch-params", Component: LaunchParamsPage, title: "Launch Params", },
+  { path: "/game-center", Component: GameCenterPage, allowYScroll: true, back: false },
   { path: "/game-genre", Component: GameAllList },
   { path: "/game-details/:id", Component: GameDetails },
   { path: "/profile", Component: ProfilePage },

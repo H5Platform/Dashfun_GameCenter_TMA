@@ -5,6 +5,7 @@ import { FC } from "react";
 import { UseDashFunCoins } from "../DashFun/DashFunCoins";
 import { GameData } from "../DashFunData/GameData";
 import { DashFunUser } from "../DashFunData/UserData";
+import { Wallet } from "lucide-react";
 
 export const Coins: FC<{ game: GameData | null, user: DashFunUser | null, onSelected: (coin: Coin) => void }> = ({ game }) => {
 	const coins = UseDashFunCoins();
@@ -18,7 +19,7 @@ export const Coins: FC<{ game: GameData | null, user: DashFunUser | null, onSele
 	const withdraw = coin?.coin.can_withdraw && coin.coin.min_withdraw > 0 ? <>
 		<ButtonCell
 			className="" disabled={true}
-			before={<i className="fa-solid fa-wallet"></i>}
+			before={<Wallet absoluteStrokeWidth />}
 		>Withdraw</ButtonCell>
 		<SectionFooter>Minimum withdrawal amount is {coin?.coin.min_withdraw} {coin?.coin.symbol}</SectionFooter></>
 		: null

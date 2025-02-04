@@ -1,12 +1,13 @@
 import { FC, useEffect, useState } from "react";
 
-import { useUtils } from "@telegram-apps/sdk-react";
 import { Button, Image, Spinner } from "@telegram-apps/telegram-ui";
 import { useDashFunGame } from "../DashFun/DashFunGame";
 import { GameData } from "../DashFunData/GameData";
 import { GameLoadingEvent } from "../Event/Events";
 import "./GameLauncher.css";
 import { toTimeString } from "@/utils/Utils";
+import { shareURL } from "@telegram-apps/sdk-react";
+import { Heart, Send } from "lucide-react";
 
 export type GLProps = JSX.IntrinsicElements['div'] & {
 	gameId: string | undefined,
@@ -21,7 +22,6 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked, foote
 	//const [game, setGame] = useState<GameData | null>(null);
 	const game = useDashFunGame();
 	const [loading, setLoading] = useState(-1);
-	const utils = useUtils();
 	const [playText, setPlayText] = useState("Play")
 
 	// const loadGame = async (gameId: string | undefined): Promise<GameData | undefined> => {
@@ -89,16 +89,17 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked, foote
 					</div>
 					<div className="gl-gamebutton-div">
 						<Button
+							style={{ width: "80%" }}
 							mode="bezeled"
 							size="m"
 							stretched
 							onClick={() => {
 								if (game != null) {
-									utils.shareURL(game.tgLink());
+									shareURL(game.tgLink());
 								}
 							}}
 						>
-							<i className="fa-solid fa-paper-plane" style={{ marginRight: "10px" }}></i>Share game
+							<div className="flex justify-center items-center"><Send size="20" strokeWidth={1}  /> <span className="pl-2">Share game</span></div>
 						</Button>
 						<Button
 							mode="bezeled"
@@ -141,7 +142,7 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked, foote
 								// }, "*")
 							}}
 						>
-							<i className="fa-regular fa-heart"></i>&nbsp;
+							<Heart size="24" strokeWidth={2}   />
 						</Button>
 					</div>
 				</>}

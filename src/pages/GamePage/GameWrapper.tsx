@@ -2,7 +2,7 @@ import { useDashFunUser } from '@/components/DashFun/DashFunUser';
 import { GameData } from '@/components/DashFunData/GameData';
 import { GameLauncher } from '@/components/GameLauncher/GameLauncher';
 import { TaskApi, TGLink, UserApi } from '@/utils/DashFunApi';
-import { useInitData, useLaunchParams, useUtils } from '@telegram-apps/sdk-react';
+import { openTelegramLink, shareURL, useLaunchParams, useSignal, viewport } from '@telegram-apps/sdk-react';
 import { Avatar, Badge, Button, LargeTitle, Modal, Tabbar, Text } from '@telegram-apps/telegram-ui';
 import { SectionHeader } from '@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionHeader/SectionHeader';
 import { ModalHeader } from '@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalHeader/ModalHeader';
@@ -10,14 +10,17 @@ import { useEffect, useState, type FC } from 'react';
 import Iframe from 'react-iframe';
 import "./GameWrapper.css";
 
+import { Coins } from '@/components/Coins/coins';
 import { UseDashFunCoins } from '@/components/DashFun/DashFunCoins';
-import { SpinWheelStatusChangedEvent, TaskStatusChangedEvent } from '@/components/Event/Events';
-import { TaskAndCoin } from '@/components/TaskAndCoin/TaskAndCoin';
-import { getCoinIcon, TaskStatus } from '@/constats';
-import SpinWheel from '@/components/SpinWheel/SpinWheel';
 import { useDashFunSpinWheel } from '@/components/DashFun/DashFunSpinWheel';
 import { SpinWheelConstants } from '@/components/DashFunData/SpinWheelData';
-import { Coins } from '@/components/Coins/coins';
+import { DashFunUser } from '@/components/DashFunData/UserData';
+import { SpinWheelStatusChangedEvent, TaskStatusChangedEvent } from '@/components/Event/Events';
+import { MessageListener } from '@/components/MessageListener/MessageListener';
+import SpinWheel from '@/components/SpinWheel/SpinWheel';
+import { TaskAndCoin } from '@/components/TaskAndCoin/TaskAndCoin';
+import { getCoinIcon, TaskStatus } from '@/constats';
+import { Gamepad2, Gift, LoaderPinwheel, Send } from 'lucide-react';
 
 
 export const GameWrapper: FC = () => {
@@ -25,13 +28,18 @@ export const GameWrapper: FC = () => {
 	const [showLoading, setShowLoadig] = useState(true);
 	const [showTask, setShowTask] = useState(false);
 	const [game, setGame] = useState<GameData | null>(null);
-	const util = useUtils();
-	const initData = useInitData();
 	const initDataRaw = useLaunchParams().initDataRaw;
 	const user = useDashFunUser();
 	const coins = UseDashFunCoins();
 	const [spinWheel, _1, _2] = useDashFunSpinWheel();
 	const [spinStatus, setSpinStatus] = useState(0);
+	const top = useSignal(viewport.safeAreaInsetTop);
+	const bottom = useSignal(viewport.safeAreaInsetBottom);
+	const contentTop = useSignal(viewport.contentSafeAreaInsetTop)
+	const contentBottom = useSignal(viewport.contentSafeAreaInsetBottom)
+
+	const pt = top + contentTop;
+	const pb = bottom + contentBottom;
 
 	const [taskCount, setTaskCount] = useState<{ [key: number]: number }>({})
 
@@ -46,12 +54,12 @@ export const GameWrapper: FC = () => {
 
 	const onShare = () => {
 		if (game != null) {
-			util.shareURL(game.tgLink());
+			shareURL(game.tgLink());
 		}
 	}
 
 	const onBackToCenter = () => {
-		util.openTelegramLink(TGLink.centerLink())
+		openTelegramLink(TGLink.centerLink())
 		//util.openTelegramLink(TGLink.botLink())
 	}
 
@@ -111,9 +119,9 @@ export const GameWrapper: FC = () => {
 						}
 					</div>
 				</div>
-				<i className="fa-solid fa-gift text-2xl" />
+				<Gift absoluteStrokeWidth className='my-1' />
 			</div>,
-			component: <TaskAndCoin user={user} game={game} onTaskClicked={({ processed }) => {
+			component: <TaskAndCoin user={user as DashFunUser} game={game} onTaskClicked={({ processed }) => {
 				if (processed) {
 					//关掉list，让用户重新开启以便刷新状态
 					setShowTask(false);
@@ -133,11 +141,10 @@ export const GameWrapper: FC = () => {
 							spinStatus == SpinWheelConstants.Status.Spin && <Badge type='number' className=' bg-gray-500' >{1}</Badge>
 						}
 					</div>
-				</div>
-				<i className="fa-regular fa-life-ring text-2xl"></i>
+				</div><LoaderPinwheel strokeWidth={2} absoluteStrokeWidth className='my-1' />
 			</div>,
 			component: <>
-				<Coins game={game} user={user} onSelected={c => {
+				<Coins game={game} user={user as DashFunUser} onSelected={c => {
 					console.log("ccc", c);
 				}} />
 				<div className="w-full flex justify-center items-center">
@@ -145,7 +152,7 @@ export const GameWrapper: FC = () => {
 						Spin & Win Daily
 					</LargeTitle>
 				</div>
-				<SpinWheel user={user} game={game} />
+				<SpinWheel user={user as DashFunUser} game={game} />
 			</>
 
 		},
@@ -158,6 +165,7 @@ export const GameWrapper: FC = () => {
 		paddingTop: "5px",
 		paddingBottom: "5px",
 	}}>
+		<MessageListener />
 		<div className='game-title'>
 			<Button mode="white"
 				before={<Avatar src={getCoinIcon(coin?.coin.name || "")} size={24} > </Avatar>}
@@ -181,12 +189,12 @@ export const GameWrapper: FC = () => {
 				}
 			</div>
 			<div className='flex gap-1'>
-				<Button size="s" mode="filled" >&nbsp;<i className="fa-solid fa-gamepad" onClick={() => {
+				<Button size="s" mode="filled" onClick={() => {
 					onBackToCenter();
-				}}>&nbsp;</i></Button>
+				}} ><Gamepad2 size="24" strokeWidth={2} absoluteStrokeWidth /> </Button>
 				<Button size="s" mode="white" style={{ color: "#000000" }} onClick={() => {
 					onShare();
-				}}>&nbsp;<i className="fa-solid fa-paper-plane"></i>&nbsp;</Button>
+				}}><Send size="20" strokeWidth={1.5} absoluteStrokeWidth /></Button>
 			</div>
 		</div>
 	</SectionHeader >
@@ -211,19 +219,19 @@ export const GameWrapper: FC = () => {
 				{/* <div className='h-[200px] mt-[100px] bg-cover bg-center bg-no-repeat ' style={{
 					backgroundImage: `url('${game?.logoUrl}')`
 				}}></div> */}
-				<img src={game?.getLogoUrl()} className=' object-contain pt-[100px]' style={{ width: "90vw" }} ></img>
+				<img src={game?.getLogoUrl()} className=' object-contain' style={{ width: "90vw", paddingTop: (pt + 100) + "px" }} ></img>
 				<Modal
 					dismissible={false}
 					open={play == false}
 					style={{ backgroundColor: "transparent" }}
 					overlayComponent={
-						<div className=' bg-[#21212164] pointer-events-auto fixed left-0 top-0 right-0 bottom-0 z-[var(--tgui--z-index--overlay)]'>
+						<div className=' bg-[#21212164] pointer-events-auto fixed left-0 right-0 z-[var(--tgui--z-index--overlay)]' style={{ top: pt + "px", bottom: pb + "px" }}>
 							{header}
 						</div>
 					}
 				>
 
-					<GameLauncher gameId={initData?.startParam}
+					<GameLauncher gameId={game?.id}
 						footer={null}
 						onLoad={g => {
 							setGame(g as GameData);
@@ -242,48 +250,52 @@ export const GameWrapper: FC = () => {
 
 				</Modal>
 
-			</div>)}
+			</div>)
+			}
 
-			{showTask && (
-				<Modal
-					open={showTask}
-					header={<ModalHeader style={{
-						backgroundColor: "var(--tg-theme-secondary-bg-color)"
-					}}></ModalHeader>
-						// <div className='flex flex-col bg-gray-200 text-black p-2 w-full items-center justify-center gap-1'>
-						// 	<div className=' w-10 h-1 bg-gray-400 rounded-full mb-2'></div>
-						// 	<Text weight='1'>Tasks</Text>
-						// </div>
-					}
-					onOpenChange={e => {
-						if (e == false) {
-							setShowTask(false);
+			{
+				showTask && (
+					<Modal
+						open={showTask}
+						header={<ModalHeader style={{
+							backgroundColor: "var(--tg-theme-secondary-bg-color)"
+						}}></ModalHeader>
+							// <div className='flex flex-col bg-gray-200 text-black p-2 w-full items-center justify-center gap-1'>
+							// 	<div className=' w-10 h-1 bg-gray-400 rounded-full mb-2'></div>
+							// 	<Text weight='1'>Tasks</Text>
+							// </div>
 						}
-					}}
-					snapPoints={[1]}
-				>
-					<div className='flex flex-col w-full h-full' style={{
-						backgroundColor: "var(--tg-theme-secondary-bg-color)"
-					}}>
-						<div className="pb-[70px]">
-							{tabs.find((t) => t.id == currentTab)?.component}
-						</div>
+						onOpenChange={e => {
+							if (e == false) {
+								setShowTask(false);
+							}
+						}}
+						snapPoints={[0.9]}
+					>
+						<div className='flex flex-col w-full h-full' style={{
+							backgroundColor: "var(--tg-theme-secondary-bg-color)"
+						}}>
+							<div style={{ paddingBottom: "calc(10vh + 100px) " }}>
+								{tabs.find((t) => t.id == currentTab)?.component}
+							</div>
 
-						<Tabbar id="bottomNavigation">
-							{tabs.map(({ id, text, Icon }) => (
-								<Tabbar.Item
-									key={id}
-									text={text}
-									selected={id === currentTab}
-									onClick={() => setCurrentTab(id)}
-								>
-									<Icon />
-								</Tabbar.Item>
-							))}
-						</Tabbar>
-					</div>
-				</Modal>
-			)}
-		</div>
+							<Tabbar id="bottomNavigation" style={{ bottom: "10vh" }}>
+								{tabs.map(({ id, text, Icon }) => (
+									<Tabbar.Item
+										key={id}
+										text={text}
+										selected={id === currentTab}
+										onClick={() => setCurrentTab(id)}
+										style={{ paddingBottom: bottom + "px" }}
+									>
+										<Icon />
+									</Tabbar.Item>
+								))}
+							</Tabbar>
+						</div>
+					</Modal>
+				)
+			}
+		</div >
 	</div >
 }

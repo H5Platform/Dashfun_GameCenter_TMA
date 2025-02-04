@@ -1,79 +1,62 @@
-import { useIntegration } from "@telegram-apps/react-router-integration";
-import {
-  bindMiniAppCSSVars,
-  bindThemeParamsCSSVars,
-  bindViewportCSSVars,
-  initNavigator,
-  useLaunchParams,
-  useMiniApp,
-  useThemeParams,
-  useViewport,
-  useSwipeBehavior,
-} from "@telegram-apps/sdk-react";
+// import {
+//   bindMiniAppCSSVars,
+//   bindThemeParamsCSSVars,
+//   bindViewportCSSVars,
+//   initNavigator,
+//   useLaunchParams,
+//   useMiniApp,
+//   useThemeParams,
+//   useViewport,
+//   useSwipeBehavior,
+// } from "@telegram-apps/sdk-react";
 import { AppRoot } from "@telegram-apps/telegram-ui";
-import { type FC, useEffect, useMemo } from "react";
-import { Navigate, Route, Router, Routes } from "react-router-dom";
+import { type FC } from "react";
+import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import { routes } from "@/navigation/routes.tsx";
-import { MessageListener } from "./MessageListener/MessageListener";
+import { miniApp, themeParams, useLaunchParams, useSignal } from "@telegram-apps/sdk-react";
+import { UserProvider } from "./DashFun/DashFunUser";
+import { Page } from "./Page";
 
 export const App: FC = () => {
   const lp = useLaunchParams();
-  const miniApp = useMiniApp();
-  const themeParams = useThemeParams();
-  const viewport = useViewport();
-  // const sb = useSwipeBehavior();
-  // const cb = useClosingBehavior();
+  const bgClr = useSignal(themeParams.secondaryBackgroundColor);
+  console.log("themeParams", bgClr)
+  const routesArr = []
 
-  const swip = useSwipeBehavior();
+  for (let index = 0; index < routes.length; index++) {
+    const route = routes[index];
 
-  useEffect(() => {
-    if (swip.supports("disableVerticalSwipe")) {
-      swip.disableVerticalSwipe();
-    }
-  }, [swip]);
+    let P = () => <Page back={route.back} allowYScroll={route.allowYScroll}><route.Component /></Page>;
+    // if (route.show) {
+    // 	Page = () => {
+    // 		return <TabWrapper tabId={route.id}><route.Component /></TabWrapper>
+    // 	}
+    // }
+    const r = <Route key={route.path} path={route.path} Component={P} />
+    routesArr.push(r);
+  }
 
-  useEffect(() => {
-    return bindMiniAppCSSVars(miniApp, themeParams);
-  }, [miniApp, themeParams]);
 
-  useEffect(() => {
-    return bindThemeParamsCSSVars(themeParams);
-  }, [themeParams]);
-
-  useEffect(() => {
-    //cb.enableConfirmation();
-    return viewport && bindViewportCSSVars(viewport);
-  }, [viewport]);
-
-  // Create a new application navigator and attach it to the browser history, so it could modify
-  // it and listen to its changes.
-  const navigator = useMemo(() => initNavigator("app-navigation-state"), []);
-  const [location, reactNavigator] = useIntegration(navigator);
-
-  // Don't forget to attach the navigator to allow it to control the BackButton state as well
-  // as browser history.
-  useEffect(() => {
-    navigator.attach();
-    return () => navigator.detach();
-  }, [navigator]);
 
   return (
     <AppRoot
       id="appRoot"
-      appearance={miniApp.isDark ? "dark" : "light"}
+      appearance={miniApp.isDark() ? "dark" : "light"}
       platform={["macos", "ios"].includes(lp.platform) ? "ios" : "base"}
-      className="h-full"
+      className="w-full h-full"
     >
-      <MessageListener />
-      <Router location={location} navigator={reactNavigator}>
-        <Routes>
-          {routes.map((route) => (
-            <Route key={route.path} {...route} />
-          ))}
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </Router>
+      <UserProvider>
+        <HashRouter>
+          <Routes>
+            {/* {routes.map((route) => (
+              <Route key={route.path} {...route} />
+            ))} */}
+            {routesArr}
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </HashRouter>
+      </UserProvider>
     </AppRoot>
   );
 };

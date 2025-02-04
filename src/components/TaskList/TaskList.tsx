@@ -1,7 +1,7 @@
 import { GameData } from "@/components/DashFunData/GameData";
 import { DashFunUser } from "@/components/DashFunData/UserData";
 import { TaskApi, TGLink, UserApi } from "@/utils/DashFunApi";
-import { useLaunchParams, useUtils } from "@telegram-apps/sdk-react";
+import { openLink, openTelegramLink, useLaunchParams } from "@telegram-apps/sdk-react";
 import { Avatar, Button, Cell, CircularProgress, List, Section, Text } from "@telegram-apps/telegram-ui";
 import { FC, useEffect, useState } from "react";
 
@@ -10,6 +10,7 @@ import { useTonConnectModal, useTonConnectUI } from "@tonconnect/ui-react";
 import { UseDashFunCoins } from "../DashFun/DashFunCoins";
 import { TaskStatusChangedEvent } from "../Event/Events";
 import "./TaskList.css";
+import { ChevronRight, CircleCheckBig } from "lucide-react";
 
 export type TaskListype = {
 	game: GameData | null
@@ -123,7 +124,6 @@ export const TaskList: FC<TaskListype> = (params) => {
 const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: (item: { task: Task, save: TaskSave, processed: boolean }) => void }> = ({ task, save, game, onClicked }) => {
 
 	let progress = null;
-	const util = useUtils();
 	const coins = UseDashFunCoins();
 	const initDataRaw = useLaunchParams().initDataRaw;
 	const [claiming, setClaiming] = useState(false);
@@ -197,7 +197,7 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 							</div>
 					}
 					{
-						getTaskLink(task) == "" || task.require.type == TaskCondition.BindWallet ? <div className="w-[10px]"></div> : <i className="fa-solid fa-chevron-right"></i>
+						getTaskLink(task) == "" || task.require.type == TaskCondition.BindWallet ? <div className="w-[10px]"></div> : <ChevronRight strokeWidth={2}  />
 					}
 				</div>
 			</div>
@@ -234,7 +234,7 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 			break;
 		case TaskStatus.Claimed:
 			progress = <div className="w-[70px] h-[70px] flex justify-center items-center">
-				<i className="fa-solid fa-circle-check fa-xl" style={{ color: "#63E6BE" }}></i>
+				<CircleCheckBig color="#63E6BE" strokeWidth={2} />
 			</div>
 	}
 
@@ -245,11 +245,11 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 			const link = getTaskLink(task);
 			if (link != "") {
 				if (link.startsWith("https://t.me")) {
-					util.openTelegramLink(link)
+					openTelegramLink(link)
 				} else if (link.startsWith("openwallet")) {
 					open();
 				} else {
-					util.openLink(link)
+					openLink(link)
 				}
 				TaskApi.onTaskClicked(initDataRaw as string, game.id, task.id).then(r => {
 					console.log("on task clicked:", r)

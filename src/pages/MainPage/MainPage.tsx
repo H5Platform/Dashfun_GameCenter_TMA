@@ -1,10 +1,11 @@
-import { Tabbar } from "@telegram-apps/telegram-ui";
-import { FC, useState } from "react";
-import GameCenter from "../GameCenter/GameCenter";
-import FriendsPage from "../Friends/FriendsPage";
-import SpinWheel from "@/components/SpinWheel/SpinWheel";
 import { useDashFunUser } from "@/components/DashFun/DashFunUser";
 import { GameData } from "@/components/DashFunData/GameData";
+import { DashFunUser } from "@/components/DashFunData/UserData";
+import SpinWheel from "@/components/SpinWheel/SpinWheel";
+import { Tabbar } from "@telegram-apps/telegram-ui";
+import { FC, useState } from "react";
+import FriendsPage from "../Friends/FriendsPage";
+import GameCenter from "../GameCenter/GameCenter";
 
 const tabs = [
   {
@@ -26,7 +27,7 @@ const tabs = [
 
 const MainPage: FC = () => {
   const [currentTab, setCurrentTab] = useState(tabs[0].id);
-  const user = useDashFunUser()
+  const user = useDashFunUser() as DashFunUser
   const game = new GameData({
     id: "LocalTest",
     iconUrl: "https://res.dashfun.games/icons/3kweb3-512.jpg",

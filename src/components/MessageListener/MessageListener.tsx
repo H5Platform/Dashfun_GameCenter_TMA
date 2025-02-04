@@ -1,6 +1,9 @@
 import { GameApi, PaymentApi } from "@/utils/DashFunApi";
 import {
-	InitData, initInitData, initInvoice, initUtils, useInitData, useLaunchParams, Utils
+	initData,
+	invoice,
+	openTelegramLink,
+	useSignal
 } from "@telegram-apps/sdk-react";
 import { FC, useEffect } from "react";
 import { useDashFunGame } from "../DashFun/DashFunGame";
@@ -12,18 +15,14 @@ import { DashFunMessages } from "./Messages";
 
 class Context {
 	callData: any;
-	initData: InitData;
-	utils: Utils;
 	dfUser: DashFunUser;
 	initDataRaw: string;
 	source: Window;
 	dfGame: GameData;
 
 	constructor(source: Window, callData: any, dfGame: GameData, dfUser: DashFunUser, initDataRaw: string) {
-		this.initData = initInitData() as InitData;
 		this.dfUser = dfUser;
 		this.callData = callData;
-		this.utils = initUtils();
 		this.initDataRaw = initDataRaw;
 		this.source = source;
 		this.dfGame = dfGame;
@@ -59,7 +58,7 @@ const onGetUserProfile = (ctx: Context) => {
 const onOpenTelegramLink = (ctx: Context) => {
 	console.log("invoke onOpenTelegramLink")
 	const { value } = ctx.callData.payload;
-	ctx.utils.openTelegramLink(value);
+	openTelegramLink(value);
 }
 
 const onOpenInvoice = (ctx: Context) => {
@@ -70,7 +69,6 @@ const onOpenInvoice = (ctx: Context) => {
 	if (invoiceLink.startsWith("test-")) {
 		sendResult(ctx.source, method, new Result("success", { paymentId, status: "paid" }))
 	} else {
-		const invoice = initInvoice();
 		console.log("opening invoice", invoiceLink)
 		invoice.open(invoiceLink, "url").then((status) => {
 			console.log(`invoice ${invoiceLink} status changed:`, status);
@@ -164,8 +162,7 @@ processors[DashFunMessages.getDataV2] = onGetDataV2;
 processors[DashFunMessages.setData] = onSetData;
 
 export const MessageListener: FC = () => {
-	const initDataRaw = useLaunchParams().initDataRaw;
-	const initData = useInitData();
+	const initDataRaw = useSignal(initData.raw)
 	const dfUser = useDashFunUser();
 	const game = useDashFunGame();
 

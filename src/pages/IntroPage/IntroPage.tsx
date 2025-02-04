@@ -4,15 +4,14 @@ import { Link } from "@/components/Link/Link";
 import { CoinInfo } from "@/constats";
 import dashfunIcon from "@/icons/dashfun-icon.svg";
 import { Env, GameApi, getEnv, TGLink, UserApi } from "@/utils/DashFunApi";
-import { useLaunchParams, useUtils } from "@telegram-apps/sdk-react";
+import { openTelegramLink, useLaunchParams } from "@telegram-apps/sdk-react";
 import { Avatar, Cell, Headline, List, Section } from "@telegram-apps/telegram-ui";
 import { SectionFooter } from "@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionFooter/SectionFooter";
+import { TonConnectButton, useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
 import { FC } from "react";
 import { IntroPageGameSection } from "./IntroPageGame";
-import { TonConnectButton, useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
 
 export const IntroPage: FC = () => {
-	const utils = useUtils();
 	const coins = UseDashFunCoins();
 	const wallet = useTonWallet();
 	const initDataRaw = useLaunchParams().initDataRaw;
@@ -79,7 +78,7 @@ export const IntroPage: FC = () => {
 		</SectionFooter>
 
 		<Section header="Follow US">
-			<Link to="" onClick={() => utils.openTelegramLink(TGLink.groupLink())}>
+			<Link to="" onClick={() => openTelegramLink(TGLink.groupLink())}>
 				<Cell>Join Our Telegram Group</Cell>
 			</Link>
 			<Link to={"https://x.com/dashfun_app"}>

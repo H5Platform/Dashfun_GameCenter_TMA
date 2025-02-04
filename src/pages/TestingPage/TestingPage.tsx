@@ -1,13 +1,12 @@
 import { GameData, GameDataParams } from "@/components/DashFunData/GameData";
 import { GameApi, TGLink } from "@/utils/DashFunApi";
-import { useLaunchParams, useUtils } from "@telegram-apps/sdk-react";
+import { openTelegramLink, useLaunchParams } from "@telegram-apps/sdk-react";
 import { Avatar, Divider, Headline, List, Section, Image, Cell, Button } from "@telegram-apps/telegram-ui";
 import { FC, useEffect, useState } from "react";
 import dashfunIcon from "@/icons/dashfun-icon.svg";
 import { Link } from "@/components/Link/Link";
 
 export const TestingPage: FC = () => {
-	const utils = useUtils();
 	const initDataRaw = useLaunchParams().initDataRaw;
 	const [testingGames, setTestingGames] = useState<GameData[]>([]);
 
@@ -36,7 +35,7 @@ export const TestingPage: FC = () => {
 		</Section>
 		{
 			testingGames.map(g => {
-				return <Link to="#" onClick={() => utils.openTelegramLink(TGLink.gameLink(g.id))}>
+				return <Link to="#" onClick={() => openTelegramLink(TGLink.gameLink(g.id))}>
 					<Cell
 						before={<Image src={g.getIconUrl()} size={48}></Image>}
 						description={g.desc}

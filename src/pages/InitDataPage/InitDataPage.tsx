@@ -1,7 +1,9 @@
 import { type FC, useMemo } from "react";
 import {
-  useInitData,
+  Chat,
+  initData,
   useLaunchParams,
+  useSignal,
   type User,
 } from "@telegram-apps/sdk-react";
 import { List, Placeholder } from "@telegram-apps/telegram-ui";
@@ -28,23 +30,22 @@ function getUserRows(user: User): DisplayDataRow[] {
 
 export const InitDataPage: FC = () => {
   const initDataRaw = useLaunchParams().initDataRaw;
-  const initData = useInitData();
+
 
   const initDataRows = useMemo<DisplayDataRow[] | undefined>(() => {
     if (!initData || !initDataRaw) {
       return;
     }
-    const {
-      hash,
-      user,
-      queryId,
-      chatType,
-      chatInstance,
-      authDate,
-      startParam,
-      canSendAfter,
-      canSendAfterDate,
-    } = initData;
+    const hash = useSignal(initData.hash);
+    const user = useSignal(initData.user);
+    const authDate = useSignal(initData.authDate) as Date;
+    const canSendAfterDate = useSignal(initData.canSendAfterDate) as Date;
+    const canSendAfter = useSignal(initData.canSendAfter);
+    const queryId = useSignal(initData.queryId);
+    const startParam = useSignal(initData.startParam);
+    const chatType = useSignal(initData.chatType);
+    const chatInstance = useSignal(initData.chatInstance);
+
     return [
       { title: "raw", value: initDataRaw },
       { title: "user", value: user?.id + "  " + user?.username },
@@ -61,12 +62,14 @@ export const InitDataPage: FC = () => {
   }, [initData, initDataRaw]);
 
   const userRows = useMemo<DisplayDataRow[] | undefined>(() => {
-    return initData && initData.user ? getUserRows(initData.user) : undefined;
+    const user = useSignal(initData.user) as User;
+    return initData && user ? getUserRows(user) : undefined;
   }, [initData]);
 
   const receiverRows = useMemo<DisplayDataRow[] | undefined>(() => {
-    return initData && initData.receiver
-      ? getUserRows(initData.receiver)
+    const receiver = useSignal(initData.receiver) as User;
+    return initData && receiver
+      ? getUserRows(receiver)
       : undefined;
   }, [initData]);
 
@@ -74,7 +77,8 @@ export const InitDataPage: FC = () => {
     if (!initData?.chat) {
       return;
     }
-    const { id, title, type, username, photoUrl } = initData.chat;
+    const chat = useSignal(initData.chat) as Chat;
+    const { id, title, type, username, photoUrl } = chat;
 
     return [
       { title: "id", value: id.toString() },

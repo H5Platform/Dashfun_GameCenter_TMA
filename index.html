@@ -1,43 +1,16 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <title>DashFun Game Center</title>
-    <script
-      src="https://kit.fontawesome.com/3f1c2f7fb7.js"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      async
-      src="https://telegram.org/js/telegram-widget.js?22"
-      data-telegram-login="testbot"
-      data-size="large"
-      data-onauth="onTelegramAuth(user)"
-      data-request-access="write"
-    ></script>
-    <script type="text/javascript">
-      function onTelegramAuth(user) {
-        alert(
-          "Logged in as " +
-            user.first_name +
-            " " +
-            user.last_name +
-            " (" +
-            user.id +
-            (user.username ? ", @" + user.username : "") +
-            ")"
-        );
-      }
-    </script>
-  </head>
 
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <!-- <div id="wrap"> -->
-    <div id="root"></div>
-    <script src="/src/index.tsx" type="module"></script>
-    <!-- </div> -->
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="https://res.dashfun.games/icons/dashfun-icon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>DashFun</title>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>
