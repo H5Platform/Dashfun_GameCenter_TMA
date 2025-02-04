@@ -7,7 +7,7 @@ import './index.css';
 
 import "./mockEnv.ts";
 
-init(retrieveLaunchParams().startParam === 'debug' || true)
+init(retrieveLaunchParams().startParam === 'debug')
 postEvent("web_app_expand");
 
 
