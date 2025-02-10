@@ -13,7 +13,7 @@ import {
 /**
  * Initializes the application and configures its dependencies.
  */
-export async function init(debug: boolean): Promise<void> {
+export function init(debug: boolean): void {
 	// Set @telegram-apps/sdk-react debug mode.
 	$debug.set(debug);
 
@@ -21,25 +21,42 @@ export async function init(debug: boolean): Promise<void> {
 	// the package.
 	initSDK();
 
+
+	// Add Eruda if needed.
+	debug && import('eruda')
+		.then((lib) => lib.default.init())
+		.catch(console.error);
+
+
 	// Mount all components used in the project.
 	backButton.isSupported() && backButton.mount();
-	mainButton.mount();
 	miniApp.mount();
+	mainButton.mount();
 	themeParams.mount();
-	miniApp.bindCssVars();
-	themeParams.bindCssVars();
 	// miniApp.setHeaderColor("#eab308")
 	swipeBehavior.isSupported() && swipeBehavior.mount();
 	initData.restore();
 
-	try {
-		await viewport.mount();
-	} catch (e: any) {
-		console.error('Something went wrong mounting the viewport', e);
-	}
-	viewport.requestFullscreen.ifAvailable();
-	viewport.bindCssVars();
+	void viewport
+		.mount()
+		.catch(e => {
+			console.error('Something went wrong mounting the viewport', e);
+		})
+		.then(() => {
+			console.log("--------binding css vars123321")
+			viewport.bindCssVars();
+			viewport.requestFullscreen.ifAvailable();
+		});
 
+	// try {
+	// 	await viewport.mount();
+	// } catch (e: any) {
+	// 	console.error('Something went wrong mounting the viewport', e);
+	// }
+
+	console.log("binding css vars")
+	miniApp.bindCssVars();
+	themeParams.bindCssVars();
 	// void viewport.mount().then(() => {
 	// 	// Define components-related CSS variables.
 	// 	viewport.bindCssVars();
@@ -59,8 +76,5 @@ export async function init(debug: boolean): Promise<void> {
 	// });
 
 
-	// Add Eruda if needed.
-	debug && import('eruda')
-		.then((lib) => lib.default.init())
-		.catch(console.error);
+
 }

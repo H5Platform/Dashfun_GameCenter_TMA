@@ -1,7 +1,8 @@
 .gl-container {
 	display: flex;
 	flex-direction: column;
-	padding: 15px;
+	padding: 15px 15px 15px 15px;
+	padding-bottom: var(--tg-viewport-safe-area-inset-bottom);
 	background-color: transparent;
 }
 

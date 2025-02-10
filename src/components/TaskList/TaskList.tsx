@@ -197,7 +197,7 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 							</div>
 					}
 					{
-						getTaskLink(task) == "" || task.require.type == TaskCondition.BindWallet ? <div className="w-[10px]"></div> : <ChevronRight strokeWidth={2}  />
+						getTaskLink(task) == "" || task.require.type == TaskCondition.BindWallet ? <div className="w-[10px]"></div> : <ChevronRight strokeWidth={2} absoluteStrokeWidth />
 					}
 				</div>
 			</div>

@@ -1,38 +1,84 @@
 import type { ComponentType, JSX } from "react";
 
-import ProfilePage from "@/components/Profile/ProfilePage";
-import GameAllList from "@/pages/GameCenter/GameAllList";
-import GameDetails from "@/pages/GameCenter/GameDetails";
+import { Page } from "@/components/Page";
 import { GameCenterPage } from "@/pages/GameCenterPage/GameCenterPage";
+import { GameCenter_FriendsPage } from "@/pages/GameCenterPage/SubPages/FriendsPage";
+import { GameCenter_MainPage } from "@/pages/GameCenterPage/SubPages/MainPage";
+import { GameCenter_SearchPage } from "@/pages/GameCenterPage/SubPages/SearchGamePage";
+import { GameCenter_TaskPage } from "@/pages/GameCenterPage/SubPages/TaskPage";
 import { GameWrapper } from "@/pages/GamePage/GameWrapper";
 import { InitDataPage } from "@/pages/InitDataPage/InitDataPage";
 import { IntroPage } from "@/pages/IntroPage/IntroPage";
 import { LaunchParamsPage } from "@/pages/LaunchParamsPage/LaunchParamsPage.tsx";
+import MainPage from "@/pages/MainPage/MainPage";
 import { TestingPage } from "@/pages/TestingPage/TestingPage";
 import { ThemeParamsPage } from "@/pages/ThemeParamsPage/ThemeParamsPage.tsx";
 import { TONConnectPage } from "@/pages/TONConnectPage/TONConnectPage";
+import { Gamepad2, Gift, Trophy } from "lucide-react";
+import { createHashRouter, RouteObject } from "react-router-dom";
 
-interface Route {
+export interface AppRoute {
+  id: string;
   path: string;
   Component: ComponentType;
   title?: string;
   icon?: JSX.Element;
   allowYScroll?: boolean;
-  back?: boolean;
+  back?: "close" | "back" | "nop" | string; //back按钮的处理， close 表示 显示close按钮，back表示退到前一个页面，nop表示不作处理，留给页面自己处理，string表示退到指定页面
+  subRoutes?: AppRoute[]
 }
 
-export const routes: Route[] = [
-  { path: "/", Component: IntroPage, allowYScroll: true, back: false },
-  { path: "/testing", Component: TestingPage, allowYScroll: true },
-  { path: "/game", Component: GameWrapper, back: false, allowYScroll: false },
-  { path: "/init-data", Component: InitDataPage, title: "Init Data" },
-  { path: "/theme-params", Component: ThemeParamsPage, title: "Theme Params" },
-  { path: "/launch-params", Component: LaunchParamsPage, title: "Launch Params", },
-  { path: "/game-center", Component: GameCenterPage, allowYScroll: true, back: false },
-  { path: "/game-genre", Component: GameAllList },
-  { path: "/game-details/:id", Component: GameDetails },
-  { path: "/profile", Component: ProfilePage },
+
+const setupRoute = (route: AppRoute, wrapPage: boolean = true): RouteObject => {
+  const p = wrapPage ? <Page back={route.back} allowYScroll={route.allowYScroll}><route.Component /></Page>
+    : <route.Component />;
+
+  const subRoutes: RouteObject[] = [];
+
+  if (route.subRoutes != null && route.subRoutes.length > 0) {
+    route.subRoutes.forEach(r => {
+      subRoutes.push(setupRoute(r, false));
+    })
+  }
+
+  const r: RouteObject = {
+    path: route.path,
+    element: p,
+    children: subRoutes,
+  }
+
+  return r;
+}
+
+export const routes: AppRoute[] = [
+  { id: "root", path: "/", Component: IntroPage, allowYScroll: true, back: "close" },
+  { id: "testing", path: "/testing", Component: TestingPage, allowYScroll: true },
+  { id: "game", path: "/game", Component: GameWrapper, back: "close", allowYScroll: false },
+  { id: "", path: "/init-data", Component: InitDataPage, title: "Init Data" },
+  { id: "", path: "/theme-params", Component: ThemeParamsPage, title: "Theme Params" },
+  { id: "", path: "/launch-params", Component: LaunchParamsPage, title: "Launch Params", },
+  { id: "", path: "/game-center-old", Component: MainPage, allowYScroll: true, back: "close" },
+
   {
+    id: "gamecenter", path: "/game-center", Component: GameCenterPage, allowYScroll: false, back: "nop",
+    subRoutes: [
+      { id: "gamecenter-main", path: "main", Component: GameCenter_MainPage, allowYScroll: true, back: "close", title: "Main", icon: <Gamepad2 absoluteStrokeWidth /> },
+      { id: "gamecenter-tasks", path: "tasks", Component: GameCenter_TaskPage, allowYScroll: true, back: "/game-center/main", title: "Tasks", icon: <Gift absoluteStrokeWidth /> },
+      { id: "gamecenter-friends", path: "friends", Component: GameCenter_FriendsPage, allowYScroll: true, back: "/game-center/main", title: "Friends", icon: <Trophy absoluteStrokeWidth /> },
+      { id: "gamecenter-search", path: "search", Component: GameCenter_SearchPage, allowYScroll: true, back: "/game-center/main" },
+    ]
+  },
+
+  // { path: "/game-center/main", Component: GameCenter_MainPage, allowYScroll: true, back: "close", title: "Main", icon: <Gamepad2 absoluteStrokeWidth /> },
+  // { path: "/game-center/tasks", Component: GameCenter_TaskPage, allowYScroll: true, back: "/game-center", title: "Tasks", icon: <Gift absoluteStrokeWidth /> },
+  // { path: "/game-center/friends", Component: GameCenter_FriendsPage, allowYScroll: true, back: "/game-center", title: "Friends", icon: <Trophy absoluteStrokeWidth /> },
+  // { path: "/game-center/search", Component: GameCenter_SearchPage, allowYScroll: true, back: "/game-center" },
+
+  // { path: "/game-genre", Component: GameAllList },
+  // { path: "/game-details/:id", Component: GameDetails },
+  // { path: "/profile", Component: ProfilePage },
+  {
+    id: "",
     path: "/ton-connect",
     Component: TONConnectPage,
     title: "TON Connect",
@@ -56,3 +102,8 @@ export const routes: Route[] = [
     ),
   },
 ];
+
+const rs = routes.map(r => setupRoute(r));
+console.log("routes", rs);
+
+export const appRoutes = createHashRouter(rs);

@@ -12,6 +12,7 @@ type GameDataParams = {
 	logoUrl: string;
 	mainPicUrl: string;
 	status: number;
+	suggest: number;
 }
 
 class GameData {
@@ -19,13 +20,14 @@ class GameData {
 	name: string = "";
 	desc: string = "";
 	url: string = "";
-	logoUrl1: string = "";
-	mainPicUrl1: string = "";
+	logoUrl: string = "";
+	mainPicUrl: string = "";
 	genre: number[] = [];
-	iconUrl1: string = "";
+	iconUrl: string = "";
 	time: number = 0;
 	openTime: number = 0;
 	status: number = 0;
+	suggest: number = 0;
 
 	tgLink(): string {
 		// return "https://t.me/DashFunBot/Games?startapp=" + this.id;
@@ -41,29 +43,39 @@ class GameData {
 	}
 
 	getIconUrl(): string {
-		return this.getImageUrl(this.iconUrl1);
+		if (this.iconUrl == "") {
+			return "https://res.dashfun.games/icons/dashfun-icon-256.png"
+		}
+		return this.getImageUrl(this.iconUrl);
 	}
 
 	getLogoUrl(): string {
-		return this.getImageUrl(this.logoUrl1);
+		if (this.logoUrl == "") {
+			return "https://res.dashfun.games/icons/dashfun-logo-transparent.png"
+		}
+		return this.getImageUrl(this.logoUrl);
 	}
 	getMainPicUrl(): string {
-		return this.getImageUrl(this.mainPicUrl1);
+		if (this.mainPicUrl == "") {
+			return "https://res.dashfun.games/icons/dashfun-logo-transparent.png"
+		}
+		return this.getImageUrl(this.mainPicUrl);
 	}
 
 	constructor(data: GameDataParams) {
-		const { id, name, desc, url, genre, iconUrl, time, openTime, mainPicUrl, logoUrl, status } = data;
+		const { id, name, desc, url, genre, iconUrl, time, openTime, mainPicUrl, logoUrl, status, suggest } = data;
 		this.id = id;
 		this.name = name;
 		this.desc = desc;
 		this.url = url;
 		this.genre = genre;
-		this.iconUrl1 = iconUrl;
+		this.iconUrl = iconUrl;
 		this.time = time;
-		this.mainPicUrl1 = mainPicUrl;
-		this.logoUrl1 = logoUrl;
+		this.mainPicUrl = mainPicUrl;
+		this.logoUrl = logoUrl;
 		this.openTime = openTime;
 		this.status = status;
+		this.suggest = suggest;
 	}
 }
 
@@ -81,5 +93,25 @@ class GameDataList {
 	}
 }
 
-export { GameData, GameDataList }
+enum GameListType {
+	Played = 0,
+	New = 1,
+	Popular = 2,
+	Suggest = 3,
+	Banner = 4,
+}
+
+/**
+ * 从服务器请求的gamelist结果
+ */
+class GameListResult {
+	//GameListType -> GameId[]
+	game_list: { [key: number]: string[] } = {};
+	games: GameData[] = []
+	getGame: (id: string) => GameData | undefined = (id: string) => {
+		return this.games.find(g => g.id == id);
+	}
+}
+
+export { GameData, GameDataList, GameListType, GameListResult }
 export type { GameDataParams }

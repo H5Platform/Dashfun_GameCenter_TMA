@@ -114,11 +114,11 @@ const GameApi = {
 			const encoded = gameId.slice("test-".length)
 			const url = atob(encoded)
 
-			console.log("encoded url::::", url);
+			console.log("decoded url::::", url);
 			return new GameData({
 				id: "ForTest",
 				name: "Test Game",
-				desc: "Only For Test",
+				desc: "Only For Test -- " + url,
 				mainPicUrl: "",
 				logoUrl: "logo.png",
 				url: url,
@@ -126,7 +126,8 @@ const GameApi = {
 				iconUrl: "icon.png",
 				time: 0,
 				openTime: 0,
-				status: 1
+				status: 1,
+				suggest: 0,
 			});
 		}
 
@@ -291,6 +292,27 @@ const GameApi = {
 				} else {
 					throw result.data.msg
 				}
+			} else {
+				throw result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
+
+	getGameList: async (tgToken: string, listTypes: number[] = []) => {
+		const api = GameApi.apiUrl() + "game_list"
+		const result = await axios.get(api, {
+			headers: {
+				"Authorization": "tma " + tgToken
+			},
+			params: {
+				list_type: listTypes
+			}
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data;
 			} else {
 				throw result.data.msg
 			}

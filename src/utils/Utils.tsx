@@ -8,3 +8,7 @@ export const toTimeString = (days: number, hours: number, minutes: number, secon
 	ret += `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 	return ret;
 }
+
+export const isPcBrowser = () => {
+	return !/Mobi|Android/i.test(navigator.userAgent);
+};

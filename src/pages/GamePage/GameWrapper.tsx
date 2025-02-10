@@ -29,6 +29,7 @@ export const GameWrapper: FC = () => {
 	const [showTask, setShowTask] = useState(false);
 	const [game, setGame] = useState<GameData | null>(null);
 	const initDataRaw = useLaunchParams().initDataRaw;
+	// const startParam = useLaunchParams().startParam;
 	const user = useDashFunUser();
 	const coins = UseDashFunCoins();
 	const [spinWheel, _1, _2] = useDashFunSpinWheel();
@@ -42,7 +43,6 @@ export const GameWrapper: FC = () => {
 	const pb = bottom + contentBottom;
 
 	const [taskCount, setTaskCount] = useState<{ [key: number]: number }>({})
-
 
 	const getTaskCount = async () => {
 		if (game != null) {
@@ -199,9 +199,9 @@ export const GameWrapper: FC = () => {
 		</div>
 	</SectionHeader >
 
-	return <div className="game-wrapper">
+	return <div id="game-wrapper" className="game-wrapper" style={{ paddingTop: pt, paddingBottom: pb }}>
 		{header}
-		<div className=' flex-1 h-full'>
+		<div id="game-iframe" className=' flex-1 h-full'>
 			<Iframe
 				id='GameFrame'
 				name='GameFrame'
@@ -225,13 +225,13 @@ export const GameWrapper: FC = () => {
 					open={play == false}
 					style={{ backgroundColor: "transparent" }}
 					overlayComponent={
-						<div className=' bg-[#21212164] pointer-events-auto fixed left-0 right-0 z-[var(--tgui--z-index--overlay)]' style={{ top: pt + "px", bottom: pb + "px" }}>
+						<div className=' bg-[#21212130] pointer-events-auto fixed left-0 right-0 z-[var(--tgui--z-index--overlay)]' style={{ top: pt + "px", bottom: pb + "px" }}>
 							{header}
 						</div>
 					}
 				>
 
-					<GameLauncher gameId={game?.id}
+					<GameLauncher gameId={undefined}
 						footer={null}
 						onLoad={g => {
 							setGame(g as GameData);

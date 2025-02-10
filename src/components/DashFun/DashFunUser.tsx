@@ -1,8 +1,8 @@
-import { UserApi } from "@/utils/DashFunApi"
+import { UserApi } from "@/utils/DashFunApi";
 import { initData, useSignal } from "@telegram-apps/sdk-react";
-import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react"
-import { DashFunUser } from "../DashFunData/UserData"
 import { Spinner } from "@telegram-apps/telegram-ui";
+import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
+import { DashFunUser } from "../DashFunData/UserData";
 
 
 const UserContext = createContext<{
@@ -29,7 +29,6 @@ export const UserProvider = ({ children }: PropsWithChildren<{}>) => {
 		if (user == null || user.channelId != initDataState?.user?.id.toString()) {
 			loginUser();
 		}
-
 	}, [initDataState?.user?.id, initDataRaw])
 
 	return <UserContext.Provider value={{ user }}>

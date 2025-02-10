@@ -99,7 +99,7 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked, foote
 								}
 							}}
 						>
-							<div className="flex justify-center items-center"><Send size="20" strokeWidth={1}  /> <span className="pl-2">Share game</span></div>
+							<div className="flex justify-center items-center"><Send size="20" strokeWidth={1} absoluteStrokeWidth /> <span className="pl-2">Share game</span></div>
 						</Button>
 						<Button
 							mode="bezeled"
@@ -142,7 +142,7 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked, foote
 								// }, "*")
 							}}
 						>
-							<Heart size="24" strokeWidth={2}   />
+							<Heart size="24" strokeWidth={2} absoluteStrokeWidth/>
 						</Button>
 					</div>
 				</>}

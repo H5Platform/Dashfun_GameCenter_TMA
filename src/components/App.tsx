@@ -10,34 +10,54 @@
 //   useSwipeBehavior,
 // } from "@telegram-apps/sdk-react";
 import { AppRoot } from "@telegram-apps/telegram-ui";
-import { type FC } from "react";
+import { useEffect, type FC } from "react";
 import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
 
-import { routes } from "@/navigation/routes.tsx";
-import { miniApp, themeParams, useLaunchParams, useSignal } from "@telegram-apps/sdk-react";
+import { AppRoute, routes } from "@/navigation/routes.tsx";
+import { miniApp, postEvent, themeParams, useLaunchParams, useSignal } from "@telegram-apps/sdk-react";
 import { UserProvider } from "./DashFun/DashFunUser";
+import { LanguageProvider } from "./Language/Language";
 import { Page } from "./Page";
 
+const setupRoute = (route: AppRoute, wrapPage: boolean = true) => {
+  let P = () => wrapPage ? <Page back={route.back} allowYScroll={route.allowYScroll}><route.Component /></Page>
+    : <route.Component />;
+
+  const subRoutes: React.JSX.Element[] = [];
+
+  if (route.subRoutes != null && route.subRoutes.length > 0) {
+    route.subRoutes.forEach(r => {
+      subRoutes.push(setupRoute(r, false));
+    })
+  }
+
+  const r = <Route key={route.path} path={route.path} Component={P} >
+    {subRoutes}
+  </Route>;
+
+  return r;
+}
+
 export const App: FC = () => {
+  console.log("init app......")
   const lp = useLaunchParams();
+  console.log("launch params", lp)
   const bgClr = useSignal(themeParams.secondaryBackgroundColor);
   console.log("themeParams", bgClr)
   const routesArr = []
 
+  useEffect(() => {
+    postEvent("web_app_request_theme");
+  }, [])
+
   for (let index = 0; index < routes.length; index++) {
     const route = routes[index];
 
-    let P = () => <Page back={route.back} allowYScroll={route.allowYScroll}><route.Component /></Page>;
-    // if (route.show) {
-    // 	Page = () => {
-    // 		return <TabWrapper tabId={route.id}><route.Component /></TabWrapper>
-    // 	}
-    // }
-    const r = <Route key={route.path} path={route.path} Component={P} />
+    // let P = () => <Page back={route.back} allowYScroll={route.allowYScroll}><route.Component /></Page>;
+    // const r = <Route key={route.path} path={route.path} Component={P} />
+    const r = setupRoute(route);
     routesArr.push(r);
   }
-
-
 
   return (
     <AppRoot
@@ -46,17 +66,17 @@ export const App: FC = () => {
       platform={["macos", "ios"].includes(lp.platform) ? "ios" : "base"}
       className="w-full h-full"
     >
-      <UserProvider>
-        <HashRouter>
-          <Routes>
-            {/* {routes.map((route) => (
-              <Route key={route.path} {...route} />
-            ))} */}
-            {routesArr}
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-        </HashRouter>
-      </UserProvider>
+      <LanguageProvider>
+        <UserProvider>
+          <HashRouter>
+            <Routes>
+              {routesArr}
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+          </HashRouter>
+          {/* <RouterProvider router={appRoutes} /> */}
+        </UserProvider>
+      </LanguageProvider>
     </AppRoot>
   );
 };

@@ -6,8 +6,9 @@ import { Root } from './components/Root.tsx';
 import './index.css';
 
 import "./mockEnv.ts";
+import { Env, getEnv } from './utils/DashFunApi.tsx';
 
-init(retrieveLaunchParams().startParam === 'debug')
+init(retrieveLaunchParams().startParam === 'debug' || getEnv() == Env.Dev)
 postEvent("web_app_expand");
 
 

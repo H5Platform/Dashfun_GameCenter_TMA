@@ -40,6 +40,7 @@ const MainPage: FC = () => {
     logoUrl: "",
     mainPicUrl: "",
     status: 1,
+    suggest: 0,
   });
 
   return (

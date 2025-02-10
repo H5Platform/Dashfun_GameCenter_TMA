@@ -10,6 +10,7 @@ import { SectionFooter } from "@telegram-apps/telegram-ui/dist/components/Blocks
 import { TonConnectButton, useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
 import { FC } from "react";
 import { IntroPageGameSection } from "./IntroPageGame";
+import { ContentWrapper } from "../ContentWrapper";
 
 export const IntroPage: FC = () => {
 	const coins = UseDashFunCoins();
@@ -38,6 +39,7 @@ export const IntroPage: FC = () => {
 			logoUrl: "",
 			mainPicUrl: "",
 			status: 2,
+			suggest: 0,
 		})
 	);
 
@@ -56,6 +58,7 @@ export const IntroPage: FC = () => {
 				logoUrl: "",
 				mainPicUrl: "",
 				status: 1,
+				suggest: 0,
 			})
 		);
 	}
@@ -64,64 +67,66 @@ export const IntroPage: FC = () => {
 
 	games.forEach((g) => {
 		const coin = coins.findCoinByGameId(g.id);
-		const dom = <IntroPageGameSection game={g} coin={coin as CoinInfo} />;
+		const dom = <IntroPageGameSection key={g.id} game={g} coin={coin as CoinInfo} />;
 		gamesDom.push(dom);
 	});
 
-	return <List>
-		<div className="w-full flex flex-col justify-center items-center pt-5">
-			<Avatar src={dashfunIcon} size={96}></Avatar>
-			<Headline weight="1" className="pt-1">DashFun</Headline>
-		</div>
-		<SectionFooter>
-			DashFun is an upcoming mini-game platform featuring a collection of exciting and fast-paced games designed for quick, fun sessions. Stay tuned for the launch and get ready to dive into endless entertainment!
-		</SectionFooter>
+	return <ContentWrapper>
+		<List>
+			<div className="w-full flex flex-col justify-center items-center pt-5">
+				<Avatar src={dashfunIcon} size={96}></Avatar>
+				<Headline weight="1" className="pt-1">DashFun</Headline>
+			</div>
+			<SectionFooter>
+				DashFun is an upcoming mini-game platform featuring a collection of exciting and fast-paced games designed for quick, fun sessions. Stay tuned for the launch and get ready to dive into endless entertainment!
+			</SectionFooter>
 
-		<Section header="Follow US">
-			<Link to="" onClick={() => openTelegramLink(TGLink.groupLink())}>
-				<Cell>Join Our Telegram Group</Cell>
-			</Link>
-			<Link to={"https://x.com/dashfun_app"}>
-				<Cell>Follow Us On X</Cell>
-			</Link>
-		</Section>
+			<Section header="Follow US">
+				<Link to="" onClick={() => openTelegramLink(TGLink.groupLink())}>
+					<Cell>Join Our Telegram Group</Cell>
+				</Link>
+				<Link to={"https://x.com/dashfun_app"}>
+					<Cell>Follow Us On X</Cell>
+				</Link>
+			</Section>
 
-		{
-			(
-				(getEnv() == Env.Dev || getEnv() == Env.Test) &&
-				<Section header="Test Functions">
-					<Link to="" onClick={async () => {
-						const testData = {
-							data1: "data1",
-							data2: "data2",
-							test: true
-						}
-
-						await GameApi.setData("LocalTest", initDataRaw as string, "test_savedata", testData);
-						await GameApi.setData("LocalTest", initDataRaw as string, "test_savedata_number", 12345);
-
-						const s1 = await GameApi.getData("LocalTest", initDataRaw as string, "test_savedata");
-						const s2 = await GameApi.getData("LocalTest", initDataRaw as string, "test_savedata_number");
-
-						console.log("test_savedata", JSON.parse(s1), "test_savedata_number", s2);
-					}}>
-						<Cell>Test Save Function</Cell>
-					</Link>
-				</Section>
-			)
-		}
-
-		<Section header="Connect Wallet">
 			{
-				wallet == null ? <div className="flex justify-center items-center w-full py-4">
-					<TonConnectButton className="py-2" />
-				</div> : <Cell after={<TonConnectButton />}>Your wallet: </Cell>
+				(
+					(getEnv() == Env.Dev || getEnv() == Env.Test) &&
+					<Section header="Test Functions">
+						<Link to="" onClick={async () => {
+							const testData = {
+								data1: "data1",
+								data2: "data2",
+								test: true
+							}
+
+							await GameApi.setData("LocalTest", initDataRaw as string, "test_savedata", testData);
+							await GameApi.setData("LocalTest", initDataRaw as string, "test_savedata_number", 12345);
+
+							const s1 = await GameApi.getData("LocalTest", initDataRaw as string, "test_savedata");
+							const s2 = await GameApi.getData("LocalTest", initDataRaw as string, "test_savedata_number");
+
+							console.log("test_savedata", JSON.parse(s1), "test_savedata_number", s2);
+						}}>
+							<Cell>Test Save Function</Cell>
+						</Link>
+					</Section>
+				)
 			}
 
-		</Section>
+			<Section header="Connect Wallet">
+				{
+					wallet == null ? <div className="flex justify-center items-center w-full py-4">
+						<TonConnectButton className="py-2" />
+					</div> : <Cell after={<TonConnectButton />}>Your wallet: </Cell>
+				}
 
-		<Section header="New Games">
-		</Section>
-		{gamesDom}
-	</List>
+			</Section>
+
+			<Section header="New Games">
+			</Section>
+			{gamesDom}
+		</List>
+	</ContentWrapper>
 }
