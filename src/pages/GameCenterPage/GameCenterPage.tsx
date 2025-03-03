@@ -99,6 +99,11 @@ export const GameCenterPage: FC = () => {
 	}, [tabRef.current])
 
 	useEffect(() => {
+		if (location.pathname == "/game-center/" || location.pathname == "/game-center") {
+			navigate("/game-center/main");
+			return
+		}
+
 		const gamecenter = routes.find(r => r.id == "gamecenter") as AppRoute;
 		const currentRoute: AppRoute = gamecenter.subRoutes?.find(r => `${gamecenter.path}/${r.path}` == location.pathname) as AppRoute;
 
