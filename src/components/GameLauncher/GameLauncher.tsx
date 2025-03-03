@@ -6,8 +6,9 @@ import { GameData } from "../DashFunData/GameData";
 import { GameLoadingEvent } from "../Event/Events";
 import "./GameLauncher.css";
 import { toTimeString } from "@/utils/Utils";
-import { shareURL } from "@telegram-apps/sdk-react";
+import { initData, shareURL, useSignal } from "@telegram-apps/sdk-react";
 import { Heart, Send } from "lucide-react";
+import { GameApi } from "@/utils/DashFunApi";
 
 export type GLProps = JSX.IntrinsicElements['div'] & {
 	gameId: string | undefined,
@@ -23,6 +24,9 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked, foote
 	const game = useDashFunGame();
 	const [loading, setLoading] = useState(-1);
 	const [playText, setPlayText] = useState("Play")
+	const initDataRaw = useSignal(initData.raw)
+
+	const [isFavorite, setIsFavorite] = useState<-1 | 0 | 1>(-1); // -1: loading, 0: not favorite, 1: favorite
 
 	// const loadGame = async (gameId: string | undefined): Promise<GameData | undefined> => {
 	// 	if (gameId == null) {
@@ -36,12 +40,31 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked, foote
 	// 	}
 	// }
 
+	const setFavorite = async (gameId: string) => {
+		if (gameId == "") {
+			return;
+		}
+		const action = isFavorite == 0 ? "add" : "remove";
+		setIsFavorite(-1);
+		const result = await GameApi.setUserFavorite(initDataRaw as string, gameId, action)
+		if (result) {
+			setIsFavorite(action == "add" ? 1 : 0);
+		}
+	}
+
 	useEffect(() => {
 		// loadGame(gameId);
 		onLoad(game as GameData);
 		const onLoading = (value: number) => {
 			console.log("loading....", value)
 			setLoading(value);
+		}
+
+		if (game != null) {
+			GameApi.isUserFavorite(initDataRaw as string, game.id).then((isFavorite) => {
+				setIsFavorite(isFavorite ? 1 : 0);
+				console.log("isFavorite", isFavorite)
+			});
 		}
 
 		GameLoadingEvent.addListener(onLoading);
@@ -104,45 +127,15 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked, foote
 						<Button
 							mode="bezeled"
 							size="m"
+							loading={isFavorite == -1}
 							onClick={() => {
-								// window.postMessage({
-								// 	dashfun: {
-								// 		method: "getUserProfile"
-								// 	}
-								// }, "*");
-
-								// const eventListener = (ev: MessageEvent<any>) => {
-								// 	const { data } = ev;
-								// 	if (data.dashfun) {
-								// 		const { method, result } = data.dashfun;
-								// 		if (method == "requestPaymentResult" && result.state == "success") {
-								// 			const { invoiceLink, paymentId } = result.data;
-								// 			console.log(invoiceLink, paymentId)
-								// 			window.removeEventListener('message', eventListener)
-								// 			window.postMessage({
-								// 				dashfun: {
-								// 					method: "openInvoice",
-								// 					value: invoiceLink
-								// 				}
-								// 			})
-								// 		}
-								// 	}
-								// }
-
-								// window.addEventListener('message', eventListener)
-								// window.postMessage({
-								// 	dashfun: {
-								// 		method: "requestPayment",
-								// 		gameId,
-								// 		title: "Test Item",
-								// 		desc: "for payment test",
-								// 		payload: "dashfun payload",
-								// 		price: 1
-								// 	}
-								// }, "*")
+								setFavorite(game?.id || "");
 							}}
 						>
-							<Heart size="24" strokeWidth={2} absoluteStrokeWidth/>
+							{
+								isFavorite == 0 ? <Heart size="24" strokeWidth={2} />
+									: <Heart size="24" strokeWidth={0} fill="#ef4444" />
+							}
 						</Button>
 					</div>
 				</>}

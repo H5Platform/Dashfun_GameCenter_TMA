@@ -11,7 +11,7 @@ import Iframe from 'react-iframe';
 import "./GameWrapper.css";
 
 import { Coins } from '@/components/Coins/coins';
-import { UseDashFunCoins } from '@/components/DashFun/DashFunCoins';
+import { useDashFunCoins } from '@/components/DashFun/DashFunCoins';
 import { useDashFunSpinWheel } from '@/components/DashFun/DashFunSpinWheel';
 import { SpinWheelConstants } from '@/components/DashFunData/SpinWheelData';
 import { DashFunUser } from '@/components/DashFunData/UserData';
@@ -19,7 +19,7 @@ import { SpinWheelStatusChangedEvent, TaskStatusChangedEvent } from '@/component
 import { MessageListener } from '@/components/MessageListener/MessageListener';
 import SpinWheel from '@/components/SpinWheel/SpinWheel';
 import { TaskAndCoin } from '@/components/TaskAndCoin/TaskAndCoin';
-import { getCoinIcon, TaskStatus } from '@/constats';
+import { CoinInfo, getCoinIcon1, TaskStatus } from '@/constats';
 import { Gamepad2, Gift, LoaderPinwheel, Send } from 'lucide-react';
 
 
@@ -31,9 +31,15 @@ export const GameWrapper: FC = () => {
 	const initDataRaw = useLaunchParams().initDataRaw;
 	// const startParam = useLaunchParams().startParam;
 	const user = useDashFunUser();
-	const coins = UseDashFunCoins();
+	// current game coin
+	const [coin, setCoin] = useState<CoinInfo | null>(null);
+
+	// const coins = UseDashFunCoins();
 	const [spinWheel, _1, _2] = useDashFunSpinWheel();
 	const [spinStatus, setSpinStatus] = useState(0);
+
+	const [coins, userCoinData, updateCoins, getCoinInfo] = useDashFunCoins();
+
 	const top = useSignal(viewport.safeAreaInsetTop);
 	const bottom = useSignal(viewport.safeAreaInsetBottom);
 	const contentTop = useSignal(viewport.contentSafeAreaInsetTop)
@@ -68,10 +74,6 @@ export const GameWrapper: FC = () => {
 	}
 
 	useEffect(() => {
-		getTaskCount();
-	}, [game])
-
-	useEffect(() => {
 		setSpinStatus(spinWheel?.status || 0);
 	}, [spinWheel])
 
@@ -86,6 +88,22 @@ export const GameWrapper: FC = () => {
 	}
 
 	useEffect(() => {
+		if (userCoinData != null) {
+			if (game != null) {
+				const info = getCoinInfo(game.id, "gameId");
+				if (info != null) {
+					setCoin(info);
+				}
+			}
+		}
+	}, [coins, userCoinData])
+
+
+	useEffect(() => {
+		getTaskCount();
+		if (updateCoins)
+			updateCoins([game?.id || ""])
+
 		TaskStatusChangedEvent.addListener(evtListener);
 		SpinWheelStatusChangedEvent.addListener(spinListener);
 		return () => {
@@ -95,9 +113,7 @@ export const GameWrapper: FC = () => {
 	}, [game]);
 
 
-	const coin = (coins == null || game == null) ? null : coins.findCoinByGameId(game.id);
-
-	const numb = coin == null ? 0 : coin.userData.amount
+	const numb = coin?.userData?.amount || 0;
 	const formatted = numb == null ? "0" : numb.toLocaleString('en-US', { style: "decimal" })
 
 	const tc = taskCount == null || taskCount[TaskStatus.Completed] == null ? 0 : taskCount[TaskStatus.Completed]
@@ -168,7 +184,7 @@ export const GameWrapper: FC = () => {
 		<MessageListener />
 		<div className='game-title'>
 			<Button mode="white"
-				before={<Avatar src={getCoinIcon(coin?.coin.name || "")} size={24} > </Avatar>}
+				before={<Avatar src={getCoinIcon1(coin?.coin ?? null)} size={24} > </Avatar>}
 				size="s" onClick={() => {
 					openTaskUI();
 					getTaskCount();

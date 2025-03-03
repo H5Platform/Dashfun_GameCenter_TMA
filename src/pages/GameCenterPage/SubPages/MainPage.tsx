@@ -1,224 +1,89 @@
-import { useDashFunUser } from "@/components/DashFun/DashFunUser";
 import { GameData, GameListType } from "@/components/DashFunData/GameData";
-import { GameIcon } from "@/components/GameIcon/GameIcon";
-import { L, LangKeys } from "@/components/Language/Language";
-import { isPcBrowser } from "@/utils/Utils";
-import { Avatar, Button, Caption, Card, Headline, Input, Skeleton, Title } from "@telegram-apps/telegram-ui";
-import { CardCell } from "@telegram-apps/telegram-ui/dist/components/Blocks/Card/components/CardCell/CardCell";
-import { ChevronRight, Search, X } from "lucide-react";
-import { FC, Fragment, useEffect, useRef, useState } from "react";
+import { TGLink } from "@/utils/DashFunApi";
+import { openTelegramLink } from "@telegram-apps/sdk-react";
+import { Button } from "@telegram-apps/telegram-ui";
+import { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGameCenterData } from "../Components/GameCenterDataProvider";
 
+import ProfileHeader from "../Components/ProfileHeader";
+
+
 export const GameCenter_MainPage: FC = () => {
-	return <div id="GameCenter_MainPage" className="w-full p-4">
-		<Header />
-		<div className="w-full flex flex-col pt-4 gap-3 pb-8">
-			<Banner />
-			<PlayRecordBar />
-			<GameList listType={GameListType.New} />
-			<GameList listType={GameListType.Popular} />
-			<GameList listType={GameListType.Suggest} />
-		</div>
-	</div>
-}
-
-const Header: FC = () => {
-	const navigator = useNavigate();
-	const user = useDashFunUser();
-	return <div className="flex flex-row items-center w-full gap-2">
-		<div className="w-full">
-			<Input id="inputSearchGame"
-				placeholder="Search Games"
-				before={<Search strokeWidth={2} absoluteStrokeWidth color="gray" />}
-				after={<X color="gray" absoluteStrokeWidth strokeWidth={4} />}
-				onFocus={() => {
-					navigator("/game-center/search");
-				}}
-				width="100%"
-				className="flex-1"
-			/> </div><Avatar size={48} src={user?.avatarUrl} />
-	</div>
-}
-
-const Banner: FC = () => {
-	const [currentIndex, setCurrentIndex] = useState(0);
+	const nav = useNavigate();
 	const [pageWidth, setPageWidth] = useState(window.innerWidth);
-	const [cardWidth, setCardWidth] = useState(0);
-	const [cardHeight, setCardHeight] = useState(0);
+	useEffect(() => {
+		const handleResize = () => {
+			let w = window.innerWidth;
+			if (w > 640) w = 640;
+			w -= 32; // 16px padding
+			setPageWidth(w);
+		}
+		window.addEventListener('resize', handleResize);
+		handleResize();
+		return () => window.removeEventListener('resize', handleResize);
+	}, []);
 
-	const { gamelist, loading } = useGameCenterData();
+	const { gamelist } = useGameCenterData();
+	const games: GameData[] = [];
 
-	const bannerRef = useRef<HTMLDivElement>(null);
-	const banners: JSX.Element[] = [
-		// <div key={1} className="bg-gray-200" style={{ width: cardWidth, height: cardHeight }}></div>,
-		// <div key={2} className="bg-red-200" style={{ width: cardWidth, height: cardHeight }}></div>,
-		// <div key={3} className="bg-blue-200" style={{ width: cardWidth, height: cardHeight }}></div>,
-		// <div key={4} className="bg-purple-200" style={{ width: cardWidth, height: cardHeight }}></div>
-	];
+	const addGame = (g: GameData | null | undefined) => {
+		if (g != null && games.length < 9) {
+			if (games.find((game) => game.id === g.id) != null) return;
+			games.push(g);
+		}
+	}
 
-	gamelist?.game_list[GameListType.Banner]?.forEach((gameId, index) => {
-		const game = gamelist.getGame(gameId);
-		banners.push(
-			<Card type="ambient" key={index} style={{ width: cardWidth - 8, height: cardHeight - 4, backgroundColor: "transparent", border: "2px solid var(--tg-theme-button-color)" }}>
-				<Fragment>
-					<img
-						src={game?.getLogoUrl()}
-						style={{ height: cardHeight, width: "auto", objectFit: "cover" }}
-					/>
-					<CardCell readOnly>
-						{game?.desc}
-					</CardCell>
-				</Fragment>
-			</Card>
-		);
+	gamelist?.game_list[GameListType.Banner]?.forEach((gameId) => {
+		const g = gamelist?.getGame(gameId);
+		addGame(g);
+	});
+	gamelist?.game_list[GameListType.Suggest]?.forEach((gameId) => {
+		const g = gamelist?.getGame(gameId);
+		addGame(g);
+	});
+	gamelist?.game_list[GameListType.Popular]?.forEach((gameId) => {
+		const g = gamelist?.getGame(gameId);
+		addGame(g);
+	});
+	gamelist?.game_list[GameListType.New]?.forEach((gameId) => {
+		const g = gamelist?.getGame(gameId);
+		addGame(g);
 	});
 
 
-	useEffect(() => {
-		const handleResize = () => {
-			let w = window.innerWidth;
-			if (w > 640) w = 640;
-			w -= 32; // 16px padding
-			let cardWidth = (w) / 2;
-			let cardHeight = cardWidth * 1.2;
-			setPageWidth(w);
-			setCardWidth(cardWidth);
-			setCardHeight(cardHeight);
-		}
-		window.addEventListener('resize', handleResize);
-		handleResize();
-		return () => window.removeEventListener('resize', handleResize);
-	}, []);
-
-	useEffect(() => {
-		const interval = setInterval(() => {
-			if (banners.length <= 2) {
-				return;
-			}
-			setCurrentIndex((prevIndex) => (prevIndex + 1) % (banners.length - 1));
-		}, 5000);
-
-		return () => clearInterval(interval);
-	}, [gamelist?.game_list[GameListType.Banner]?.length]);
-
-	useEffect(() => {
-		if (bannerRef.current) {
-			bannerRef.current.scrollTo({
-				left: pageWidth * 0.5 * currentIndex,
-				behavior: 'smooth'
-			});
-		}
-	}, [currentIndex]);
-
-	const divHeight = cardHeight + (isPcBrowser() ? 12 : 0)
-
-	return <Skeleton
-		visible={loading}>
-		<div className="w-full overflow-x-auto hide-scrollbar" ref={bannerRef} style={{ height: divHeight }}>
-			<div className="grid grid-flow-col gap-2">
-				{banners}
-			</div>
+	return <div id="GameCenter_MainPage" className="w-full p-4 min-h-full flex flex-col gap-2">
+		<ProfileHeader />
+		<div className="py-2 font-semibold text-2xl w-full text-center text-white">Games</div>
+		<div className="w-full grid grid-cols-3 gap-1 pb-8 min-h-full">
+			{games.map((game, index) => {
+				return <GameCard key={index} game={game} width={(pageWidth - 8) / 3} />
+			})}
 		</div>
-	</Skeleton>
-}
 
-const PlayRecordBar: FC = () => {
-	const { gamelist, loading } = useGameCenterData();
-
-	if (gamelist == null) {
-		<Skeleton className=" h-[64px]" visible={loading}>
-		</Skeleton>
-	} else if (gamelist.game_list[GameListType.Played]?.length == 0) {
-		return null;
-	} else {
-		return <div className="w-full flex flex-col gap-2">
-			<div className="flex flex-row w-full">
-				<Title weight="2"><L langKey={LangKeys.GameListType} index={GameListType.Played} /></Title>
-				<ChevronRight size={30} strokeWidth={3.5} />
-			</div>
-			<Skeleton
-				visible={loading}>
-				<div className="w-full overflow-x-auto hide-scrollbar">
-					<div className="grid grid-flow-col gap-2 min-h-[64px]">
-						{gamelist?.game_list[GameListType.Played]?.map((gameId) => {
-							const game = gamelist.getGame(gameId);
-							return <div key={gameId} >
-								<GameIcon game={game} size={64} onClick={() => { console.log("onclick") }}></GameIcon>
-							</div>
-						})}
-					</div>
-				</div>
-			</Skeleton>
+		<div className="w-full flex items-center justify-between bg-white bg-opacity-10 rounded-2xl px-4 py-2">
+			<span className=" text-white">Join Community</span>
+			<Button mode="filled" size="s" onClick={() => {
+				openTelegramLink("https://t.me/DashFun_Official");
+			}}>Join</Button>
 		</div>
-	}
-}
 
-const GameList: FC<{ listType: number, limit?: number, countPerColumn?: number }> = ({ listType, limit = 30, countPerColumn = 3 }) => {
-	const { gamelist, loading } = useGameCenterData();
-	const [pageWidth, setPageWidth] = useState(window.innerWidth);
-
-	useEffect(() => {
-		const handleResize = () => {
-			let w = window.innerWidth;
-			if (w > 640) w = 640;
-			w -= 32; // 16px padding
-			setPageWidth(w);
-		}
-		window.addEventListener('resize', handleResize);
-		handleResize();
-		return () => window.removeEventListener('resize', handleResize);
-	}, []);
-
-	const gamelistDom = [];
-	if (gamelist?.game_list[listType]) {
-		for (let i = 0; i < limit && i < gamelist.game_list[listType].length; i += countPerColumn) {
-			const itemsDom = [];
-			for (let j = i; j < i + countPerColumn && j < gamelist.game_list[listType].length; j++) {
-				const gameId = gamelist.game_list[listType][j];
-				const game = gamelist.getGame(gameId);
-
-				let width = pageWidth * 0.95;
-				let pr = 0;
-				const m = Math.round(Math.min(limit, gamelist.game_list[listType].length) / countPerColumn) * countPerColumn;
-				if (i >= m) {
-					width = pageWidth;
-					pr = pageWidth * 0.05;
-				}
-				itemsDom.push(<div key={gameId} style={{ width: width, paddingRight: pr }}>
-					<GameListItem game={game} />
-				</div>);
-			}
-			gamelistDom.push(<div key={i} className="flex flex-col snap-start">
-				{itemsDom}
-			</div>);
-		}
-	}
-
-	return <div className="w-full flex flex-col">
-		<div className="flex flex-row w-full pt-2 pb-2">
-			<Title weight="2"><L langKey={LangKeys.GameListType} index={listType} /></Title>
-			<ChevronRight size={30} strokeWidth={3.5} />
+		<div className="w-full flex items-center justify-center py-2">
+			<Button mode="filled" size="s" onClick={() => {
+				nav("/game-center/games");
+			}}>SEE ALL GAMES</Button>
 		</div>
-		<Skeleton
-			visible={loading}
-			className="min-h-16">
-			<div className="w-full grid grid-flow-col overflow-x-auto hide-scrollbar snap-mandatory snap-x">
-				{
-					gamelistDom
-				}
-			</div>
-		</Skeleton>
 	</div>
 }
 
-const GameListItem: FC<{ game: GameData | undefined }> = ({ game }) => {
-	return <div className="w-full relative py-2  flex flex-row justify-start items-center pr-4">
-		<GameIcon game={game} size={64} onClick={() => { console.log("onclick") }} />
-		<div className="flex flex-col px-2 flex-1">
-			<Headline weight="3" className="truncate max-w-[220px]">{game?.name}</Headline>
-			<Caption style={{ height: 38, color: "var(--tgui--hint_color)", overflow: "hidden", textOverflow: "ellipsis" }}>{game?.desc}</Caption>
-		</div>
-		<Button mode="bezeled" size="s" onClick={() => { console.log("onclick") }}>Play</Button>
+const GameCard: FC<{ game: GameData, width: number }> = ({ game, width }) => {
+	return <div className=" flex flex-col rounded-2xl p-2 bg-white bg-opacity-10" style={{ width: width }}>
+		<img src={game?.getLogoUrl()} className="object-contain rounded-2xl" style={{ width: width - 16, height: width - 16 }} />
+		<span className="text-sm truncate overflow-hidden min-w-0 py-1 text-white">{game?.name}</span>
+		<div className="w-full text-center text-sm font-semibold py-1 bg-white bg-opacity-20 rounded-full text-white" onClick={() => {
+			const url = TGLink.gameLink(encodeURIComponent(game?.id ?? ""));
+			openTelegramLink(url);
+		}}>PLAY</div>
 	</div>
 }
+

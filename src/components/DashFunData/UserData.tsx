@@ -9,9 +9,10 @@ class DashFunUser {
 	loginTime: number		//登录时间
 	logoffTime: number		//登出时间
 	language: string 		//语言设定
+	level: number			//DashFun 等级
 
 	constructor(data: any) {
-		const { id, channel_id, display_name, user_name, avatar_url, from, create_data, login_time, logoff_time, language } = data
+		const { id, channel_id, display_name, user_name, avatar_url, from, create_data, login_time, logoff_time, language, level } = data
 		this.id = id;
 		this.channelId = channel_id;
 		this.displayName = display_name;
@@ -20,8 +21,9 @@ class DashFunUser {
 		this.from = from;
 		this.createData = create_data;
 		this.loginTime = login_time;
-		this.logoffTime = logoff_time
-		this.language = language
+		this.logoffTime = logoff_time;
+		this.language = language;
+		this.level = level || 1;
 	}
 }
 

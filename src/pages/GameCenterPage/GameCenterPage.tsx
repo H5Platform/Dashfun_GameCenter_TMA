@@ -7,6 +7,69 @@ import { ContentWrapper } from "../ContentWrapper";
 import { GameCenterTab, GameCenterTabRef } from "./Components/GameCenterTab";
 import "./GameCenterPage.css";
 import { GameCenterDataProvider } from "./Components/GameCenterDataProvider";
+
+
+// const pageHideTabBar = [
+// 	"/game-center/search",
+// 	"/game-center/profile"
+// ]
+type PageSetting = {
+	hideTabBar?: boolean;
+	doNotKeepAlive?: boolean;
+	doNotScrollPage?: boolean;
+}
+type PageSettings = {
+	[key: string]: PageSetting;
+};
+
+const pageSetting: PageSettings = {
+	"/game-center/search": {
+		hideTabBar: true,
+		// /game-center/search需要特殊处理，如果放在keepalive里面，会导致input的autoFocus失效
+		doNotKeepAlive: true,
+	},
+	"/game-center/profile": {
+		hideTabBar: true,
+	},
+	"/game-center/friends": {
+		doNotScrollPage: true,
+	},
+	"/game-center/tops": {
+		doNotScrollPage: true,
+	},
+}
+
+const keepPageAlive = (pathname: string) => {
+	const setting = pageSetting[pathname];
+	console.log("keepPageAlive", pathname, setting);
+	if (setting == null) {
+		return true;
+	}
+	return setting.doNotKeepAlive != true;
+}
+
+const showTabBar = (pathname: string) => {
+	const setting = pageSetting[pathname];
+	if (setting == null) {
+		return true;
+	}
+	return setting.hideTabBar != true;
+}
+
+const scrolPage = (pathname: string) => {
+	const setting = pageSetting[pathname];
+	console.log("scrolPage", pathname, setting);
+	if (setting == null) {
+		return true;
+	}
+	return setting.doNotScrollPage != true;
+}
+
+
+const customPageBg: { [key: string]: string } = {
+	"/game-center/main": "bg-gradient-to-b from-slate-950 to-slate-900"
+}
+
 export const GameCenterPage: FC = () => {
 	const aliveRef = useKeepAliveRef();
 	const tabRef = useRef<GameCenterTabRef>(null);
@@ -16,7 +79,13 @@ export const GameCenterPage: FC = () => {
 	const viewportState = useSignal(viewport.state);
 	let outlet = useOutlet();
 
-	outlet = <ContentWrapper paddingBottomAdd={tabOffset}>
+	const hideTabBar = !showTabBar(location.pathname);
+	const keepalive = keepPageAlive(location.pathname);
+	const scroll = scrolPage(location.pathname);
+
+	outlet = <ContentWrapper
+		paddingBottomAdd={hideTabBar ? 0 : tabOffset}
+		className={hideTabBar || !scroll ? "h-full" : ""}>
 		{outlet}
 	</ContentWrapper>
 
@@ -50,18 +119,18 @@ export const GameCenterPage: FC = () => {
 	}, [location.pathname])
 
 	return <div className="max-w-screen-sm sm:aligen-center sm:mx-auto h-full">
-		<div id="GameCenterPage" className="w-full h-full flex flex-col ">
+		<div id="GameCenterPage" className={"w-full h-full flex flex-col " + (customPageBg[location.pathname] || "")}>
 			<GameCenterDataProvider>
 				{
-					///game-center/search需要特殊处理，如果放在keepalive里面，会导致input的autoFocus失效
-					location.pathname == "/game-center/search" && outlet
+					!keepalive && outlet
 				}
 				<KeepAlive transition={false} aliveRef={aliveRef} activeCacheKey={currentCacheKey} max={18}>
+					{keepalive && !scroll && outlet}
 					<MemoScrollTopWrapper>
-						{location.pathname != "/game-center/search" && outlet}
+						{keepalive && scroll && outlet}
 					</MemoScrollTopWrapper>
 				</KeepAlive>
-				{(location.pathname != "/game-center/search" && <GameCenterTab ref={tabRef} />)}
+				{(!hideTabBar && <GameCenterTab ref={tabRef} />)}
 			</GameCenterDataProvider>
 		</div>
 	</div>

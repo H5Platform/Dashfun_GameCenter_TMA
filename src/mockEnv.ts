@@ -40,15 +40,15 @@ if (import.meta.env.DEV) {
 		// 	['chat_instance', '8428209589180549439'],
 		// ]).toString();
 
-    const initDataRaw = "query_id=AAGuFCQDAQAAAK4UJAPHYlhd&user=%7B%22id%22%3A2200179886%2C%22first_name%22%3A%22Marco%22%2C%22last_name%22%3A%22Test%22%2C%22username%22%3A%22Marco_web3%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Fa-ttgme.stel.com%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FUyoEyL4xrB_4jYbtDAKsRlU3-VHl9vlJ_ESwtdo9ztBcHXdXsAzLHk1biir38TJ-.svg%22%7D&auth_date=1738643830&signature=b9BaT5t8w5bR4b0S509qY1VIsmk20aymkhP2CfRv-r7M-G4Injb0iELE4licSA9F-nFaYPYkFFZQl-3IPf4jDg&hash=031c3c0040a6d79f979fab7c4c1db26fa7f67c9edc012fdfabcc64b8a14012e3"
+		const initDataRaw = "query_id=AAGuFCQDAQAAAK4UJAPHYlhd&user=%7B%22id%22%3A2200179886%2C%22first_name%22%3A%22Marco%22%2C%22last_name%22%3A%22Test%22%2C%22username%22%3A%22Marco_web3%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Fa-ttgme.stel.com%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FUyoEyL4xrB_4jYbtDAKsRlU3-VHl9vlJ_ESwtdo9ztBcHXdXsAzLHk1biir38TJ-.svg%22%7D&auth_date=1738643830&signature=b9BaT5t8w5bR4b0S509qY1VIsmk20aymkhP2CfRv-r7M-G4Injb0iELE4licSA9F-nFaYPYkFFZQl-3IPf4jDg&hash=031c3c0040a6d79f979fab7c4c1db26fa7f67c9edc012fdfabcc64b8a14012e3"
 		mockTelegramEnv({
 			themeParams: {
 				accentTextColor: '#3e88f7',
-				bgColor: '#000000',
+				bgColor: '#222222',
 				buttonColor: '#3e88f7',
 				buttonTextColor: '#ffffff',
 				destructiveTextColor: '#eb5545',
-				headerBgColor: '#1a1a1a', 
+				headerBgColor: '#1a1a1a',
 				hintColor: '#98989e',
 				linkColor: '#3e88f7',
 				secondaryBgColor: '#1c1c1d',

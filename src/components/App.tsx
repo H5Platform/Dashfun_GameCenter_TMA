@@ -18,6 +18,7 @@ import { miniApp, postEvent, themeParams, useLaunchParams, useSignal } from "@te
 import { UserProvider } from "./DashFun/DashFunUser";
 import { LanguageProvider } from "./Language/Language";
 import { Page } from "./Page";
+import { CoinProvider } from "./DashFun/DashFunCoins";
 
 const setupRoute = (route: AppRoute, wrapPage: boolean = true) => {
   let P = () => wrapPage ? <Page back={route.back} allowYScroll={route.allowYScroll}><route.Component /></Page>
@@ -66,17 +67,19 @@ export const App: FC = () => {
       platform={["macos", "ios"].includes(lp.platform) ? "ios" : "base"}
       className="w-full h-full"
     >
-      <LanguageProvider>
-        <UserProvider>
-          <HashRouter>
-            <Routes>
-              {routesArr}
-              <Route path="*" element={<Navigate to="/" />} />
-            </Routes>
-          </HashRouter>
-          {/* <RouterProvider router={appRoutes} /> */}
-        </UserProvider>
-      </LanguageProvider>
+      <HashRouter>
+        <LanguageProvider>
+          <UserProvider>
+            <CoinProvider>
+              <Routes>
+                {routesArr}
+                <Route path="*" element={<Navigate to="/" />} />
+              </Routes>
+              {/* <RouterProvider router={appRoutes} /> */}
+            </CoinProvider>
+          </UserProvider>
+        </LanguageProvider>
+      </HashRouter>
     </AppRoot>
   );
 };

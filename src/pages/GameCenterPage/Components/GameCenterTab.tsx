@@ -14,8 +14,10 @@ export const GameCenterTab = forwardRef<GameCenterTabRef>(({ }, ref) => {
 
 	const gamecenter = routes.find(r => r.id == "gamecenter") as AppRoute;
 	const main = gamecenter.subRoutes?.find(r => r.id == "gamecenter-main") as AppRoute;
+	const games = gamecenter.subRoutes?.find(r => r.id == "gamecenter-games") as AppRoute;
 	const tasks = gamecenter.subRoutes?.find(r => r.id == "gamecenter-tasks") as AppRoute;
 	const friends = gamecenter.subRoutes?.find(r => r.id == "gamecenter-friends") as AppRoute;
+	const tops = gamecenter.subRoutes?.find(r => r.id == "gamecenter-tops") as AppRoute;
 
 
 	useImperativeHandle(ref, () => ({
@@ -31,8 +33,10 @@ export const GameCenterTab = forwardRef<GameCenterTabRef>(({ }, ref) => {
 
 	const tabs: AppRoute[] = [
 		tasks,
+		games,
 		main,
 		friends,
+		tops,
 	]
 
 	const tabItems = [];
@@ -59,7 +63,7 @@ export const GameCenterTab = forwardRef<GameCenterTabRef>(({ }, ref) => {
 		<Tabbar id="bottomNavigation"
 			style={{ paddingBottom: bottom + "px" }}
 			className="max-w-screen-sm sm:left-[50%] sm:right-[-50%] sm:translate-x-[-50%]"
-			>
+		>
 			{tabItems}
 		</Tabbar>
 	</div>

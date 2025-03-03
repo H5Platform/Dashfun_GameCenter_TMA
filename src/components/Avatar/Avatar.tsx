@@ -1,0 +1,65 @@
+import profileBorder from "@/assets/ProfileFrame01_Border.png";
+import { FC, useEffect, useState } from "react";
+import { useDashFunAvatar, useDashFunUser } from "../DashFun/DashFunUser";
+import ReactAvatar from "react-avatar";
+import { UserApi } from "@/utils/DashFunApi";
+import { Spinner } from "@telegram-apps/telegram-ui";
+import { useSignal, initData } from "@telegram-apps/sdk-react";
+
+export const DFAvatar: FC<{ src: string, size: number, onClick?: () => void }> = ({ src, size, onClick }) => {
+	return <div className=" flex justify-center items-center rounded-full relative" onClick={onClick} style={{ minWidth: size, width: size, height: size, backgroundColor: "var(--tgui--tertiary_bg_color)", boxShadow: "0 0 0 1px var(--tgui--outline)" }} >
+		<img src={src} className="w-full h-full block object-cover absolute " style={{ borderRadius: "inherit" }} />
+	</div>
+}
+
+export const DFProfileAvatar: FC<{ size: number, onClick?: () => void }> = ({ size, onClick }) => {
+	const avatar = useDashFunAvatar();
+	const user = useDashFunUser();
+	return <div className="relative" style={{ minWidth: size, width: size, height: size }} onClick={onClick}>
+		<div
+			className="flex justify-center items-center absolute rounded-full"
+			style={{ minWidth: size, width: size, height: size }} >
+			{avatar == "" ? <ReactAvatar name={user?.displayName} round={true} size={(size).toString()} textSizeRatio={2.5} />
+				: <img src={avatar} className="block object-cover absolute " style={{
+					borderRadius: "inherit",
+					width: size - 6, height: size - 6
+				}} />}
+		</div>
+		<div className="absolute w-full h-full" style={{ backgroundImage: `url(${profileBorder})`, backgroundSize: 'cover' }}></div>
+		<div className="flex justify-center items-center absolute rounded-full" style={{ right: -size / 4 + 2, top: -5 }} >
+			{/* 角标部分 */}
+		</div>
+	</div>
+}
+
+export const DFUserAvatar: FC<{ size: number, userId: string, avatarPath: string, displayName: string, onClick?: () => void }> = ({ size, userId, avatarPath, displayName, onClick }) => {
+	const [avatar, setAvatar] = useState("");
+	const [isLoading, setIsLoading] = useState(false);
+	const initDataRaw = useSignal(initData.raw)
+
+	const updateAvatar = async () => {
+		if (avatarPath == "") return;
+		setIsLoading(true);
+		try {
+			const result = await UserApi.userAvatar(initDataRaw as string, userId, avatarPath);
+			if (result != "") {
+				setAvatar(result);
+			}
+		} finally {
+			setIsLoading(false);
+		}
+	}
+
+	useEffect(() => {
+		updateAvatar();
+	}, [avatarPath])
+
+	return <div className=" flex justify-center items-center rounded-full" onClick={onClick} style={{ minWidth: size, width: size, height: size, backgroundColor: "var(--tgui--tertiary_bg_color)", boxShadow: "0 0 0 1px var(--tgui--outline)" }} >
+		{isLoading ? <Spinner size="s" /> :
+			avatar == "" ? <ReactAvatar name={displayName} round={true} size={size.toString()} textSizeRatio={2} /> : <img src={avatar} className="block object-cover   " style={{
+				borderRadius: "inherit",
+				width: size, height: size
+			}} />}
+	</div>
+
+}

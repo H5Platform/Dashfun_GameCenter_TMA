@@ -8,10 +8,22 @@ const en: { [key: string]: string | string[] } = {
 		"Our Favorites",
 		"Banner",
 	],
+	"ProfileNoRecentGame": "You haven't played any games yet!",
+	"ProfileNoFavoritesGame": "Nothing here! Add your favorite games now!",
+	"ProfileRecentGames": "Recent Games",
+	"ProfileFavoritesGames": "Favorites Games",
+	"ProfileMyGames": "Games",
+	"ProfileMyFriends": "Friends",
 }
 
 export const LangKeys = {
 	GameListType: "GameListType",
+	ProfileNoRecentGame: "ProfileNoRecentGame",
+	ProfileNoFavoritesGame: "ProfileNoFavoritesGame",
+	ProfileRecentGames: "ProfileRecentGames",
+	ProfileFavoritesGames: "ProfileFavoritesGames",
+	ProfileMyGames: "ProfileMyGames",
+	ProfileMyFriends: "ProfileMyFriends",
 }
 
 let currentLang = en;

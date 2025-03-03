@@ -14,9 +14,13 @@ const api_local = "https://tma-server-test.nexgami.com/api/v1/"
 const api_test = "https://dashfun-server-test.nexgami.com/api/v1/"
 const api_prod = "https://tma-server.dashfun.games/api/v1/"
 
-export const getImageUrl = (id: string | undefined, url: string | undefined) =>
-	`https://res.dashfun.games/images/${id}/${url}`;
-
+export const getImageUrl = (id: string | undefined, url: string | undefined) => {
+	if (url?.startsWith("http")) {
+		return url;
+	} else {
+		return `https://res.dashfun.games/images/${id}/${url}`;
+	}
+}
 
 const api_url = () => {
 	const url = window.location.href;
@@ -42,9 +46,27 @@ const UserApi = {
 		return dashFunApiUrl + "user/"
 	},
 
-	tgLogin: async (tgToken: string): Promise<DashFunUser> => {
-		const api = UserApi.apiUrl() + "tg_login"
+	getAvatar: async (tgToken: string): Promise<string> => {
+		const api = UserApi.apiUrl() + "avatar"
 		const result = await axios.get(api, {
+			headers: {
+				"Authorization": "tma " + tgToken
+			},
+			responseType: "blob"
+		})
+		if (result.status == 200) {
+			return URL.createObjectURL(result.data);
+		} else {
+			//用户没有头像
+			return "";
+		}
+	},
+
+	tgLogin: async (tgToken: string, referrerId: string = ""): Promise<DashFunUser> => {
+		const api = UserApi.apiUrl() + "tg_login"
+		const formData = new FormData();
+		formData.append("referrer_id", referrerId);
+		const result = await axios.post(api, formData, {
 			headers: {
 				"Authorization": "tma " + tgToken
 			},
@@ -99,6 +121,25 @@ const UserApi = {
 			}
 		} else {
 			throw result.status
+		}
+	},
+
+	userAvatar: async (tgToken: string, userId: string, photoFile: string): Promise<string> => {
+		const api = UserApi.apiUrl() + `${userId}/avatar`
+		const result = await axios.get(api, {
+			params: {
+				photo_path: photoFile
+			},
+			headers: {
+				"Authorization": "tma " + tgToken
+			},
+			responseType: "blob"
+		})
+		if (result.status == 200) {
+			return URL.createObjectURL(result.data);
+		} else {
+			//用户没有头像
+			return "";
 		}
 	}
 }
@@ -286,9 +327,9 @@ const GameApi = {
 		console.log("gameSearch:", result)
 		if (result.status == 200) {
 			if (result.data.code == 0) {
-				if (result.data.data && result.data.data.data) {
-					const data = result.data.data.data.map((item: GameDataParams) => new GameData(item));
-					return new GameDataList(data, result.data.page, result.data.size, result.data.total_pages);
+				if (result.data.data) {
+					const data = result.data.data.data?.map((item: GameDataParams) => new GameData(item)) ?? [];
+					return new GameDataList(data, result.data.data.page, result.data.data.size, result.data.data.total_pages);
 				} else {
 					throw result.data.msg
 				}
@@ -313,6 +354,44 @@ const GameApi = {
 		if (result.status == 200) {
 			if (result.data.code == 0) {
 				return result.data.data;
+			} else {
+				throw result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
+
+	isUserFavorite: async (tgToken: string, gameId: string): Promise<boolean> => {
+		const api = GameApi.apiUrl() + gameId + "/favorite"
+		const result = await axios.get(api, {
+			headers: {
+				"Authorization": "tma " + tgToken
+			},
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data as boolean;
+			} else {
+				throw result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
+
+	setUserFavorite: async (tgToken: string, gameId: string, action: "add" | "remove"): Promise<boolean> => {
+		const api = GameApi.apiUrl() + gameId + "/favorite"
+		const formData = new FormData();
+		formData.append("action", action);
+		const result = await axios.post(api, formData, {
+			headers: {
+				"Authorization": "tma " + tgToken
+			}
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data as boolean;
 			} else {
 				throw result.data.msg
 			}
@@ -488,8 +567,99 @@ const CoinApi = {
 		} else {
 			throw result.status
 		}
+	},
+
+	getCoinList: async (tgToken: string, coin_ids: string[], idType: "id" | "gameId") => {
+		const api = CoinApi.apiUrl() + "list";
+		const result = await axios.post(api, {
+			ids: coin_ids,
+			id_type: idType
+		}, {
+			headers: {
+				"Authorization": "tma " + tgToken
+			}
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data;
+			} else {
+				return result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
+
+	getCoinUserDataList: async (tgToken: string, coin_ids: string[], idType: "id" | "gameId") => {
+		const api = CoinApi.apiUrl() + "user_data";
+		const result = await axios.post(api, {
+			ids: coin_ids,
+			id_type: idType
+		}, {
+			headers: {
+				"Authorization": "tma " + tgToken
+			}
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data;
+			} else {
+				return result.data.msg
+			}
+		} else {
+			throw result.status
+		}
 	}
 }
+
+const FriendsApi = {
+	apiUrl(): string {
+		return dashFunApiUrl + "friends/"
+	},
+
+	myFriends: async (tgToken: string) => {
+		const api = FriendsApi.apiUrl() + "my"
+		const result = await axios.get(api, {
+			headers: {
+				"Authorization": "tma " + tgToken
+			},
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data;
+			} else {
+				return result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
+}
+
+const LeaderBoardApi = {
+	apiUrl(): string {
+		return dashFunApiUrl + "leaderboard/"
+	},
+
+	xpTop: async (tgToken: string) => {
+		const api = LeaderBoardApi.apiUrl() + "xp_top"
+		const result = await axios.get(api, {
+			headers: {
+				"Authorization": "tma " + tgToken
+			}
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data;
+			} else {
+				return result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	}
+}
+
 
 const SpinWheelApi = {
 	apiUrl: (): string => {
@@ -582,8 +752,8 @@ const TGLink = {
 	gameLink: (gameId: string) => {
 		return `${tg_link()}/Games?startapp=${gameId}`
 	},
-	centerLink: () => {
-		return `${tg_link()}/Center`
+	centerLink: (userId?: string) => {
+		return userId == null || userId == "" ? `${tg_link()}/Center` : `${tg_link()}/Center?startapp=${userId}`
 	},
 	botLink: () => {
 		return `${tg_link()}`
@@ -610,4 +780,4 @@ const getEnv = () => {
 }
 
 
-export { GameApi, PaymentApi, UserApi, TGLink, TaskApi, CoinApi, SpinWheelApi, getEnv, Env }
+export { GameApi, PaymentApi, UserApi, TGLink, TaskApi, CoinApi, SpinWheelApi, LeaderBoardApi, FriendsApi, getEnv, Env }

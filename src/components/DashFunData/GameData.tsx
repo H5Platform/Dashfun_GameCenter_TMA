@@ -99,6 +99,7 @@ enum GameListType {
 	Popular = 2,
 	Suggest = 3,
 	Banner = 4,
+	Favorites = 5,
 }
 
 /**

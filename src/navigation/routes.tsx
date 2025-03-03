@@ -3,7 +3,9 @@ import type { ComponentType, JSX } from "react";
 import { Page } from "@/components/Page";
 import { GameCenterPage } from "@/pages/GameCenterPage/GameCenterPage";
 import { GameCenter_FriendsPage } from "@/pages/GameCenterPage/SubPages/FriendsPage";
+import { GameCenter_GamesPage } from "@/pages/GameCenterPage/SubPages/GamesPage";
 import { GameCenter_MainPage } from "@/pages/GameCenterPage/SubPages/MainPage";
+import { GameCenter_Profile } from "@/pages/GameCenterPage/SubPages/ProfilePage";
 import { GameCenter_SearchPage } from "@/pages/GameCenterPage/SubPages/SearchGamePage";
 import { GameCenter_TaskPage } from "@/pages/GameCenterPage/SubPages/TaskPage";
 import { GameWrapper } from "@/pages/GamePage/GameWrapper";
@@ -14,8 +16,9 @@ import MainPage from "@/pages/MainPage/MainPage";
 import { TestingPage } from "@/pages/TestingPage/TestingPage";
 import { ThemeParamsPage } from "@/pages/ThemeParamsPage/ThemeParamsPage.tsx";
 import { TONConnectPage } from "@/pages/TONConnectPage/TONConnectPage";
-import { Gamepad2, Gift, Trophy } from "lucide-react";
+import { Cpu, Gamepad2, Gift, Trophy, Users } from "lucide-react";
 import { createHashRouter, RouteObject } from "react-router-dom";
+import { GameCenter_TopPage } from "@/pages/GameCenterPage/SubPages/TopsPage";
 
 export interface AppRoute {
   id: string;
@@ -52,7 +55,7 @@ const setupRoute = (route: AppRoute, wrapPage: boolean = true): RouteObject => {
 
 export const routes: AppRoute[] = [
   { id: "root", path: "/", Component: IntroPage, allowYScroll: true, back: "close" },
-  { id: "testing", path: "/testing", Component: TestingPage, allowYScroll: true },
+  { id: "testing", path: "/testing", Component: TestingPage, allowYScroll: true, back: "close" },
   { id: "game", path: "/game", Component: GameWrapper, back: "close", allowYScroll: false },
   { id: "", path: "/init-data", Component: InitDataPage, title: "Init Data" },
   { id: "", path: "/theme-params", Component: ThemeParamsPage, title: "Theme Params" },
@@ -62,10 +65,13 @@ export const routes: AppRoute[] = [
   {
     id: "gamecenter", path: "/game-center", Component: GameCenterPage, allowYScroll: false, back: "nop",
     subRoutes: [
-      { id: "gamecenter-main", path: "main", Component: GameCenter_MainPage, allowYScroll: true, back: "close", title: "Main", icon: <Gamepad2 absoluteStrokeWidth /> },
+      { id: "gamecenter-main", path: "main", Component: GameCenter_MainPage, allowYScroll: true, back: "close", title: "Main", icon: <Cpu absoluteStrokeWidth /> },
+      { id: "gamecenter-games", path: "games", Component: GameCenter_GamesPage, allowYScroll: true, back: "/game-center/main", title: "Games", icon: <Gamepad2 absoluteStrokeWidth /> },
       { id: "gamecenter-tasks", path: "tasks", Component: GameCenter_TaskPage, allowYScroll: true, back: "/game-center/main", title: "Tasks", icon: <Gift absoluteStrokeWidth /> },
-      { id: "gamecenter-friends", path: "friends", Component: GameCenter_FriendsPage, allowYScroll: true, back: "/game-center/main", title: "Friends", icon: <Trophy absoluteStrokeWidth /> },
-      { id: "gamecenter-search", path: "search", Component: GameCenter_SearchPage, allowYScroll: true, back: "/game-center/main" },
+      { id: "gamecenter-friends", path: "friends", Component: GameCenter_FriendsPage, allowYScroll: true, back: "/game-center/main", title: "Friends", icon: <Users absoluteStrokeWidth /> },
+      { id: "gamecenter-tops", path: "tops", Component: GameCenter_TopPage, allowYScroll: true, back: "/game-center/main", title: "Top", icon: <Trophy absoluteStrokeWidth /> },
+      { id: "gamecenter-search", path: "search", Component: GameCenter_SearchPage, allowYScroll: true, back: "/game-center/games" },
+      { id: "gamecenter-profile", path: "profile", Component: GameCenter_Profile, allowYScroll: true, back: "/game-center/main" },
     ]
   },
 

@@ -1,6 +1,9 @@
+import { GameData } from "./components/DashFunData/GameData";
 import dashfunIcon from "./icons/dashfun-icon.svg";
-import dashfunPointIcon from "./icons/dashfun-point-icon.png";
-import w3kPointIcon from "./icons/w3k-point-icon.png";
+import dashfunPointIcon from "./icons/dashfun-xp-icon.png";
+import dashfunCoinIcon from "./icons/dashfun-coin-icon.png";
+import dashfunDiamond from "./icons/dashfun-diamond4.png";
+import { getImageUrl } from "./utils/DashFunApi";
 
 
 //Task
@@ -17,10 +20,10 @@ export type Task = {
 		link: string
 		type: number
 	}
-	reward: {
+	rewards: {
 		amount: number
 		reward_type: number
-	}
+	}[]
 }
 
 export const TaskType = {
@@ -37,6 +40,9 @@ export const TaskCondition = {
 	FollowX: 5,
 	SpendStars: 6,
 	BindWallet: 7,
+	PlaySpecificGame: 8,
+	InviteFriends: 9,
+	EnterDashFun: 10,
 }
 
 export const TaskStatus = {
@@ -97,17 +103,28 @@ export type CoinInfo = {
 	userData: CoinUserData
 }
 
-export const getCoinIcon = (coinName: "DashFunCoin" | "DashFunPoint" | "W3KPoint" | string) => {
+export const getCoinIcon1 = (coin: Coin | null | undefined) => {
+	if (coin == null) {
+		return "";
+	}
+	if (coin.bind_game_id == "" || coin.bind_game_id == "-1") {
+		return getCoinIcon(coin.name);
+	} else {
+		return getImageUrl(coin.bind_game_id, "coin.png");
+	}
+}
+
+export const getCoinIcon = (coinName: "DashFunCoin" | "DashFunPoint" | "DashFunDiamond" | string) => {
 	console.log("get coin icon:", coinName)
 	switch (coinName) {
 		case "DashFunCoin":
-			return dashfunIcon;
+			return dashfunCoinIcon;
 		case "DashFunPoint":
 			return dashfunPointIcon;
-		case "W3KPoint":
-			return w3kPointIcon;
+		case "DashFunDiamond":
+			return dashfunDiamond;
 		default:
-			return "";
+			return dashfunIcon;
 	}
 };
 
@@ -118,3 +135,38 @@ export const GameGenre = {
 	Card: 1002,
 	Strategy: 1003,
 };
+
+export const GameDashFun: GameData = new GameData({
+	id: "DashFun",
+	name: "DashFun",
+	genre: [],
+	desc: "",
+	iconUrl: "https://res.dashfun.games/icons/dashfun-icon-256.png",
+	logoUrl: "",
+	mainPicUrl: "",
+	openTime: 0,
+	time: 0,
+	url: "",
+	status: 0,
+	suggest: 0
+});
+
+export const formatNumber = (num: number | null | undefined, precision: number = 2): string => {
+	if (num === null || num === undefined) {
+		num = 0;
+	}
+	const format = (n: number) => n.toFixed(precision).replace(/\.?0+$/, '');
+	if (num >= 1_000_000_000) {
+		return format(num / 1_000_000_000) + 'b';
+	} else if (num >= 1_000_000) {
+		return format(num / 1_000_000) + 'm';
+	} else if (num >= 1_000) {
+		return format(num / 1_000) + 'k';
+	} else {
+		return format(num);
+	}
+};
+
+export const toCurrency = (num: number): string => {
+	return num.toLocaleString('en-US', { style: "decimal" });
+}
