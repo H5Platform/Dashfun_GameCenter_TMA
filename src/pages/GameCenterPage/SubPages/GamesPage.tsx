@@ -11,6 +11,8 @@ import { useNavigate } from "react-router-dom";
 import GameCell from "../Components/GameCell";
 import { useGameCenterData } from "../Components/GameCenterDataProvider";
 import ProfileHeader from "../Components/ProfileHeader";
+import { TGLink } from "@/utils/DashFunApi";
+import { openTelegramLink } from "@telegram-apps/sdk-react";
 
 export const GameCenter_GamesPage: FC = () => {
 	return <div id="GameCenter_GamesPage" className="w-full p-4">
@@ -68,7 +70,14 @@ const Banner: FC = () => {
 	gamelist?.game_list[GameListType.Banner]?.forEach((gameId, index) => {
 		const game = gamelist.getGame(gameId);
 		banners.push(
-			<Card type="ambient" key={index} style={{ width: cardWidth - 8, height: cardHeight - 4, backgroundColor: "transparent", border: "2px solid var(--tg-theme-button-color)" }}>
+			<Card type="ambient" key={index}
+				onClick={() => {
+					if (game?.id) {
+						const url = TGLink.gameLink(encodeURIComponent(game?.id ?? ""));
+						openTelegramLink(url);
+					}
+				}}
+				style={{ width: cardWidth - 8, height: cardHeight - 4, backgroundColor: "transparent", border: "2px solid var(--tg-theme-button-color)" }}>
 				<Fragment>
 					<img
 						src={game?.getLogoUrl()}

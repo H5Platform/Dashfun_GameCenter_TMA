@@ -64,7 +64,7 @@ export const GameCenter_MainPage: FC = () => {
 		<div className="w-full flex items-center justify-between bg-white bg-opacity-10 rounded-2xl px-4 py-2">
 			<span className=" text-white">Join Community</span>
 			<Button mode="filled" size="s" onClick={() => {
-				openTelegramLink("https://t.me/DashFun_Official");
+				openTelegramLink("https://t.me/dashfungroup");
 			}}>Join</Button>
 		</div>
 
