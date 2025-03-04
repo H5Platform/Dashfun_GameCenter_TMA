@@ -177,10 +177,12 @@ export const GameWrapper: FC = () => {
 
 	const [currentTab, setCurrentTab] = useState(tabs[0].id);
 
-	const header = <SectionHeader style={{
-		paddingTop: "5px",
-		paddingBottom: "5px",
-	}}>
+	const header = <SectionHeader
+		className='max-w-screen-sm sm:mx-auto'
+		style={{
+			paddingTop: "5px",
+			paddingBottom: "5px",
+		}}>
 		<MessageListener />
 		<div className='game-title'>
 			<Button mode="white"
@@ -215,7 +217,7 @@ export const GameWrapper: FC = () => {
 		</div>
 	</SectionHeader >
 
-	return <div id="game-wrapper" className="game-wrapper" style={{ paddingTop: pt, paddingBottom: pb }}>
+	return <div id="game-wrapper" className="game-wrapper max-w-screen-sm sm:mx-auto" style={{ paddingTop: pt, paddingBottom: pb }}>
 		{header}
 		<div id="game-iframe" className=' flex-1 h-full'>
 			<Iframe
@@ -235,8 +237,9 @@ export const GameWrapper: FC = () => {
 				{/* <div className='h-[200px] mt-[100px] bg-cover bg-center bg-no-repeat ' style={{
 					backgroundImage: `url('${game?.logoUrl}')`
 				}}></div> */}
-				<img src={game?.getLogoUrl()} className=' object-contain' style={{ width: "90vw", paddingTop: (pt + 100) + "px" }} ></img>
+				<img src={game?.getLogoUrl()} className=' object-contain max-w-screen-sm mx-auto' style={{ width: "90vw", paddingTop: (pt + 100) + "px" }} ></img>
 				<Modal
+					className='max-w-screen-sm sm:mx-auto'
 					dismissible={false}
 					open={play == false}
 					style={{ backgroundColor: "transparent" }}
@@ -272,6 +275,7 @@ export const GameWrapper: FC = () => {
 			{
 				showTask && (
 					<Modal
+						className='max-w-screen-sm sm:mx-auto'
 						open={showTask}
 						header={<ModalHeader style={{
 							backgroundColor: "var(--tg-theme-secondary-bg-color)"
