@@ -178,13 +178,13 @@ export const GameWrapper: FC = () => {
 	const [currentTab, setCurrentTab] = useState(tabs[0].id);
 
 	const header = <SectionHeader
-		className='max-w-screen-sm sm:mx-auto'
+		className=''
 		style={{
 			paddingTop: "5px",
 			paddingBottom: "5px",
 		}}>
 		<MessageListener />
-		<div className='game-title'>
+		<div className='game-title max-w-screen-sm sm:mx-auto'>
 			<Button mode="white"
 				before={<Avatar src={getCoinIcon1(coin?.coin ?? null)} size={24} > </Avatar>}
 				size="s" onClick={() => {
