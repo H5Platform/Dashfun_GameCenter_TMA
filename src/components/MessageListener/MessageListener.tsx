@@ -12,6 +12,7 @@ import { GameData } from "../DashFunData/GameData";
 import { DashFunUser } from "../DashFunData/UserData";
 import { GameLoadingEvent } from "../Event/Events";
 import { DashFunMessages } from "./Messages";
+import GameSaveMgr, { GameSaveData } from "../GameSaveMgr/GameSaveMgr";
 
 class Context {
 	callData: any;
@@ -101,43 +102,77 @@ const onRequestPayment = (ctx: Context) => {
 const onSetData = (ctx: Context) => {
 	const { method, payload } = ctx.callData
 	const { key, data } = payload
-	GameApi.setData(ctx.dfGame.id, ctx.initDataRaw, key, data)
-		.then(result => {
-			const r = new Result("success", result);
-			sendResult(ctx.source, method, r)
-		}).catch(e => {
-			console.error(e);
-			const r = new Result("error", e);
-			sendResult(ctx.source, method, r)
-		})
+
+	GameSaveMgr.getInstance().getGameSaveData(ctx.dfUser.id, ctx.initDataRaw, ctx.dfGame.id).then(gameSaveData => {
+		gameSaveData.set(key, data);
+		GameSaveMgr.getInstance().saveGameSaveData();
+		const r = new Result("success", { ...gameSaveData.data });
+		sendResult(ctx.source, method, r)
+	}).catch(e => {
+		console.error(e);
+		const r = new Result("error", e);
+		sendResult(ctx.source, method, r)
+	})
+
+	// GameApi.setData(ctx.dfGame.id, ctx.initDataRaw, key, data)
+	// 	.then(result => {
+	// 		const r = new Result("success", result);
+	// 		sendResult(ctx.source, method, r)
+	// 	}).catch(e => {
+	// 		console.error(e);
+	// 		const r = new Result("error", e);
+	// 		sendResult(ctx.source, method, r)
+	// 	})
 }
 
 const onGetData = (ctx: Context) => {
 	const { method, payload } = ctx.callData
 	const { key } = payload
-	GameApi.getData(ctx.dfGame.id, ctx.initDataRaw, key)
-		.then(result => {
-			const r = new Result("success", result);
-			sendResult(ctx.source, method, r)
-		}).catch(e => {
-			console.error(e);
-			const r = new Result("error", e);
-			sendResult(ctx.source, method, r)
-		})
+
+	console.log("onGetData", key, ctx)
+
+	GameSaveMgr.getInstance().getGameSaveData(ctx.dfUser.id, ctx.initDataRaw, ctx.dfGame.id).then(gameSaveData => {
+		const r = new Result("success", gameSaveData.get(key));
+		sendResult(ctx.source, method, r)
+	}).catch(e => {
+		console.error(e);
+		const r = new Result("error", e);
+		sendResult(ctx.source, method, r)
+	})
+
+	// GameApi.getData(ctx.dfGame.id, ctx.initDataRaw, key)
+	// 	.then(result => {
+	// 		const r = new Result("success", result);
+	// 		sendResult(ctx.source, method, r)
+	// 	}).catch(e => {
+	// 		console.error(e);
+	// 		const r = new Result("error", e);
+	// 		sendResult(ctx.source, method, r)
+	// 	})
 }
 
 const onGetDataV2 = (ctx: Context) => {
 	const { method, payload } = ctx.callData
 	const { key } = payload
-	GameApi.getDataV2(ctx.dfGame.id, ctx.initDataRaw, key)
-		.then(result => {
-			const r = new Result("success", result);
-			sendResult(ctx.source, method, r)
-		}).catch(e => {
-			console.error(e);
-			const r = new Result("error", e);
-			sendResult(ctx.source, method, r)
-		})
+
+	GameSaveMgr.getInstance().getGameSaveData(ctx.dfUser.id, ctx.initDataRaw, ctx.dfGame.id).then(gameSaveData => {
+		const r = new Result("success", { key, data: gameSaveData.get(key) });
+		sendResult(ctx.source, method, r)
+	}).catch(e => {
+		console.error(e);
+		const r = new Result("error", e);
+		sendResult(ctx.source, method, r)
+	})
+
+	// GameApi.getDataV2(ctx.dfGame.id, ctx.initDataRaw, key)
+	// 	.then(result => {
+	// 		const r = new Result("success", result);
+	// 		sendResult(ctx.source, method, r)
+	// 	}).catch(e => {
+	// 		console.error(e);
+	// 		const r = new Result("error", e);
+	// 		sendResult(ctx.source, method, r)
+	// 	})
 }
 
 const onLoading = (ctx: Context) => {

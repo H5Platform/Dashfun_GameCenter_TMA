@@ -225,10 +225,6 @@ const GameApi = {
 			strToEncode = JSON.stringify(data);
 		}
 
-		// const encoded = btoa(strToEncode);
-
-		console.log(typeof (data), strToEncode)
-
 		const result = await axios.post(api, {
 			key, data: strToEncode
 		}, {

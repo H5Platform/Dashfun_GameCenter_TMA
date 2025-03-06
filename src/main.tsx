@@ -7,10 +7,11 @@ import './index.css';
 
 import "./mockEnv.ts";
 import { Env, getEnv } from './utils/DashFunApi.tsx';
+import DBMgr from './components/DBMgr/DBMgr.ts';
 
 init(retrieveLaunchParams().startParam === 'debug' || getEnv() == Env.Dev)
 postEvent("web_app_expand");
-
+DBMgr.getInstance().openDB();
 
 createRoot(document.getElementById('root')!).render(
 	// <StrictMode>
