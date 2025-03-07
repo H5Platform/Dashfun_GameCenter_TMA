@@ -25,7 +25,7 @@ export class GameSaveData {
     }
 }
 
-const SAVE_TO_SERVER_INTERVAL = 1000 * 60 * 2;
+const SAVE_TO_SERVER_INTERVAL = 1000 * 30;
 
 export default class GameSaveMgr {
 
