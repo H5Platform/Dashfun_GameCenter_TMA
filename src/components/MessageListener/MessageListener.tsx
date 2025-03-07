@@ -1,18 +1,18 @@
-import { GameApi, PaymentApi } from "@/utils/DashFunApi";
+import { PaymentApi } from "@/utils/DashFunApi";
 import {
 	initData,
 	invoice,
 	openTelegramLink,
 	useSignal
 } from "@telegram-apps/sdk-react";
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useEffect } from "react";
 import { useDashFunGame } from "../DashFun/DashFunGame";
 import { useDashFunUser } from "../DashFun/DashFunUser";
 import { GameData } from "../DashFunData/GameData";
 import { DashFunUser } from "../DashFunData/UserData";
 import { GameLoadingEvent } from "../Event/Events";
+import GameSaveMgr from "../GameSaveMgr/GameSaveMgr";
 import { DashFunMessages } from "./Messages";
-import GameSaveMgr, { GameSaveData } from "../GameSaveMgr/GameSaveMgr";
 
 class Context {
 	callData: any;
