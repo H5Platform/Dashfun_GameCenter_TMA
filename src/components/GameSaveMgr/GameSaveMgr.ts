@@ -50,7 +50,15 @@ export default class GameSaveMgr {
     private intervalHandler: NodeJS.Timeout | null = null;
 
     private constructor() {
+        this.intervalHandler = setInterval(() => {
+            this.saveGameSaveData();
+        }, SAVE_TO_SERVER_INTERVAL);
 
+        window.addEventListener('beforeunload', () => {
+            this.saveTime = 0;
+            this.saveGameSaveData();
+            clearInterval(this.intervalHandler as NodeJS.Timeout);
+        });
     }
 
     public setContext(userId: string, userToken: string, gameId: string) {
@@ -60,16 +68,6 @@ export default class GameSaveMgr {
         this.saveTime = Date.now();
         this.lastSaveTimestamp = 0;
 
-        this.intervalHandler = setInterval(() => {
-            this.saveTime = 0;
-            this.saveGameSaveData();
-        }, SAVE_TO_SERVER_INTERVAL);
-
-        window.addEventListener('beforeunload', () => {
-            console.log("saving data....");
-            this.saveGameSaveData();
-            clearInterval(this.intervalHandler as NodeJS.Timeout);
-        });
     }
 
     public getUserContext(): { userId: string, userToken: string, gameId: string } {
@@ -138,6 +136,7 @@ export default class GameSaveMgr {
 
         await this.saveGameSaveDataToDB(this.savedata);
         if (this.saveTime + SAVE_TO_SERVER_INTERVAL < Date.now()) {
+            console.log("saving data to server....");
             const t = this.savedata.timestamp.toString().padStart(15, '0');
             const serverString = `timestamp${t}${JSON.stringify(this.savedata.data)}`;
             await GameApi.setData(this.gameId, this.userToken, "gamesave", serverString);
