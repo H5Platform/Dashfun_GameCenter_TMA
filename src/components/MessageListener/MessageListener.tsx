@@ -5,7 +5,7 @@ import {
 	openTelegramLink,
 	useSignal
 } from "@telegram-apps/sdk-react";
-import { FC, useEffect } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { useDashFunGame } from "../DashFun/DashFunGame";
 import { useDashFunUser } from "../DashFun/DashFunUser";
 import { GameData } from "../DashFunData/GameData";
@@ -102,10 +102,11 @@ const onRequestPayment = (ctx: Context) => {
 const onSetData = (ctx: Context) => {
 	const { method, payload } = ctx.callData
 	const { key, data } = payload
+	const gameSaveMgr = GameSaveMgr.getInstance();
 
-	GameSaveMgr.getInstance().getGameSaveData(ctx.dfUser.id, ctx.initDataRaw, ctx.dfGame.id).then(gameSaveData => {
+	gameSaveMgr.getGameSaveData().then(gameSaveData => {
 		gameSaveData.set(key, data);
-		GameSaveMgr.getInstance().saveGameSaveData();
+		gameSaveMgr.saveGameSaveData();
 		const r = new Result("success", { ...gameSaveData.data });
 		sendResult(ctx.source, method, r)
 	}).catch(e => {
@@ -129,9 +130,9 @@ const onGetData = (ctx: Context) => {
 	const { method, payload } = ctx.callData
 	const { key } = payload
 
-	console.log("onGetData", key, ctx)
+	const gameSaveMgr = GameSaveMgr.getInstance();;
 
-	GameSaveMgr.getInstance().getGameSaveData(ctx.dfUser.id, ctx.initDataRaw, ctx.dfGame.id).then(gameSaveData => {
+	gameSaveMgr.getGameSaveData().then(gameSaveData => {
 		const r = new Result("success", gameSaveData.get(key));
 		sendResult(ctx.source, method, r)
 	}).catch(e => {
@@ -154,8 +155,9 @@ const onGetData = (ctx: Context) => {
 const onGetDataV2 = (ctx: Context) => {
 	const { method, payload } = ctx.callData
 	const { key } = payload
+	const gameSaveMgr = GameSaveMgr.getInstance();;
 
-	GameSaveMgr.getInstance().getGameSaveData(ctx.dfUser.id, ctx.initDataRaw, ctx.dfGame.id).then(gameSaveData => {
+	gameSaveMgr.getGameSaveData().then(gameSaveData => {
 		const r = new Result("success", { key, data: gameSaveData.get(key) });
 		sendResult(ctx.source, method, r)
 	}).catch(e => {
@@ -201,22 +203,38 @@ export const MessageListener: FC = () => {
 	const dfUser = useDashFunUser();
 	const game = useDashFunGame();
 
-	const eventListener = (ev: MessageEvent<any>) => {
+	const eventListener = useCallback((ev: MessageEvent<any>) => {
 		console.log("receive message", ev);
 		const { data } = ev;
 		if (data.dashfun) {
 			const { method } = data.dashfun;
 			const f = processors[method];
-			if (f != null) f(new Context(ev.source as Window, data.dashfun, game as GameData, dfUser as DashFunUser, initDataRaw as string));
+			if (f != null) {
+				const context = new Context(
+					ev.source as Window,
+					data.dashfun,
+					game as GameData,
+					dfUser as DashFunUser,
+					initDataRaw as string,
+				)
+				f(context);
+			}
 		}
-	}
+	}, [dfUser, game, initDataRaw])
+
+	useEffect(() => {
+		if (dfUser != null && game != null) {
+			GameSaveMgr.getInstance().setContext(dfUser.id, initDataRaw as string, game.id)
+			GameSaveMgr.getInstance().getGameSaveData();
+		}
+	}, [initData, initDataRaw, dfUser, game]);
+
 	useEffect(() => {
 		window.addEventListener('message', eventListener)
 		return () => {
 			window.removeEventListener('message', eventListener);
 		}
-
-	}, [initData, initDataRaw, dfUser, game]);
+	}, [eventListener])
 
 	return <></>
 }
