@@ -18,7 +18,7 @@ export class GameSaveData {
     get(key: string): string {
         return this.data[key] ? btoa(this.data[key]) : "";
     }
-    
+
     set(key: string, value: string): void {
         this.data[key] = value;
         this.timestamp = Date.now();
@@ -61,6 +61,7 @@ export default class GameSaveMgr {
         this.lastSaveTimestamp = 0;
 
         this.intervalHandler = setInterval(() => {
+            this.saveTime = 0;
             this.saveGameSaveData();
         }, SAVE_TO_SERVER_INTERVAL);
 
