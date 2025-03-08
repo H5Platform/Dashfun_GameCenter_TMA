@@ -29,7 +29,7 @@ const EntryPage: React.FC = () => {
             }
 
             //save login channel
-            localStorage.setItem("DashFun-LoginChannel", channel || "");
+            localStorage.setItem("DashFun-LoginChannel-" + getEnv(), channel || "");
 
             nav(toPath);
         }

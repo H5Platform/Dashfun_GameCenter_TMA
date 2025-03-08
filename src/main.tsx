@@ -30,7 +30,7 @@ if (idx > 0) {
 	}
 } else {
 	//从localStroage中获取环境，如果获取不到默认就是tg环境
-	const channel = localStorage.getItem("DashFun-LoginChannel");
+	const channel = localStorage.getItem("DashFun-LoginChannel-" + getEnv());
 	if (channel == "test" && getEnv() != Env.Prod) {
 		//生成测试环境的数据
 		makeMockTgEnv();
