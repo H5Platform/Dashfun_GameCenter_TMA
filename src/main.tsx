@@ -37,6 +37,8 @@ if (idx > 0) {
 	}
 }
 
+console.log("Platform:", retrieveLaunchParams().platform);
+
 init(retrieveLaunchParams().startParam === 'debug' || getEnv() == Env.Dev)
 
 postEvent("web_app_expand");
