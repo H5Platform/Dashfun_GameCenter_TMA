@@ -39,7 +39,7 @@ if (idx > 0) {
 
 console.log("Platform:", retrieveLaunchParams().platform);
 
-init(retrieveLaunchParams().startParam === 'debug' || getEnv() == Env.Dev)
+init(retrieveLaunchParams().startParam === 'debug' || getEnv() == Env.Dev, retrieveLaunchParams().platform)
 
 postEvent("web_app_expand");
 DBMgr.getInstance().openDB();
