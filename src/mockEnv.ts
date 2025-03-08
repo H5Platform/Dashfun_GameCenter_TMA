@@ -4,7 +4,7 @@ import { Env, getEnv } from './utils/DashFunApi';
 // It is important, to mock the environment only for development purposes. When building the
 // application, import.meta.env.DEV will become false, and the code inside will be tree-shaken,
 // so you will not see it in your final bundle.
-if (import.meta.env.DEV || getEnv() != Env.Prod) {
+if (import.meta.env.DEV) {
 	(() => {
 		let shouldMock;
 		const MOCK_KEY = '____mocked';
@@ -41,8 +41,10 @@ if (import.meta.env.DEV || getEnv() != Env.Prod) {
 		// 	['chat_instance', '8428209589180549439'],
 		// ]).toString();
 
+
 		const initDataRaw = getEnv() == Env.Dev ? "query_id=AAGuFCQDAQAAAK4UJAPHYlhd&user=%7B%22id%22%3A2200179886%2C%22first_name%22%3A%22Marco%22%2C%22last_name%22%3A%22Test%22%2C%22username%22%3A%22Marco_web3%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Fa-ttgme.stel.com%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FUyoEyL4xrB_4jYbtDAKsRlU3-VHl9vlJ_ESwtdo9ztBcHXdXsAzLHk1biir38TJ-.svg%22%7D&auth_date=1738643830&signature=b9BaT5t8w5bR4b0S509qY1VIsmk20aymkhP2CfRv-r7M-G4Injb0iELE4licSA9F-nFaYPYkFFZQl-3IPf4jDg&hash=031c3c0040a6d79f979fab7c4c1db26fa7f67c9edc012fdfabcc64b8a14012e3"
 			: "query_id=AAGdRiMDAQAAAJ1GIwP8XZGl&user=%7B%22id%22%3A2200127133%2C%22first_name%22%3A%22DashFun%22%2C%22last_name%22%3A%22Test%22%2C%22username%22%3A%22MarcoTest1%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Fa-ttgme.stel.com%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2F_UkdJAKrHgrVAVEg7reGeAtTtgNXStMmUSPq3W9C5WL6VBIe1b9bpZa5VRORCYWK.svg%22%7D&auth_date=1739304257&signature=jBwBAZTVg4EBllIS2sCgLyn-QjIWqi5pFGCzEvsM6kjGnarRYNX8UUrYzv77cY0GM3TwMTya3fpwMWgLu4YxDQ&hash=2e3cb51c74b3ebbc85fcc8d1010234e86c272f543cc0e3002a8b743824029e40";
+		const initData = parseInitData(initDataRaw);
 		mockTelegramEnv({
 			themeParams: {
 				accentTextColor: '#3e88f7',
@@ -59,7 +61,7 @@ if (import.meta.env.DEV || getEnv() != Env.Prod) {
 				subtitleTextColor: '#98989e',
 				textColor: '#ffffff',
 			},
-			initData: parseInitData(initDataRaw),
+			initData: initData,
 			initDataRaw,
 			version: '8',
 			platform: 'tdesktop',
@@ -71,3 +73,58 @@ if (import.meta.env.DEV || getEnv() != Env.Prod) {
 		);
 	})();
 }
+
+const makeTestTgEnv = () => {
+	let userStr = localStorage.getItem("DashFun-TestUser")
+	let user = null;
+	if (userStr == null) {
+		const uid = crypto.randomUUID();
+		const randomPart = Math.floor(1000 + Math.random() * 9000).toString();
+		const milliseconds = new Date().getMilliseconds().toString().padStart(3, '0');
+		const generatedId = `999${randomPart}${milliseconds}`;
+
+		user = {
+			userId: uid,
+			tgUser: {
+				id: generatedId,
+				firstName: "Test",
+				lastName: uid.slice(-4),
+				username: "Test-" + uid.slice(-4),
+				languageCode: "en",
+				allowsWriteToPm: true,
+				photoUrl: "",
+			}
+		}
+		userStr = JSON.stringify(user);
+		localStorage.setItem("DashFun-TestUser", userStr);
+	} else {
+		user = JSON.parse(userStr);
+	}
+
+	const initDataRaw = `query_id=AAGdRiMDAQAAAJ1GIwP8XZGl&user=%7B%22id%22%3A${user.tgUser.id}%2C%22first_name%22%3A%22${user.tgUser.firstName}%22%2C%22last_name%22%3A%22${user.tgUser.lastName}%22%2C%22username%22%3A%22${user.tgUser.username}%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Fa-ttgme.stel.com%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2F_UkdJAKrHgrVAVEg7reGeAtTtgNXStMmUSPq3W9C5WL6VBIe1b9bpZa5VRORCYWK.svg%22%7D&auth_date=1739304257&signature=jBwBAZTVg4EBllIS2sCgLyn-QjIWqi5pFGCzEvsM6kjGnarRYNX8UUrYzv77cY0GM3TwMTya3fpwMWgLu4YxDQ&hash=2e3cb51c74b3ebbc85fcc8d1010234e86c272f543cc0e3002a8b743824029e40`;
+
+	const initData = parseInitData(initDataRaw);
+	mockTelegramEnv({
+		themeParams: {
+			accentTextColor: '#3e88f7',
+			bgColor: '#222222',
+			buttonColor: '#3e88f7',
+			buttonTextColor: '#ffffff',
+			destructiveTextColor: '#eb5545',
+			headerBgColor: '#1a1a1a',
+			hintColor: '#98989e',
+			linkColor: '#3e88f7',
+			secondaryBgColor: '#1c1c1d',
+			sectionBgColor: '#2c2c2c',
+			sectionHeaderTextColor: '#8d8e93',
+			subtitleTextColor: '#98989e',
+			textColor: '#ffffff',
+		},
+		initData: initData,
+		initDataRaw,
+		version: '8',
+		platform: 'tdesktop',
+	});
+}
+
+export default makeTestTgEnv;

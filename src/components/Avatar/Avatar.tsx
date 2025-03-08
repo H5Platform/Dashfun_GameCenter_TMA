@@ -12,7 +12,7 @@ export const DFAvatar: FC<{ src: string, size: number, onClick?: () => void }> =
 	</div>
 }
 
-export const DFProfileAvatar: FC<{ size: number, onClick?: () => void }> = ({ size, onClick }) => {
+export const DFProfileAvatar: FC<{ size: number, children?: React.ReactNode, onClick?: () => void }> = ({ size, children, onClick }) => {
 	const avatar = useDashFunAvatar();
 	const user = useDashFunUser();
 	return <div className="relative" style={{ minWidth: size, width: size, height: size }} onClick={onClick}>
@@ -26,8 +26,8 @@ export const DFProfileAvatar: FC<{ size: number, onClick?: () => void }> = ({ si
 				}} />}
 		</div>
 		<div className="absolute w-full h-full" style={{ backgroundImage: `url(${profileBorder})`, backgroundSize: 'cover' }}></div>
-		<div className="flex justify-center items-center absolute rounded-full" style={{ right: -size / 4 + 2, top: -5 }} >
-			{/* 角标部分 */}
+		<div className="flex justify-center items-center absolute w-0 h-0" style={{ right: 3, bottom: 5 }} >
+			{children}
 		</div>
 	</div>
 }

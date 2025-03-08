@@ -19,6 +19,7 @@ import { TONConnectPage } from "@/pages/TONConnectPage/TONConnectPage";
 import { Cpu, Gamepad2, Gift, Trophy, Users } from "lucide-react";
 import { createHashRouter, RouteObject } from "react-router-dom";
 import { GameCenter_TopPage } from "@/pages/GameCenterPage/SubPages/TopsPage";
+import EntryPage from "@/pages/Entry/EntryPage";
 
 export interface AppRoute {
   id: string;
@@ -61,6 +62,7 @@ export const routes: AppRoute[] = [
   { id: "", path: "/theme-params", Component: ThemeParamsPage, title: "Theme Params" },
   { id: "", path: "/launch-params", Component: LaunchParamsPage, title: "Launch Params", },
   { id: "", path: "/game-center-old", Component: MainPage, allowYScroll: true, back: "close" },
+  { id: "entry", path: "/entry/:channel/:to", Component: EntryPage, allowYScroll: true, back: "close" },
 
   {
     id: "gamecenter", path: "/game-center", Component: GameCenterPage, allowYScroll: false, back: "nop",

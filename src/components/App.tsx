@@ -11,7 +11,7 @@
 // } from "@telegram-apps/sdk-react";
 import { AppRoot } from "@telegram-apps/telegram-ui";
 import { useEffect, type FC } from "react";
-import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import { AppRoute, routes } from "@/navigation/routes.tsx";
 import { miniApp, postEvent, themeParams, useLaunchParams, useSignal } from "@telegram-apps/sdk-react";
@@ -67,7 +67,7 @@ export const App: FC = () => {
       platform={["macos", "ios"].includes(lp.platform) ? "ios" : "base"}
       className="w-full h-full"
     >
-      <HashRouter>
+      <BrowserRouter>
         <LanguageProvider>
           <UserProvider>
             <CoinProvider>
@@ -79,7 +79,7 @@ export const App: FC = () => {
             </CoinProvider>
           </UserProvider>
         </LanguageProvider>
-      </HashRouter>
+      </BrowserRouter>
     </AppRoot>
   );
 };

@@ -286,7 +286,7 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 
 	const rewardDom: JSX.Element[] = [];
 
-	task.rewards.forEach(reward => {
+	task.rewards?.forEach(reward => {
 		let coinInfo: CoinInfo | null = null;
 		switch (reward.reward_type) {
 			case TaskRewardType.DashFunPoint:

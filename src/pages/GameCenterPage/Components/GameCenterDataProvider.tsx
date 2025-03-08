@@ -32,7 +32,7 @@ export const GameCenterDataProvider = ({ children }: PropsWithChildren<{}>) => {
 			types.forEach(type => {
 				gamelist.game_list[type] = r.game_list[type];
 			});
-			const newGames: GameData[] = r.games.map((g: GameDataParams) => new GameData(g));
+			const newGames: GameData[] = r.games?.map((g: GameDataParams) => new GameData(g)) || [];
 			const existingGameIds = new Set(gamelist.games.map(game => game.id));
 			const mergedGames = [
 				...gamelist.games,

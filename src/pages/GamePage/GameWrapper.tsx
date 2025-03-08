@@ -3,14 +3,14 @@ import { GameData } from '@/components/DashFunData/GameData';
 import { GameLauncher } from '@/components/GameLauncher/GameLauncher';
 import { TaskApi, TGLink, UserApi } from '@/utils/DashFunApi';
 import { openTelegramLink, shareURL, useLaunchParams, useSignal, viewport } from '@telegram-apps/sdk-react';
-import { Avatar, Badge, Button, LargeTitle, Modal, Tabbar, Text } from '@telegram-apps/telegram-ui';
+import { Badge, Button, LargeTitle, Modal, Tabbar } from '@telegram-apps/telegram-ui';
 import { SectionHeader } from '@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionHeader/SectionHeader';
 import { ModalHeader } from '@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalHeader/ModalHeader';
 import { useEffect, useState, type FC } from 'react';
 import Iframe from 'react-iframe';
 import "./GameWrapper.css";
 
-import { Coins } from '@/components/Coins/coins';
+import { CoinPanel, Coins } from '@/components/Coins/coins';
 import { useDashFunCoins } from '@/components/DashFun/DashFunCoins';
 import { useDashFunSpinWheel } from '@/components/DashFun/DashFunSpinWheel';
 import { SpinWheelConstants } from '@/components/DashFunData/SpinWheelData';
@@ -19,8 +19,9 @@ import { SpinWheelStatusChangedEvent, TaskStatusChangedEvent } from '@/component
 import { MessageListener } from '@/components/MessageListener/MessageListener';
 import SpinWheel from '@/components/SpinWheel/SpinWheel';
 import { TaskAndCoin } from '@/components/TaskAndCoin/TaskAndCoin';
-import { CoinInfo, getCoinIcon1, TaskStatus } from '@/constats';
+import { CoinInfo, TaskStatus } from '@/constats';
 import { Gamepad2, Gift, LoaderPinwheel, Send } from 'lucide-react';
+import { DFProfileAvatar } from '@/components/Avatar/Avatar';
 
 
 export const GameWrapper: FC = () => {
@@ -113,12 +114,13 @@ export const GameWrapper: FC = () => {
 	}, [game]);
 
 
-	const numb = coin?.userData?.amount || 0;
-	const formatted = numb == null ? "0" : numb.toLocaleString('en-US', { style: "decimal" })
+	// const numb = coin?.userData?.amount || 0;
+	// const formatted = numb == null ? "0" : numb.toLocaleString('en-US', { style: "decimal" })
 
 	const tc = taskCount == null || taskCount[TaskStatus.Completed] == null ? 0 : taskCount[TaskStatus.Completed]
 	const tp = taskCount == null || taskCount[TaskStatus.InProgress] == null ? 0 : taskCount[TaskStatus.InProgress]
 
+	const diamond = getCoinInfo("DashFunDiamond", "name");
 
 	const tabs = [
 		{
@@ -177,15 +179,41 @@ export const GameWrapper: FC = () => {
 
 	const [currentTab, setCurrentTab] = useState(tabs[0].id);
 
+	const avatarWidth = window.innerWidth > 400 ? 40 : 32;
+
 	const header = <SectionHeader
-		className=''
+		className='px-2'
 		style={{
 			paddingTop: "5px",
 			paddingBottom: "5px",
 		}}>
 		<MessageListener />
-		<div className='game-title max-w-screen-sm sm:mx-auto'>
-			<Button mode="white"
+		<div className='game-title max-w-screen-sm sm:mx-auto flex items-center gap-2'>
+			<DFProfileAvatar size={avatarWidth} onClick={() => {
+				openTaskUI();
+				getTaskCount();
+			}}>
+				{
+					tc > 0 && (<div className=''>
+						<Badge type='number'>{tc}</Badge>
+					</div>)
+				}
+				{
+					tc == 0 && tp > 0 && (<div className=''>
+						<Badge type='number' className=' bg-gray-500' >{tp}</Badge>
+					</div>)
+				}
+			</DFProfileAvatar>
+
+			<div className='w-56 gap-2 flex items-center justify-between'>
+				<div className='w-24'>
+					<CoinPanel coin={coin?.coin} userCoinData={coin?.userData} />
+				</div>
+				<div className='flex-1'>
+					<CoinPanel coin={diamond?.coin} userCoinData={diamond?.userData} showAdd />
+				</div>
+			</div>
+			{/* <Button mode="white"
 				before={<Avatar src={getCoinIcon1(coin?.coin ?? null)} size={24} > </Avatar>}
 				size="s" onClick={() => {
 					openTaskUI();
@@ -193,8 +221,8 @@ export const GameWrapper: FC = () => {
 				}} >
 				<Text className='text-black'>{formatted}</Text>
 
-			</Button>
-			<div className='flex-1 relative'>
+			</Button> */}
+			{/* <div className='flex-1 relative'>
 				{
 					tc > 0 && (<div className=' absolute top-0 left-[-15px]'>
 						<Badge type='number'>{tc}</Badge>
@@ -205,8 +233,8 @@ export const GameWrapper: FC = () => {
 						<Badge type='number' className=' bg-gray-500' >{tp}</Badge>
 					</div>)
 				}
-			</div>
-			<div className='flex gap-1'>
+			</div> */}
+			<div className='flex gap-1 items-end flex-1 justify-end'>
 				<Button size="s" mode="filled" onClick={() => {
 					onBackToCenter();
 				}} ><Gamepad2 size="24" strokeWidth={2} absoluteStrokeWidth /> </Button>
