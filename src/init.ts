@@ -43,7 +43,6 @@ export function init(debug: boolean): void {
 			console.error('Something went wrong mounting the viewport', e);
 		})
 		.then(() => {
-			console.log("--------binding css vars123321")
 			viewport.bindCssVars();
 			viewport.requestFullscreen.ifAvailable();
 		});
