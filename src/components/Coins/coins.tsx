@@ -56,7 +56,9 @@ export const CoinPanel: FC<{ coin: Coin | null | undefined, userCoinData: CoinUs
 			<div className=" h-full" style={{ width: 14 }}></div>
 		</div>
 		<Number className="absolute text-white text-sm font-semibold w-full text-right pr-[34px]" value={userCoinData?.amount || 0}></Number>
-		<img className="absolute right-0" src={getCoinIcon1(coin)} style={{ height: 28 }} />
+		<div className="rounded-full absolute right-0">
+			<img className="" src={getCoinIcon1(coin)} style={{ height: 28 }} />
+		</div>
 		{showAdd && <img className="absolute left-2 top-1" width={20} src={btnAdd}></img>}
 	</div >
 }
