@@ -7,13 +7,13 @@ import {
 	miniApp,
 	swipeBehavior,
 	themeParams,
-	viewport
+	viewport,
 } from '@telegram-apps/sdk-react';
 
 /**
  * Initializes the application and configures its dependencies.
  */
-export function init(debug: boolean): void {
+export function init(debug: boolean, platform: string): void {
 	// Set @telegram-apps/sdk-react debug mode.
 	$debug.set(debug);
 
@@ -43,9 +43,10 @@ export function init(debug: boolean): void {
 			console.error('Something went wrong mounting the viewport', e);
 		})
 		.then(() => {
-			console.log("--------binding css vars123321")
 			viewport.bindCssVars();
-			viewport.requestFullscreen.ifAvailable();
+			if (platform != "tdesktop") {
+				viewport.requestFullscreen.ifAvailable();
+			}
 		});
 
 	// try {
