@@ -46,6 +46,7 @@ const ProfileHeader: FC<{ disableClick?: boolean }> = ({ disableClick = false })
 			<CoinPanel coin={dp?.coin} userCoinData={dp?.userData} forceDark={forceDark} />
 			<CoinPanel coin={dc?.coin} userCoinData={dc?.userData} forceDark={forceDark} />
 			<CoinPanel coin={dd?.coin} userCoinData={dd?.userData} forceDark={forceDark} showAdd onClick={() => {
+				navigator("/game-center/recharge");
 			}} />
 		</div>
 	</div >

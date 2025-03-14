@@ -20,6 +20,7 @@ import { Cpu, Gamepad2, Gift, Trophy, Users } from "lucide-react";
 import { createHashRouter, RouteObject } from "react-router-dom";
 import { GameCenter_TopPage } from "@/pages/GameCenterPage/SubPages/TopsPage";
 import EntryPage from "@/pages/Entry/EntryPage";
+import GameCenter_RechargePage from "@/pages/GameCenterPage/SubPages/RechargePage";
 
 export interface AppRoute {
   id: string;
@@ -74,6 +75,7 @@ export const routes: AppRoute[] = [
       { id: "gamecenter-tops", path: "tops", Component: GameCenter_TopPage, allowYScroll: true, back: "/game-center/main", title: "Top", icon: <Trophy absoluteStrokeWidth /> },
       { id: "gamecenter-search", path: "search", Component: GameCenter_SearchPage, allowYScroll: true, back: "/game-center/games" },
       { id: "gamecenter-profile", path: "profile", Component: GameCenter_Profile, allowYScroll: true, back: "/game-center/main" },
+      { id: "gamecenter-recharge", path: "recharge", Component: GameCenter_RechargePage, allowYScroll: true, back: "" }
     ]
   },
 

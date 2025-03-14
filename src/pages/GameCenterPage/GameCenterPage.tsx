@@ -37,6 +37,9 @@ const pageSetting: PageSettings = {
 	"/game-center/tops": {
 		doNotScrollPage: true,
 	},
+	"/game-center/recharge": {
+		hideTabBar: true,
+	}
 }
 
 const keepPageAlive = (pathname: string) => {

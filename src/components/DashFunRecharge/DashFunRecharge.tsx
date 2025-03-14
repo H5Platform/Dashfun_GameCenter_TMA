@@ -81,7 +81,7 @@ const DashFunRecharge: FC = () => {
     const user = useDashFunUser();
     const [purchasedOrder, setPurchasedOrder] = useState<any>(null);
 
-    const [_1, _2, _updateCoins, getCoinInfo] = useDashFunCoins();
+    const [_1, _2, updateCoins, getCoinInfo] = useDashFunCoins();
 
     const getRechargeOptions = async () => {
         // Fetch recharge options
@@ -157,6 +157,9 @@ const DashFunRecharge: FC = () => {
                         priceType={priceType}
                         onBack={() => {
                             setSelected(-1);
+                            updateCoins && updateCoins(["DashFun"]).then(() => {
+                                setPurchasedOrder(null);
+                            });
                         }}
                         onPurchase={(rechargeOrder) => {
                             setPurchasedOrder(rechargeOrder);
@@ -196,6 +199,7 @@ const RechargeSelected: FC<{
                     setLoading(false);
                     clearSavedOrder(user?.id || "");
                     setOrder(undefined);
+                    setRechargeOrder(null);
                     onBack && onBack();
                 }, 8000);
             }
@@ -212,9 +216,10 @@ const RechargeSelected: FC<{
             setLoading(true);
             setOrder(order);
         }
+        checkOrderStatus();
         const interval = setInterval(() => {
             checkOrderStatus();
-        }, 10000);
+        }, 20000);
         return () => {
             clearInterval(interval);
         }
