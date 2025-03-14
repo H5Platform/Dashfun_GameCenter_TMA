@@ -3,8 +3,14 @@ import dashfunIcon from "./icons/dashfun-icon.svg";
 import dashfunPointIcon from "./icons/dashfun-xp-icon.png";
 import dashfunCoinIcon from "./icons/dashfun-coin-icon.png";
 import dashfunDiamond from "./icons/dashfun-diamond4.png";
-import { getImageUrl } from "./utils/DashFunApi";
+import { getEnv, getImageUrl } from "./utils/DashFunApi";
+import { retrieveLaunchParams } from "@telegram-apps/sdk-react";
 
+//Recharge
+export const RechargePriceType = {
+	USD: 1,
+	TGSTAR: 2,
+}
 
 //Task
 export type Task = {
@@ -103,6 +109,15 @@ export type CoinInfo = {
 	userData: CoinUserData
 }
 
+export const RechargeOrderStatus = {
+	New: 1,
+	Pending: 2,
+	Failed: 3,
+	Canceled: 4,
+	Paid: 5,
+	Completed: 6,
+}
+
 export const getCoinIcon1 = (coin: Coin | null | undefined) => {
 	if (coin == null) {
 		return "";
@@ -167,6 +182,6 @@ export const formatNumber = (num: number | null | undefined, precision: number =
 	}
 };
 
-export const toCurrency = (num: number): string => {
-	return num.toLocaleString('en-US', { style: "decimal" });
+export const toCurrency = (num: number, digits: number = 2): string => {
+	return num.toLocaleString('en-US', { style: "decimal", minimumFractionDigits: digits, maximumFractionDigits: digits });
 }

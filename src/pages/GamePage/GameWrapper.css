@@ -42,3 +42,15 @@
 		opacity: 0;
 	}
 }
+
+.recharge-dialog {
+	overflow-y: hidden
+}
+
+.recharge-dialog > div {
+	overflow-y: hidden;
+	height:100%;
+	display:flex;
+	flex-grow: 1;
+	/* flex:1 1 0%; */
+}

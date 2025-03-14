@@ -40,11 +40,7 @@ const setupRoute = (route: AppRoute, wrapPage: boolean = true) => {
 }
 
 export const App: FC = () => {
-  console.log("init app......")
   const lp = useLaunchParams();
-  console.log("launch params", lp)
-  const bgClr = useSignal(themeParams.secondaryBackgroundColor);
-  console.log("themeParams", bgClr)
   const routesArr = []
 
   useEffect(() => {

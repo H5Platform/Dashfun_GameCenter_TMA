@@ -1,4 +1,5 @@
 import { Env, getEnv } from '@/utils/DashFunApi';
+import { channelSaveKey } from '@/utils/Utils';
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
@@ -29,7 +30,7 @@ const EntryPage: React.FC = () => {
             }
 
             //save login channel
-            localStorage.setItem("DashFun-LoginChannel-" + getEnv(), channel || "");
+            localStorage.setItem(channelSaveKey(), channel || "");
 
             nav(toPath);
         }

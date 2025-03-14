@@ -9,10 +9,14 @@ import DBMgr from './components/DBMgr/DBMgr.ts';
 import GameSaveMgr from './components/GameSaveMgr/GameSaveMgr.ts';
 import "./mockEnv.ts";
 import makeMockTgEnv from './mockEnv.ts';
+import { currentChannel } from './utils/Utils.tsx';
 
 /**
  * tgbot绑定miniapp链接时，不需要entry/tg的路径，只需要router中的路径即可,如/game, /game-center
+ * 其他环境进入需要从指定的入口进入，例如/entry/test/game,会进入test环境的game，/entry/web/game-center会进入web环境的game-center
  */
+
+
 const path = window.location.href;
 const idx = path.indexOf("/entry/")
 if (idx > 0) {
@@ -30,7 +34,7 @@ if (idx > 0) {
 	}
 } else {
 	//从localStroage中获取环境，如果获取不到默认就是tg环境
-	const channel = localStorage.getItem("DashFun-LoginChannel-" + getEnv());
+	const channel = currentChannel();
 	if (channel == "test" && getEnv() != Env.Prod) {
 		//生成测试环境的数据
 		makeMockTgEnv();

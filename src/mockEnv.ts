@@ -123,7 +123,7 @@ const makeTestTgEnv = () => {
 		initData: initData,
 		initDataRaw,
 		version: '8',
-		platform: 'tdesktop',
+		platform: 'browser',
 	});
 }
 

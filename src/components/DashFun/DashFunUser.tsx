@@ -19,7 +19,6 @@ export const UserProvider = ({ children }: PropsWithChildren<{}>) => {
 	const initDataState = useSignal(initData.state)
 	const l = useLocation();
 
-
 	let referrerId = "";
 	if (l.pathname.includes("game-center")) {
 		//is game-center
@@ -47,6 +46,7 @@ export const UserProvider = ({ children }: PropsWithChildren<{}>) => {
 			loginUser();
 			getAvatar();
 		}
+
 	}, [initDataState?.user?.id, initDataRaw])
 
 	return <UserContext.Provider value={{ user, avatar }}>

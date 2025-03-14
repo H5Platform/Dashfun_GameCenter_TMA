@@ -2,7 +2,7 @@ import { useDashFunUser } from '@/components/DashFun/DashFunUser';
 import { GameData } from '@/components/DashFunData/GameData';
 import { GameLauncher } from '@/components/GameLauncher/GameLauncher';
 import { TaskApi, TGLink, UserApi } from '@/utils/DashFunApi';
-import { openTelegramLink, shareURL, useLaunchParams, useSignal, viewport } from '@telegram-apps/sdk-react';
+import { backButton, openTelegramLink, shareURL, useLaunchParams, useSignal, viewport } from '@telegram-apps/sdk-react';
 import { Badge, Button, LargeTitle, Modal, Tabbar } from '@telegram-apps/telegram-ui';
 import { SectionHeader } from '@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionHeader/SectionHeader';
 import { ModalHeader } from '@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalHeader/ModalHeader';
@@ -22,12 +22,17 @@ import { TaskAndCoin } from '@/components/TaskAndCoin/TaskAndCoin';
 import { CoinInfo, TaskStatus } from '@/constats';
 import { Gamepad2, Gift, LoaderPinwheel, Send } from 'lucide-react';
 import { DFProfileAvatar } from '@/components/Avatar/Avatar';
-
+import DashFunRecharge from '@/components/DashFunRecharge/DashFunRecharge';
+import { motion } from 'framer-motion';
+import { ContentWrapper } from '../ContentWrapper';
+import { L, LangKeys } from '@/components/Language/Language';
+import { isInTelegram } from '@/utils/Utils';
 
 export const GameWrapper: FC = () => {
 	const [play, setPlay] = useState(false);
 	const [showLoading, setShowLoadig] = useState(true);
 	const [showTask, setShowTask] = useState(false);
+	const [showRecharge, setShowRecharge] = useState(false);
 	const [game, setGame] = useState<GameData | null>(null);
 	const initDataRaw = useLaunchParams().initDataRaw;
 	// const startParam = useLaunchParams().startParam;
@@ -112,6 +117,17 @@ export const GameWrapper: FC = () => {
 			SpinWheelStatusChangedEvent.removeListener(spinListener);
 		}
 	}, [game]);
+
+	useEffect(() => {
+		if (showRecharge) {
+			backButton.show();
+			return backButton.onClick(() => {
+				setShowRecharge(false);
+			});
+		} else {
+			backButton.hide();
+		}
+	}, [showRecharge])
 
 
 	// const numb = coin?.userData?.amount || 0;
@@ -210,7 +226,9 @@ export const GameWrapper: FC = () => {
 					<CoinPanel coin={coin?.coin} userCoinData={coin?.userData} />
 				</div>
 				<div className='flex-1'>
-					<CoinPanel coin={diamond?.coin} userCoinData={diamond?.userData} showAdd />
+					<CoinPanel coin={diamond?.coin} userCoinData={diamond?.userData} showAdd onClick={() => {
+						setShowRecharge(true);
+					}} />
 				</div>
 			</div>
 			{/* <Button mode="white"
@@ -299,7 +317,6 @@ export const GameWrapper: FC = () => {
 
 			</div>)
 			}
-
 			{
 				showTask && (
 					<Modal
@@ -344,6 +361,36 @@ export const GameWrapper: FC = () => {
 					</Modal>
 				)
 			}
+			{
+				showRecharge && (
+					<div id="recharge-overlay" className='pointer-events-auto absolute top-0 bottom-0 left-0 right-0 z-[9999]'>
+						<ContentWrapper className='h-full max-w-screen-md md:mx-auto'>
+							<motion.div
+								className='w-full h-full'
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								transition={{ duration: 0.5 }}
+							>
+								<div className='flex flex-col w-full h-full max-h-full min-h-0 ' style={{
+									backgroundColor: "var(--tg-theme-secondary-bg-color)",
+									//paddingBottom: "calc(10vh) "
+								}}>
+									{!isInTelegram() &&
+										<div className='p-4'>
+											<Button mode="plain" onClick={() => { setShowRecharge(false) }}>
+												<L langKey={LangKeys.Common_Close} />
+											</Button>
+										</div>
+									}
+									<div className='w-full min-h-0 flex-1'>
+										<DashFunRecharge />
+									</div>
+								</div>
+							</motion.div>
+						</ContentWrapper>
+					</div>
+				)
+			}
 		</div >
 	</div >
-}
+}	
