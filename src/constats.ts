@@ -3,8 +3,7 @@ import dashfunIcon from "./icons/dashfun-icon.svg";
 import dashfunPointIcon from "./icons/dashfun-xp-icon.png";
 import dashfunCoinIcon from "./icons/dashfun-coin-icon.png";
 import dashfunDiamond from "./icons/dashfun-diamond4.png";
-import { getEnv, getImageUrl } from "./utils/DashFunApi";
-import { retrieveLaunchParams } from "@telegram-apps/sdk-react";
+import { getImageUrl } from "./utils/DashFunApi";
 
 //Recharge
 export const RechargePriceType = {

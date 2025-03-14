@@ -14,7 +14,7 @@ import { useEffect, type FC } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import { AppRoute, routes } from "@/navigation/routes.tsx";
-import { miniApp, postEvent, themeParams, useLaunchParams, useSignal } from "@telegram-apps/sdk-react";
+import { miniApp, postEvent, useLaunchParams } from "@telegram-apps/sdk-react";
 import { UserProvider } from "./DashFun/DashFunUser";
 import { LanguageProvider } from "./Language/Language";
 import { Page } from "./Page";

@@ -1,7 +1,7 @@
-import { FC, useCallback, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import diamondIcon from "@/icons/dashfun-diamond4.png";
 import starIcon from "@/icons/star-icon.png";
-import { Button, Caption, Cell, Spinner, Subheadline, Text, Title } from "@telegram-apps/telegram-ui";
+import { Button, Caption, Cell, Spinner, Text, Title } from "@telegram-apps/telegram-ui";
 import { RechargeApi, RechargeLink } from "@/utils/DashFunApi";
 import { initData, retrieveLaunchParams, useSignal } from "@telegram-apps/sdk-react";
 import { RechargeOrderStatus, RechargePriceType, toCurrency } from "@/constats";
@@ -81,7 +81,7 @@ const DashFunRecharge: FC = () => {
     const user = useDashFunUser();
     const [purchasedOrder, setPurchasedOrder] = useState<any>(null);
 
-    const [_1, _2, updateCoins, getCoinInfo] = useDashFunCoins();
+    const [_1, _2, _updateCoins, getCoinInfo] = useDashFunCoins();
 
     const getRechargeOptions = async () => {
         // Fetch recharge options
@@ -98,7 +98,7 @@ const DashFunRecharge: FC = () => {
     const checkSavedOrder = async (order: OrderInfo) => {
         setIsChecking(true);
         try {
-            const result = await RechargeApi.getOrder(order.orderId)
+            //const result = await RechargeApi.getOrder(order.orderId)
             //if (result.status <= RechargeOrderStatus.Paid) {
             setSelected(order.optionIndex);
             // } else {
