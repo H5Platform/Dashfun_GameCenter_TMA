@@ -1,5 +1,6 @@
 import { mockTelegramEnv, isTMA, parseInitData } from '@telegram-apps/sdk-react';
 import { Env, getEnv } from './utils/DashFunApi';
+import { v4 as uuidv4 } from "uuid";
 
 // It is important, to mock the environment only for development purposes. When building the
 // application, import.meta.env.DEV will become false, and the code inside will be tree-shaken,
@@ -78,7 +79,7 @@ const makeTestTgEnv = () => {
 	let userStr = localStorage.getItem("DashFun-TestUser")
 	let user = null;
 	if (userStr == null) {
-		const uid = crypto.randomUUID();
+		const uid = uuidv4();
 		const randomPart = Math.floor(1000 + Math.random() * 9000).toString();
 		const milliseconds = new Date().getMilliseconds().toString().padStart(3, '0');
 		const generatedId = `999${randomPart}${milliseconds}`;
