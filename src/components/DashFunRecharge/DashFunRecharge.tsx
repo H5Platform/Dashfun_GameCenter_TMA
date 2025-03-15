@@ -282,7 +282,7 @@ const RechargeSelected: FC<{
             </div>
 
             {
-                rechargeOrder == null && order != null && order.orderId != "" && order.optionIndex > 0 &&
+                rechargeOrder == null && order != null && order.orderId != "" && order.optionIndex >= 0 &&
                 <div className="w-full flex flex-col items-center justify-center p-2">
                     <Caption weight="2"><L langKey={LangKeys.Recharge_Purchase_Link_Tip} /></Caption>
                     <a href={rechargeLink} target="_blank">
