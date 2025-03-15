@@ -101,6 +101,9 @@ export const TaskList: FC<TaskListype> = ({ game, onTaskClicked, tasksData = nul
 			}
 			const save = taskSaves[task.id]
 			items.push(<TaskListItem key={task + "_" + task.id} task={task} save={save} game={game as GameData} onClicked={(item) => {
+				if(item.processed) {
+					setTaskSaves({...taskSaves, [task.id]: item.save})
+				}
 				if (onTaskClicked != null) {
 					onTaskClicked(item)
 				}
@@ -262,6 +265,7 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 					console.log("on task clicked:", r)
 				});
 				processed = true;
+				save.status = TaskStatus.Verify_Pending;
 				TaskStatusChangedEvent.fire(task.id, save.status);
 			}
 		}
