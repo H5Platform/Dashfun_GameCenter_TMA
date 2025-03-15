@@ -3,7 +3,7 @@ import diamondIcon from "@/icons/dashfun-diamond4.png";
 import starIcon from "@/icons/star-icon.png";
 import { Button, Caption, Cell, Spinner, Text, Title } from "@telegram-apps/telegram-ui";
 import { RechargeApi, RechargeLink } from "@/utils/DashFunApi";
-import { initData, retrieveLaunchParams, useSignal } from "@telegram-apps/sdk-react";
+import { initData, openLink, retrieveLaunchParams, useSignal } from "@telegram-apps/sdk-react";
 import { RechargeOrderStatus, RechargePriceType, toCurrency } from "@/constats";
 import { motion } from "framer-motion";
 import Section from "../Section/Section";
@@ -285,9 +285,14 @@ const RechargeSelected: FC<{
                 rechargeOrder == null && order != null && order.orderId != "" && order.optionIndex >= 0 &&
                 <div className="w-full flex flex-col items-center justify-center p-2">
                     <Caption weight="2"><L langKey={LangKeys.Recharge_Purchase_Link_Tip} /></Caption>
-                    <a href={rechargeLink} target="_blank">
+                    {/* <a href={rechargeLink} target="_blank"> */}
+                    <div className="w-full text-center cursor-pointer"
+                        onClick={() => {
+                            openLink(rechargeLink, { tryInstantView: true });
+                        }}>
                         <Caption style={{ color: "var(--tg-theme-link-color)" }}>{rechargeLink}</Caption>
-                    </a>
+                    </div>
+                    {/* </a> */}
                 </div>
             }
             {
