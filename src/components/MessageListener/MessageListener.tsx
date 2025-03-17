@@ -10,7 +10,7 @@ import { useDashFunGame } from "../DashFun/DashFunGame";
 import { useDashFunUser } from "../DashFun/DashFunUser";
 import { GameData } from "../DashFunData/GameData";
 import { DashFunUser } from "../DashFunData/UserData";
-import { GameLoadingEvent } from "../Event/Events";
+import { GameLoadingEvent, OpenDashFunPaymentEvent } from "../Event/Events";
 import GameSaveMgr from "../GameSaveMgr/GameSaveMgr";
 import { DashFunMessages } from "./Messages";
 
@@ -65,19 +65,27 @@ const onOpenTelegramLink = (ctx: Context) => {
 const onOpenInvoice = (ctx: Context) => {
 	const { method, payload } = ctx.callData;
 	console.log("open invoice payload:", payload)
-	const { invoiceLink, paymentId } = payload;
+	const { paymentId } = payload;
 
-	if (invoiceLink.startsWith("test-")) {
-		sendResult(ctx.source, method, new Result("success", { paymentId, status: "paid" }))
-	} else {
-		console.log("opening invoice", invoiceLink)
-		invoice.open(invoiceLink, "url").then((status) => {
-			console.log(`invoice ${invoiceLink} status changed:`, status);
-			sendResult(ctx.source, method, new Result("success", { paymentId, status }))
-		}).catch(e => {
-			console.error(e);
-		});
+	// if (invoiceLink.startsWith("test-")) {
+	// 	sendResult(ctx.source, method, new Result("success", { paymentId, status: "paid" }))
+	// } else {
+	// 	console.log("opening invoice", invoiceLink)
+	// 	invoice.open(invoiceLink, "url").then((status) => {
+	// 		console.log(`invoice ${invoiceLink} status changed:`, status);
+	// 		sendResult(ctx.source, method, new Result("success", { paymentId, status }))
+	// 	}).catch(e => {
+	// 		console.error(e);
+	// 	});
+	// }
+
+	//open dashfun payment
+	const onResult = (success: boolean, msg: string) => {
+		sendResult(ctx.source, method, new Result(success ? "success" : "error", { paymentId, status: success ? "paid" : "error", msg }))
 	}
+
+	OpenDashFunPaymentEvent.fire(paymentId, onResult);
+
 }
 
 const onRequestPayment = (ctx: Context) => {

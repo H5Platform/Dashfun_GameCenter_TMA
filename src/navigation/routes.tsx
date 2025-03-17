@@ -21,6 +21,7 @@ import { createHashRouter, RouteObject } from "react-router-dom";
 import { GameCenter_TopPage } from "@/pages/GameCenterPage/SubPages/TopsPage";
 import EntryPage from "@/pages/Entry/EntryPage";
 import GameCenter_RechargePage from "@/pages/GameCenterPage/SubPages/RechargePage";
+import { GameProvider } from "@/components/DashFun/DashFunGame";
 
 export interface AppRoute {
   id: string;
@@ -58,7 +59,7 @@ const setupRoute = (route: AppRoute, wrapPage: boolean = true): RouteObject => {
 export const routes: AppRoute[] = [
   { id: "root", path: "/", Component: IntroPage, allowYScroll: true, back: "close" },
   { id: "testing", path: "/testing", Component: TestingPage, allowYScroll: true, back: "close" },
-  { id: "game", path: "/game", Component: GameWrapper, back: "close", allowYScroll: false },
+  { id: "game", path: "/game", Component: () => <GameProvider><GameWrapper /></GameProvider>, back: "close", allowYScroll: false },
   { id: "", path: "/init-data", Component: InitDataPage, title: "Init Data" },
   { id: "", path: "/theme-params", Component: ThemeParamsPage, title: "Theme Params" },
   { id: "", path: "/launch-params", Component: LaunchParamsPage, title: "Launch Params", },

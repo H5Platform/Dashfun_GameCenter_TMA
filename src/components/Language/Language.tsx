@@ -1,4 +1,4 @@
-import { createContext, FC, PropsWithChildren, useContext, useState } from "react";
+import React, { createContext, FC, PropsWithChildren, useContext, useState } from "react";
 
 const en: { [key: string]: string | string[] } = {
 	"GameListType": [
@@ -18,6 +18,8 @@ const en: { [key: string]: string | string[] } = {
 	"Common_Close": "Close",
 	"Common_Cancel": "Cancel",
 	"Common_Confirm": "Confirm",
+	"Common_In": "in",
+	"Common_For": "for",
 
 	"ProfileNoRecentGame": "You haven't played any games yet!",
 	"ProfileNoFavoritesGame": "Nothing here! Add your favorite games now!",
@@ -28,6 +30,10 @@ const en: { [key: string]: string | string[] } = {
 
 	"Recharge_BuyDiamondSubTitle": "Use them on all DashFun Games!",
 	"Recharge_Purchase_Link_Tip": "Open the link below to complete the purchase.",
+
+	"DashFunPay_ConfirmPurchase": "Confirm Your Purchase",
+	"DashFunPay_PurchaseTip": "Do you want to buy %title in %game for %price ?",
+	"DashFunPay_ConfirmButton": "Confirm and Pay %price"
 }
 
 export const LangKeys = {
@@ -41,6 +47,8 @@ export const LangKeys = {
 	Common_Close: "Common_Close",
 	Common_Cancel: "Common_Cancel",
 	Common_Confirm: "Common_Confirm",
+	Common_In: "Common_In",
+	Common_For: "Common_For",
 
 	GameListType: "GameListType",
 	ProfileNoRecentGame: "ProfileNoRecentGame",
@@ -52,6 +60,10 @@ export const LangKeys = {
 
 	Recharge_BuyDiamondSubTitle: "Recharge_BuyDiamondSubTitle",
 	Recharge_Purchase_Link_Tip: "Recharge_Purchase_Link_Tip",
+
+	DashFunPay_ConfirmPurchase: "DashFunPay_ConfirmPurchase",
+	DashFunPay_PurchaseTip: "DashFunPay_PurchaseTip",
+	DashFunPay_ConfirmButton: "DashFunPay_ConfirmButton",
 }
 
 let currentLang = en;
@@ -92,4 +104,21 @@ export const L = ({ langKey, index = 0 }: { langKey: string, index?: number }) =
 	} else {
 		return l;
 	}
+}
+
+export const LV = ({ langKey, values }: { langKey: string, values: { [key: string]: string } }) => {
+	const [get] = useLanguage();
+
+	const l = get(langKey);
+	if (l == null) return null;
+	if (Array.isArray(l)) {
+		return <></>
+	}
+	let str = l as string;
+
+	for (const key in values) {
+		str = str.replace(`%${key}`, values[key]);
+	}
+
+	return <p dangerouslySetInnerHTML={{ __html: str }} />
 }

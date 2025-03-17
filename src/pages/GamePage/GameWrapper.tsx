@@ -15,7 +15,7 @@ import { useDashFunCoins } from '@/components/DashFun/DashFunCoins';
 import { useDashFunSpinWheel } from '@/components/DashFun/DashFunSpinWheel';
 import { SpinWheelConstants } from '@/components/DashFunData/SpinWheelData';
 import { DashFunUser } from '@/components/DashFunData/UserData';
-import { SpinWheelStatusChangedEvent, TaskStatusChangedEvent } from '@/components/Event/Events';
+import { OpenDashFunRechargeEvent, SpinWheelStatusChangedEvent, TaskStatusChangedEvent } from '@/components/Event/Events';
 import { MessageListener } from '@/components/MessageListener/MessageListener';
 import SpinWheel from '@/components/SpinWheel/SpinWheel';
 import { TaskAndCoin } from '@/components/TaskAndCoin/TaskAndCoin';
@@ -27,12 +27,14 @@ import { motion } from 'framer-motion';
 import { ContentWrapper } from '../ContentWrapper';
 import { L, LangKeys } from '@/components/Language/Language';
 import { isInTelegram } from '@/utils/Utils';
+import DashFunPay from '@/components/DashFunPay/DashFunPay';
 
 export const GameWrapper: FC = () => {
 	const [play, setPlay] = useState(false);
 	const [showLoading, setShowLoadig] = useState(true);
 	const [showTask, setShowTask] = useState(false);
 	const [showRecharge, setShowRecharge] = useState(false);
+	const [minRechargeValue, setMinRechargeValue] = useState(0);
 	const [game, setGame] = useState<GameData | null>(null);
 	const initDataRaw = useLaunchParams().initDataRaw;
 	// const startParam = useLaunchParams().startParam;
@@ -93,6 +95,11 @@ export const GameWrapper: FC = () => {
 		setSpinStatus(status)
 	}
 
+	const openRechargeEvtListener = (minRechargeValue: number) => {
+		setMinRechargeValue(minRechargeValue);
+		setShowRecharge(true);
+	}
+
 	useEffect(() => {
 		if (userCoinData != null) {
 			if (game != null) {
@@ -112,9 +119,12 @@ export const GameWrapper: FC = () => {
 
 		TaskStatusChangedEvent.addListener(evtListener);
 		SpinWheelStatusChangedEvent.addListener(spinListener);
+		OpenDashFunRechargeEvent.addListener(openRechargeEvtListener);
+
 		return () => {
 			TaskStatusChangedEvent.removeListener(evtListener);
 			SpinWheelStatusChangedEvent.removeListener(spinListener);
+			OpenDashFunRechargeEvent.removeListener(openRechargeEvtListener);
 		}
 	}, [game]);
 
@@ -126,6 +136,7 @@ export const GameWrapper: FC = () => {
 			});
 		} else {
 			backButton.hide();
+			setMinRechargeValue(0);
 		}
 	}, [showRecharge])
 
@@ -263,134 +274,137 @@ export const GameWrapper: FC = () => {
 		</div>
 	</SectionHeader >
 
-	return <div id="game-wrapper" className="game-wrapper max-w-screen-sm sm:mx-auto" style={{ paddingTop: pt, paddingBottom: pb }}>
-		{header}
-		<div id="game-iframe" className=' flex-1 h-full'>
-			<Iframe
-				id='GameFrame'
-				name='GameFrame'
-				url={game == null ? "" : game.url}
-				display="block"
-				width='100%'
-				height="100%"
-				frameBorder={0}
-				className='game-frame'
-				styles={{
-					visibility: play ? "" : "hidden"
-				}}
-			/>
-			{showLoading && (<div className={`flex justify-center items-start game-loading ${play ? ", game-loading-fadeout" : ""}`} >
-				{/* <div className='h-[200px] mt-[100px] bg-cover bg-center bg-no-repeat ' style={{
+	return <div id="game-wrapper" className='w-full h-full flex flex-col'>
+		<div className="game-wrapper max-w-screen-sm sm:mx-auto" style={{ paddingTop: pt, paddingBottom: pb }}>
+			{header}
+			<div id="game-iframe" className=' flex-1 h-full'>
+				<Iframe
+					id='GameFrame'
+					name='GameFrame'
+					url={game == null ? "" : game.url}
+					display="block"
+					width='100%'
+					height="100%"
+					frameBorder={0}
+					className='game-frame'
+					styles={{
+						visibility: play ? "" : "hidden"
+					}}
+				/>
+				{showLoading && (<div className={`flex justify-center items-start game-loading ${play ? ", game-loading-fadeout" : ""}`} >
+					{/* <div className='h-[200px] mt-[100px] bg-cover bg-center bg-no-repeat ' style={{
 					backgroundImage: `url('${game?.logoUrl}')`
 				}}></div> */}
-				<img src={game?.getLogoUrl()} className=' object-contain max-w-screen-sm mx-auto' style={{ width: "90vw", paddingTop: (pt + 100) + "px" }} ></img>
-				<Modal
-					className='max-w-screen-sm sm:mx-auto'
-					dismissible={false}
-					open={play == false}
-					style={{ backgroundColor: "transparent" }}
-					overlayComponent={
-						<div className=' bg-[#21212130] pointer-events-auto fixed left-0 right-0 z-[var(--tgui--z-index--overlay)]' style={{ top: pt + "px", bottom: pb + "px" }}>
-							{header}
-						</div>
-					}
-				>
-
-					<GameLauncher gameId={undefined}
-						footer={null}
-						onLoad={g => {
-							setGame(g as GameData);
-						}}
-						onPlayClicked={() => {
-							//上报enterGame
-							if (game != null) {
-								console.log("report user enter game:", game)
-								UserApi.enterGame(initDataRaw as string, game.id)
-								setPlay(true);
-								setTimeout(() => {
-									setShowLoadig(false);
-								}, 2000);
-							}
-						}} />
-
-				</Modal>
-
-			</div>)
-			}
-			{
-				showTask && (
+					<img src={game?.getLogoUrl()} className=' object-contain max-w-screen-sm mx-auto' style={{ width: "90vw", paddingTop: (pt + 100) + "px" }} ></img>
 					<Modal
 						className='max-w-screen-sm sm:mx-auto'
-						open={showTask}
-						header={<ModalHeader style={{
-							backgroundColor: "var(--tg-theme-secondary-bg-color)"
-						}}></ModalHeader>
-							// <div className='flex flex-col bg-gray-200 text-black p-2 w-full items-center justify-center gap-1'>
-							// 	<div className=' w-10 h-1 bg-gray-400 rounded-full mb-2'></div>
-							// 	<Text weight='1'>Tasks</Text>
-							// </div>
-						}
-						onOpenChange={e => {
-							if (e == false) {
-								setShowTask(false);
-							}
-						}}
-						snapPoints={[0.9]}
-					>
-						<div className='flex flex-col w-full h-full' style={{
-							backgroundColor: "var(--tg-theme-secondary-bg-color)"
-						}}>
-							<div style={{ paddingBottom: "calc(10vh + 100px) " }}>
-								{tabs.find((t) => t.id == currentTab)?.component}
+						dismissible={false}
+						open={play == false}
+						style={{ backgroundColor: "transparent" }}
+						overlayComponent={
+							<div className=' bg-[#21212130] pointer-events-auto fixed left-0 right-0 z-[var(--tgui--z-index--overlay)]' style={{ top: pt + "px", bottom: pb + "px" }}>
+								{header}
 							</div>
+						}
+					>
 
-							<Tabbar id="bottomNavigation" style={{ bottom: "10vh" }}>
-								{tabs.map(({ id, text, Icon }) => (
-									<Tabbar.Item
-										key={id}
-										text={text}
-										selected={id === currentTab}
-										onClick={() => setCurrentTab(id)}
-										style={{ paddingBottom: bottom + "px" }}
-									>
-										<Icon />
-									</Tabbar.Item>
-								))}
-							</Tabbar>
-						</div>
+						<GameLauncher gameId={undefined}
+							footer={null}
+							onLoad={g => {
+								setGame(g as GameData);
+							}}
+							onPlayClicked={() => {
+								//上报enterGame
+								if (game != null) {
+									console.log("report user enter game:", game)
+									UserApi.enterGame(initDataRaw as string, game.id)
+									setPlay(true);
+									setTimeout(() => {
+										setShowLoadig(false);
+									}, 2000);
+								}
+							}} />
+
 					</Modal>
-				)
-			}
-			{
-				showRecharge && (
-					<div id="recharge-overlay" className='pointer-events-auto absolute top-0 bottom-0 left-0 right-0 z-[9999]'>
-						<ContentWrapper className='h-full max-w-screen-md md:mx-auto'>
-							<motion.div
-								className='w-full h-full'
-								initial={{ opacity: 0 }}
-								animate={{ opacity: 1 }}
-								transition={{ duration: 0.5 }}
-							>
-								<div className='flex flex-col w-full h-full max-h-full min-h-0 ' style={{
-									backgroundColor: "var(--tg-theme-secondary-bg-color)",
-									//paddingBottom: "calc(10vh) "
-								}}>
-									{!isInTelegram() &&
-										<div className='p-4'>
-											<Button mode="plain" onClick={() => { setShowRecharge(false) }}>
-												<L langKey={LangKeys.Common_Close} />
-											</Button>
-										</div>
-									}
-									<div className='w-full min-h-0 flex-1'>
-										<DashFunRecharge />
-									</div>
+
+				</div>)
+				}
+				{
+					showTask && (
+						<Modal
+							className='max-w-screen-sm sm:mx-auto'
+							open={showTask}
+							header={<ModalHeader style={{
+								backgroundColor: "var(--tg-theme-secondary-bg-color)"
+							}}></ModalHeader>
+								// <div className='flex flex-col bg-gray-200 text-black p-2 w-full items-center justify-center gap-1'>
+								// 	<div className=' w-10 h-1 bg-gray-400 rounded-full mb-2'></div>
+								// 	<Text weight='1'>Tasks</Text>
+								// </div>
+							}
+							onOpenChange={e => {
+								if (e == false) {
+									setShowTask(false);
+								}
+							}}
+							snapPoints={[0.9]}
+						>
+							<div className='flex flex-col w-full h-full' style={{
+								backgroundColor: "var(--tg-theme-secondary-bg-color)"
+							}}>
+								<div style={{ paddingBottom: "calc(10vh + 100px) " }}>
+									{tabs.find((t) => t.id == currentTab)?.component}
 								</div>
-							</motion.div>
-						</ContentWrapper>
-					</div>
-				)
-			}
+
+								<Tabbar id="bottomNavigation" style={{ bottom: "10vh" }}>
+									{tabs.map(({ id, text, Icon }) => (
+										<Tabbar.Item
+											key={id}
+											text={text}
+											selected={id === currentTab}
+											onClick={() => setCurrentTab(id)}
+											style={{ paddingBottom: bottom + "px" }}
+										>
+											<Icon />
+										</Tabbar.Item>
+									))}
+								</Tabbar>
+							</div>
+						</Modal>
+					)
+				}
+			</div >
 		</div >
-	</div >
+		{
+			showRecharge && (
+				<div id="recharge-overlay" className='pointer-events-auto absolute top-0 bottom-0 left-0 right-0 z-[9999]'>
+					<ContentWrapper className='h-full max-w-screen-md md:mx-auto'>
+						<motion.div
+							className='w-full h-full'
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							transition={{ duration: 0.5 }}
+						>
+							<div className='flex flex-col w-full h-full max-h-full min-h-0 ' style={{
+								backgroundColor: "var(--tg-theme-secondary-bg-color)",
+								//paddingBottom: "calc(10vh) "
+							}}>
+								{!isInTelegram() &&
+									<div className='p-4'>
+										<Button mode="plain" onClick={() => { setShowRecharge(false) }}>
+											<L langKey={LangKeys.Common_Close} />
+										</Button>
+									</div>
+								}
+								<div className='w-full min-h-0 flex-1'>
+									<DashFunRecharge minRechargeValue={minRechargeValue} />
+								</div>
+							</div>
+						</motion.div>
+					</ContentWrapper>
+				</div>
+			)
+		}
+		<DashFunPay />
+	</div>
 }	

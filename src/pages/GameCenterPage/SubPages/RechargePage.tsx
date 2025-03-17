@@ -15,7 +15,7 @@ const GameCenter_RechargePage: FC = () => {
                 </Button>
             </div>
         }
-        <DashFunRecharge />
+        <DashFunRecharge minRechargeValue={0}/>
     </div>
 }
 

@@ -5,6 +5,13 @@ import dashfunCoinIcon from "./icons/dashfun-coin-icon.png";
 import dashfunDiamond from "./icons/dashfun-diamond4.png";
 import { getImageUrl } from "./utils/DashFunApi";
 
+
+export const DashFunCoins = {
+	DashFunXP: "DashFunPoint",
+	DashFunCoin: "DashFunCoin",
+	DashFunDiamond: "DashFunDiamond",
+}
+
 //Recharge
 export const RechargePriceType = {
 	USD: 1,

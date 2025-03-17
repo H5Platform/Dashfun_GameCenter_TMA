@@ -5,6 +5,8 @@ const EventTypes = {
 	TaskStatusChanged: 50,
 	CoinChanged: 100,
 	SpinWheelStatusChanged: 150,
+	OpenDashFunPayment: 200,
+	OpenDashFunRecharge: 250
 }
 
 
@@ -142,9 +144,39 @@ class CoinChangedEvents extends EventBase {
 	}
 }
 
+class OpenDashFunPaymentEvents extends EventBase {
+	constructor() {
+		super(EventTypes.OpenDashFunPayment);
+	}
+
+	addListener(listener: (paymentId: string, onResult: (success: boolean, msg: string) => void) => void): void {
+		super.addListener(listener);
+	}
+
+	fire(paymentId: string, onResult: (success: boolean, msg: string) => void): void {
+		super.fire(paymentId, onResult)
+	}
+}
+
+class OpenDashFunRechargeEvents extends EventBase {
+	constructor() {
+		super(EventTypes.OpenDashFunRecharge);
+	}
+
+	addListener(listener: (minRechargeValue: number) => void): void {
+		super.addListener(listener);
+	}
+
+	fire(minRechargeValue: number): void {
+		super.fire(minRechargeValue)
+	}
+}
+
 const GameLoadingEvent = new GameLoadingEvents();
 const CoinChangedEvent = new CoinChangedEvents();
 const TaskStatusChangedEvent = new TaskStatusChangedEvents();
 const SpinWheelStatusChangedEvent = new SpinWheelStatusChangedEvents();
+const OpenDashFunPaymentEvent = new OpenDashFunPaymentEvents();
+const OpenDashFunRechargeEvent = new OpenDashFunRechargeEvents();
 
-export { GameLoadingEvent, CoinChangedEvent, TaskStatusChangedEvent, SpinWheelStatusChangedEvent }
+export { OpenDashFunRechargeEvent, GameLoadingEvent, CoinChangedEvent, TaskStatusChangedEvent, SpinWheelStatusChangedEvent, OpenDashFunPaymentEvent }

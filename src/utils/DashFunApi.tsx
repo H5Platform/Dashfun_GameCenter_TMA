@@ -410,6 +410,24 @@ const GameApi = {
 	}
 }
 
+type PaymentData = {
+	id: string,
+	userId: string,
+	game_id: string,
+	payment_id: string,
+	title: string,
+	description: string,
+	payload: string,
+	currency: string,
+	from: number,
+	price: number,
+	extraData: string,
+	message: string,
+	created_at: number,
+	pay_at: number,
+	status: number,
+}
+
 const PaymentApi = {
 	apiUrl: (): string => {
 		return dashFunApiUrl + "payment/"
@@ -432,7 +450,55 @@ const PaymentApi = {
 		} else {
 			throw result.status
 		}
-	}
+	},
+
+	confirmPayment: async (tgToken: string, paymentId: string) => {
+		const api = PaymentApi.apiUrl() + "confirm"
+		const formData = new FormData();
+		formData.append("payment_id", paymentId);
+		try {
+			const result = await axios.post(api, formData, {
+				headers: {
+					"Authorization": "tma " + processToken(tgToken)
+				}
+			});
+			if (result.status == 200) {
+				if (result.data.code == 0) {
+					return result.data.data;
+				} else {
+					throw result.data.msg;
+				}
+			} else {
+				throw result.status;
+			}
+		} catch (error: any) {
+			if (error.response && error.response.data) {
+				throw error.response.data.msg;
+			} else {
+				throw error;
+			}
+		}
+	},
+
+	getPayment: async (userId: string, gameId: string, paymentId: string) => {
+		const api = PaymentApi.apiUrl() + "get"
+		const result = await axios.get(api, {
+			params: {
+				user_id: userId,
+				game_id: gameId,
+				payment_id: paymentId
+			}
+		});
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data as PaymentData;
+			} else {
+				throw result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
 }
 
 const RechargeApi = {
@@ -891,3 +957,4 @@ const getEnv = () => {
 
 
 export { GameApi, PaymentApi, RechargeApi, UserApi, TGLink, TaskApi, CoinApi, SpinWheelApi, LeaderBoardApi, FriendsApi, RechargeLink, getEnv, Env }
+export type { PaymentData }

@@ -10,7 +10,7 @@ import Section from "../Section/Section";
 import { useDashFunCoins } from "../DashFun/DashFunCoins";
 import { L, LangKeys } from "../Language/Language";
 import { useDashFunUser } from "../DashFun/DashFunUser";
-import { orderSaveKey } from "@/utils/Utils";
+import { isInTelegram, orderSaveKey } from "@/utils/Utils";
 
 import aniSuccess from "@/assets/animation/successful.json";
 import aniFailed from "@/assets/animation/failed.json";
@@ -71,7 +71,7 @@ type RechargeOption = {
     price_off: number
 }
 
-const DashFunRecharge: FC = () => {
+const DashFunRecharge: FC<{ minRechargeValue: number }> = ({ minRechargeValue = 0 }) => {
     const [priceType, setPriceType] = useState(1);
     const [options, setOptions] = useState<RechargeOption[]>([]);
     const [isChecking, setIsChecking] = useState(false);
@@ -82,6 +82,8 @@ const DashFunRecharge: FC = () => {
     const [purchasedOrder, setPurchasedOrder] = useState<any>(null);
 
     const [_1, _2, updateCoins, getCoinInfo] = useDashFunCoins();
+
+    console.log("Recharge UI Opened, minRechargeValue:", minRechargeValue);
 
     const getRechargeOptions = async () => {
         // Fetch recharge options
@@ -134,7 +136,14 @@ const DashFunRecharge: FC = () => {
                     />
                 </Text>
             </div>
-            <Title><L langKey={LangKeys.Common_Get} /> <L langKey={LangKeys.Common_DashFunDiamond} /></Title>
+            <Title>
+                {
+                    minRechargeValue == 0 ?
+                        <><L langKey={LangKeys.Common_Get} /> <L langKey={LangKeys.Common_DashFunDiamond} /></> :
+                        <>{minRechargeValue} Diamonds Needed</>
+                }
+
+            </Title>
         </div>
         {options.length == 0 || isChecking ? <div className="w-full h-full items-center justify-center flex"
             style={{ paddingTop: headerHeight }}>
@@ -146,7 +155,7 @@ const DashFunRecharge: FC = () => {
                 transition={{ type: "spring", stiffness: 200, damping: 20 }}>
                 <div className="w-full min-w-full h-full p-4 overflow-y-auto "
                     style={{ paddingTop: headerHeight }} >
-                    <RechargeList options={options} priceType={priceType} onClick={(_, index) => {
+                    <RechargeList options={options} priceType={priceType} minRechargeValue={minRechargeValue} onClick={(_, index) => {
                         setSelected(index);
                     }} />
                 </div>
@@ -285,14 +294,14 @@ const RechargeSelected: FC<{
                 rechargeOrder == null && order != null && order.orderId != "" && order.optionIndex >= 0 &&
                 <div className="w-full flex flex-col items-center justify-center p-2">
                     <Caption weight="2"><L langKey={LangKeys.Recharge_Purchase_Link_Tip} /></Caption>
-                    {/* <a href={rechargeLink} target="_blank"> */}
-                    <div className="w-full text-center cursor-pointer"
-                        onClick={() => {
-                            openLink(rechargeLink, { tryInstantView: true });
-                        }}>
-                        <Caption style={{ color: "var(--tg-theme-link-color)" }}>{rechargeLink}</Caption>
-                    </div>
-                    {/* </a> */}
+                    {
+                        isInTelegram() ? <div className="w-full text-center cursor-pointer"
+                            onClick={() => {
+                                openLink(rechargeLink, { tryInstantView: true });
+                            }}>
+                            <Caption style={{ color: "var(--tg-theme-link-color)" }}>{rechargeLink}</Caption>
+                        </div> : <a href={rechargeLink} target="_blank"><Caption style={{ color: "var(--tg-theme-link-color)" }}>{rechargeLink}</Caption></a>
+                    }
                 </div>
             }
             {
@@ -332,12 +341,15 @@ const RechargeResult: FC<{ rechargeOrder: any }> = ({ rechargeOrder }) => {
 }
 
 const RechargeList: FC<{
-    options: RechargeOption[], priceType: number,
+    options: RechargeOption[], priceType: number, minRechargeValue?: number,
     onClick?: (option: RechargeOption, index: number) => void
-}> = ({ options, priceType, onClick }) => {
+}> = ({ options, priceType, minRechargeValue = 0, onClick }) => {
     return <div className="w-full flex flex-col gap-3" >
         {
             options.map((option, index) => {
+                if (option.diamond < minRechargeValue) {
+                    return null;
+                }
                 return <div className="w-full" key={index}>
                     <RechargeItem option={option} priceType={priceType} onClick={() => {
                         if (onClick) {

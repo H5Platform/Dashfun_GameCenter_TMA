@@ -10,6 +10,7 @@ import GameSaveMgr from './components/GameSaveMgr/GameSaveMgr.ts';
 import "./mockEnv.ts";
 import makeMockTgEnv from './mockEnv.ts';
 import { currentChannel } from './utils/Utils.tsx';
+import initProxy from "@/components/TelegramWebviewProxy/TelegramWebviewProxy.ts";
 
 /**
  * tgbot绑定miniapp链接时，不需要entry/tg的路径，只需要router中的路径即可,如/game, /game-center
@@ -44,7 +45,7 @@ if (idx > 0) {
 console.log("Platform:", retrieveLaunchParams().platform);
 
 init(retrieveLaunchParams().startParam === 'debug' || getEnv() == Env.Dev, retrieveLaunchParams().platform)
-
+initProxy();
 postEvent("web_app_expand");
 DBMgr.getInstance().openDB();
 GameSaveMgr.getInstance();
