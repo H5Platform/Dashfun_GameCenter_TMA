@@ -1,4 +1,4 @@
-import React, { createContext, FC, PropsWithChildren, useContext, useState } from "react";
+import { createContext, FC, PropsWithChildren, useContext, useState } from "react";
 
 const en: { [key: string]: string | string[] } = {
 	"GameListType": [

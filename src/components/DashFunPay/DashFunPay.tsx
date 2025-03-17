@@ -1,6 +1,6 @@
 import { FC, useCallback, useEffect, useState } from "react";
 import { OpenDashFunPaymentEvent, OpenDashFunRechargeEvent } from "../Event/Events";
-import { Button, Caption, Modal, Spinner, Subheadline, Text, Title } from "@telegram-apps/telegram-ui";
+import { Button, Modal, Spinner, Subheadline, Text, Title } from "@telegram-apps/telegram-ui";
 import { PaymentApi, PaymentData } from "@/utils/DashFunApi";
 import { useDashFunUser } from "../DashFun/DashFunUser";
 import { useDashFunGame } from "../DashFun/DashFunGame";

@@ -1,7 +1,6 @@
 import { PaymentApi } from "@/utils/DashFunApi";
 import {
 	initData,
-	invoice,
 	openTelegramLink,
 	useSignal
 } from "@telegram-apps/sdk-react";
