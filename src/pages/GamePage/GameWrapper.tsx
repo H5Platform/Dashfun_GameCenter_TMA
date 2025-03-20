@@ -295,7 +295,10 @@ export const GameWrapper: FC = () => {
 					{/* <div className='h-[200px] mt-[100px] bg-cover bg-center bg-no-repeat ' style={{
 					backgroundImage: `url('${game?.logoUrl}')`
 				}}></div> */}
-					<img src={game?.getLogoUrl()} className=' object-contain max-w-screen-sm mx-auto' style={{ width: "90vw", paddingTop: (pt + 100) + "px" }} ></img>
+					<div className='max-w-screen-sm mx-auto' style={{ width: "90vw", paddingTop: (pt + 100) + "px" }} >
+						<img src={game?.getLogoUrl()} className='object-contain w-full rounded-3xl shadow-xl'></img>
+					</div>
+
 					<Modal
 						className='max-w-screen-sm sm:mx-auto'
 						dismissible={false}
@@ -319,9 +322,11 @@ export const GameWrapper: FC = () => {
 									console.log("report user enter game:", game)
 									UserApi.enterGame(initDataRaw as string, game.id)
 									setPlay(true);
-									setTimeout(() => {
-										setShowLoadig(false);
-									}, 2000);
+									setShowLoadig(false);
+									//不要淡出了
+									// setTimeout(() => {
+									// 	setShowLoadig(false);
+									// }, 2000);
 								}
 							}} />
 

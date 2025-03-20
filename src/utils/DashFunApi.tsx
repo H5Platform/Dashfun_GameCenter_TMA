@@ -1,7 +1,7 @@
 import { GameData, GameDataList, GameDataParams } from "@/components/DashFunData/GameData"
 import { DashFunUser } from "@/components/DashFunData/UserData"
 import axios from "axios"
-import { currentChannel } from "./Utils"
+import { currentChannel, isInTelegram } from "./Utils"
 
 enum Env {
 	Dev,
@@ -887,24 +887,33 @@ const SpinWheelApi = {
 
 const tg_link = () => {
 	let botName = "DashFunBot";
-
-	switch (env) {
-		case Env.Test:
-			botName = "DashFunTestBot";
-			break;
-		case Env.Dev:
-			botName = "LocalTestBot";
-			break;
-		case Env.Prod:
-			botName = "DashFunBot";
-			break;
+	
+	if (isInTelegram()) {
+		switch (env) {
+			case Env.Test:
+				botName = "DashFunTestBot";
+				break;
+			case Env.Dev:
+				botName = "LocalTestBot";
+				break;
+			case Env.Prod:
+				botName = "DashFunBot";
+				break;
+		}
+		return `https://t.me/${botName}`
+	}else{
+		//环境外不需要bot name，但是为了openTelegramLink的统一性，必须返回https://t.me
+		return "https://t.me";
 	}
-	return `https://t.me/${botName}`
 }
 
 const TGLink = {
 	gameLink: (gameId: string) => {
+		if(isInTelegram()){
 		return `${tg_link()}/Games?startapp=${gameId}`
+		}else{
+		return `${tg_link()}/game?game_id=${gameId}`
+		}
 	},
 	centerLink: (userId?: string) => {
 		return userId == null || userId == "" ? `${tg_link()}/Center` : `${tg_link()}/Center?startapp=${userId}`

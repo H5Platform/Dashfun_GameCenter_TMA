@@ -5,7 +5,7 @@ import { openLink, openTelegramLink, useLaunchParams } from "@telegram-apps/sdk-
 import { Avatar, Button, Cell, CircularProgress, Image, Text } from "@telegram-apps/telegram-ui";
 import { FC, useEffect, useState } from "react";
 
-import { CoinInfo, getCoinIcon1, Task, TaskCategoryText, TaskCondition, TaskRewardType, TaskSave, TaskStatus } from "@/constats";
+import { CoinInfo, getCoinIcon1, GetTaskIcon, Task, TaskCategory, TaskCategoryText, TaskCondition, TaskRewardType, TaskSave, TaskStatus } from "@/constats";
 import { useTonConnectModal, useTonConnectUI } from "@tonconnect/ui-react";
 import { ChevronRight, CircleCheckBig } from "lucide-react";
 import { useDashFunCoins } from "../DashFun/DashFunCoins";
@@ -63,7 +63,26 @@ export const TaskList: FC<TaskListype> = ({ game, onTaskClicked, tasksData = nul
 		if (game != null) {
 			const r = await TaskApi.getTaskList(initDataRaw as string, game.id);
 			console.log("tasks:", r)
-			setTasks(r.tasks)
+			const tasklist = r.tasks;
+			tasklist.sort((a: Task, b: Task) => {
+				const saveA = r.user_data[a.id];
+				const saveB = r.user_data[b.id];
+				//已领取的任务排在最后，归类改为Done
+				if (saveA.status == TaskStatus.Claimed) {
+					a.category = TaskCategory.Done;
+					return 1;
+				} else if (saveB.status == TaskStatus.Claimed) {
+					b.category = TaskCategory.Done;
+					return -1;
+				} else if (a.category != b.category) {
+					return a.category - b.category;
+				} else if (saveA.status !== saveB.status) {
+					return saveB.status - saveA.status;
+				}
+
+				return b.create_time - a.create_time;
+			});
+			setTasks(tasklist)
 			setTaskSaves(r.user_data)
 		}
 	}
@@ -101,8 +120,8 @@ export const TaskList: FC<TaskListype> = ({ game, onTaskClicked, tasksData = nul
 			}
 			const save = taskSaves[task.id]
 			items.push(<TaskListItem key={task + "_" + task.id} task={task} save={save} game={game as GameData} onClicked={(item) => {
-				if(item.processed) {
-					setTaskSaves({...taskSaves, [task.id]: item.save})
+				if (item.processed) {
+					setTaskSaves({ ...taskSaves, [task.id]: item.save })
 				}
 				if (onTaskClicked != null) {
 					onTaskClicked(item)
@@ -265,7 +284,9 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 					console.log("on task clicked:", r)
 				});
 				processed = true;
-				save.status = TaskStatus.Verify_Pending;
+				if (task.require.type == TaskCondition.FollowX || task.require.type == TaskCondition.JoinTGChannel) {
+					save.status = TaskStatus.Verify_Pending;
+				}
 				TaskStatusChangedEvent.fire(task.id, save.status);
 			}
 		}
@@ -317,7 +338,7 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 	return <Cell
 		subtitle={<div className="flex flex-row gap-3">{rewardDom}</div>}
 		//subtitle={`+${task.reward.amount} ${coin?.coin.symbol}`}
-		before={<Image src={getImageUrl(game.id, game.iconUrl)} size={40} />}
+		before={<Image src={GetTaskIcon(task)} size={40} />}
 		after={progress}
 		onClick={() => {
 			onTaskClicked()

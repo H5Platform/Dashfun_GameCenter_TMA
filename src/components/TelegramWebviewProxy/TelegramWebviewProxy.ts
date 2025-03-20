@@ -2,6 +2,7 @@
  * 非telegram内置浏览器中打开telegram miniapp的代理组件，接收telegram事件并做出回应
  */
 
+import { createLogger } from "@/utils/createLogger";
 import { isInTelegram } from "@/utils/Utils";
 
 declare global {
@@ -10,10 +11,45 @@ declare global {
     }
 }
 
+const [logInfo] = createLogger("DF-EventProxy", {
+    bgColor: '#228888',
+    textColor: 'white',
+    shouldLog() {
+        return true;
+    },
+})
+
+const ProcessEvents = [
+    "web_app_open_tg_link",
+]
+
 class TelegramWebviewProxy {
-    postEvent(...args: unknown[]) {
+    postEvent(...args: any[]) {
         console.log("TelegramWebviewProxy postEvent----", args);
+        logInfo(false, "Posting Event", args[0])
+        if (ProcessEvents.includes(args[0])) {
+            this.processEvent(args[0], ...args.slice(1));
+        }
         return;
+    }
+
+    processEvent(event: string, ...args: any[]) {
+        logInfo(false, "Processing Event", event, args)
+        switch (event) {
+            case "web_app_open_tg_link":
+                //打开链接
+                const params = JSON.parse(args[0]);
+                openLink(params["path_full"]);
+                break;
+        }
+        return;
+    }
+}
+
+const openLink = (url: string) => {
+    if (url.startsWith("/game")) {
+        const to = `${window.location.origin}${url}`;
+        window.open(to, "_blank")
     }
 }
 

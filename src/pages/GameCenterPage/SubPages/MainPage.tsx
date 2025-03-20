@@ -78,7 +78,7 @@ export const GameCenter_MainPage: FC = () => {
 
 const GameCard: FC<{ game: GameData, width: number }> = ({ game, width }) => {
 	return <div className=" flex flex-col rounded-2xl p-2 bg-white bg-opacity-10" style={{ width: width }}>
-		<img src={game?.getLogoUrl()} className="object-contain rounded-2xl" style={{ width: width - 16, height: width - 16 }} />
+		<img src={game?.getLogoUrl()} className="object-cover rounded-2xl" style={{ width: width - 16, height: width - 16 }} />
 		<span className="text-sm truncate overflow-hidden min-w-0 py-1 text-white">{game?.name}</span>
 		<div className="w-full text-center text-sm font-semibold py-1 bg-white bg-opacity-20 rounded-full text-white" onClick={() => {
 			const url = TGLink.gameLink(encodeURIComponent(game?.id ?? ""));

@@ -1,4 +1,4 @@
-import { PaymentApi } from "@/utils/DashFunApi";
+import { Env, getEnv, PaymentApi } from "@/utils/DashFunApi";
 import {
 	initData,
 	openTelegramLink,
@@ -12,6 +12,7 @@ import { DashFunUser } from "../DashFunData/UserData";
 import { GameLoadingEvent, OpenDashFunPaymentEvent } from "../Event/Events";
 import GameSaveMgr from "../GameSaveMgr/GameSaveMgr";
 import { DashFunMessages } from "./Messages";
+import { createLogger } from "@/utils/createLogger";
 
 class Context {
 	callData: any;
@@ -46,24 +47,22 @@ const sendResult = (source: Window, method: string, result: Result) => {
 			result: result,
 		}
 	}
+	logInfo(false, "Sending Result", payload.dashfun)
 	source.postMessage(payload, "*")
 }
 
 const onGetUserProfile = (ctx: Context) => {
 	const { method } = ctx.callData;
 	sendResult(ctx.source, method, new Result("success", ctx.dfUser))
-	console.log("send user profile:", ctx.dfUser)
 }
 
 const onOpenTelegramLink = (ctx: Context) => {
-	console.log("invoke onOpenTelegramLink")
 	const { value } = ctx.callData.payload;
 	openTelegramLink(value);
 }
 
 const onOpenInvoice = (ctx: Context) => {
 	const { method, payload } = ctx.callData;
-	console.log("open invoice payload:", payload)
 	const { paymentId } = payload;
 
 	// if (invoiceLink.startsWith("test-")) {
@@ -205,6 +204,14 @@ processors[DashFunMessages.getData] = onGetData;
 processors[DashFunMessages.getDataV2] = onGetDataV2;
 processors[DashFunMessages.setData] = onSetData;
 
+const [logInfo] = createLogger("DF-Message", {
+	bgColor: '#228888',
+	textColor: 'white',
+	shouldLog() {
+		return getEnv() != Env.Prod;
+	}
+})
+
 export const MessageListener: FC = () => {
 	const initDataRaw = useSignal(initData.raw)
 	const dfUser = useDashFunUser();
@@ -217,6 +224,7 @@ export const MessageListener: FC = () => {
 			const { method } = data.dashfun;
 			const f = processors[method];
 			if (f != null) {
+				logInfo(false, "Processing Message", method, data.dashfun)
 				const context = new Context(
 					ev.source as Window,
 					data.dashfun,

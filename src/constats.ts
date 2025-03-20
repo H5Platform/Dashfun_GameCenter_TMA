@@ -3,6 +3,8 @@ import dashfunIcon from "./icons/dashfun-icon.svg";
 import dashfunPointIcon from "./icons/dashfun-xp-icon.png";
 import dashfunCoinIcon from "./icons/dashfun-coin-icon.png";
 import dashfunDiamond from "./icons/dashfun-diamond4.png";
+import iconX from "./icons/icon-x.png";
+import iconTg from "./icons/icon-telegram.png";
 import { getImageUrl } from "./utils/DashFunApi";
 
 
@@ -21,6 +23,7 @@ export const RechargePriceType = {
 //Task
 export type Task = {
 	id: string
+	create_time: number
 	game_id: string
 	category: number
 	name: string
@@ -36,6 +39,24 @@ export type Task = {
 		amount: number
 		reward_type: number
 	}[]
+}
+
+export const GetTaskIcon = (task: Task): string => {
+	switch (task.require.type) {
+		case TaskCondition.FollowX:
+			return iconX;
+		case TaskCondition.JoinTGChannel:
+			return iconTg;
+		case TaskCondition.PlayGame:
+			return getImageUrl(task.game_id, "icon.png");
+		case TaskCondition.PlaySpecificGame:
+			return getImageUrl(task.require.condition, "icon.png");
+		case TaskCondition.SpendStars:
+			return dashfunDiamond;
+		default:
+			return dashfunIcon;
+	}
+
 }
 
 export const TaskType = {
@@ -74,12 +95,14 @@ export const TaskRewardType = {
 export const TaskCategory = {
 	Challenges: 1,
 	Daily: 2,
+	Done: 4, //已完成的任务，客户端单独归类
 }
 
 export const TaskCategoryText: { [key: number]: string } = {
 	1: "Challenges",
-	2: "Daily Hunt",
-	3: "7 Days Challenges"
+	2: "Daily",
+	3: "7 Days Challenges",
+	4: "Done", //已完成的任务，客户端单独归类
 }
 
 export type TaskSave = {
