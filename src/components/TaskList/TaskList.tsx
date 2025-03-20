@@ -1,6 +1,6 @@
 import { GameData } from "@/components/DashFunData/GameData";
 import { DashFunUser } from "@/components/DashFunData/UserData";
-import { getImageUrl, TaskApi, TGLink, UserApi } from "@/utils/DashFunApi";
+import { TaskApi, TGLink, UserApi } from "@/utils/DashFunApi";
 import { openLink, openTelegramLink, useLaunchParams } from "@telegram-apps/sdk-react";
 import { Avatar, Button, Cell, CircularProgress, Image, Text } from "@telegram-apps/telegram-ui";
 import { FC, useEffect, useState } from "react";
