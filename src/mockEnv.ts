@@ -119,7 +119,7 @@ const makeTestTgEnv = () => {
 		startParam = "&start_param=" + params["game_id"];
 	}
 
-	const initDataRaw = `query_id=AAGdRiMDAQAAAJ1GIwP8XZGl${startParam}&user=%7B%22id%22%3A${user.tgUser.id}%2C%22first_name%22%3A%22${user.tgUser.firstName}%22%2C%22last_name%22%3A%22${user.tgUser.lastName}%22%2C%22username%22%3A%22${user.tgUser.username}%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Fa-ttgme.stel.com%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2F_UkdJAKrHgrVAVEg7reGeAtTtgNXStMmUSPq3W9C5WL6VBIe1b9bpZa5VRORCYWK.svg%22%7D&auth_date=1739304257&signature=jBwBAZTVg4EBllIS2sCgLyn-QjIWqi5pFGCzEvsM6kjGnarRYNX8UUrYzv77cY0GM3TwMTya3fpwMWgLu4YxDQ&hash=2e3cb51c74b3ebbc85fcc8d1010234e86c272f543cc0e3002a8b743824029e40`;
+	const initDataRaw = `query_id=AAGdRiMDAQAAAJ1GIwP8XZGl${startParam}&user=%7B%22id%22%3A${parseInt(user.tgUser.id, 10)}%2C%22first_name%22%3A%22${user.tgUser.firstName}%22%2C%22last_name%22%3A%22${user.tgUser.lastName}%22%2C%22username%22%3A%22${user.tgUser.username}%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Fa-ttgme.stel.com%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2F_UkdJAKrHgrVAVEg7reGeAtTtgNXStMmUSPq3W9C5WL6VBIe1b9bpZa5VRORCYWK.svg%22%7D&auth_date=${Math.floor(new Date().getTime() / 1000)}&signature=jBwBAZTVg4EBllIS2sCgLyn-QjIWqi5pFGCzEvsM6kjGnarRYNX8UUrYzv77cY0GM3TwMTya3fpwMWgLu4YxDQ&hash=2e3cb51c74b3ebbc85fcc8d1010234e86c272f543cc0e3002a8b743824029e40`;
 
 	const initData = parseInitData(initDataRaw);
 	mockTelegramEnv({

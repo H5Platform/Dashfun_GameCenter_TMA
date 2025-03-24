@@ -2,6 +2,7 @@ import { GameData, GameDataList, GameDataParams } from "@/components/DashFunData
 import { DashFunUser } from "@/components/DashFunData/UserData"
 import axios from "axios"
 import { currentChannel, isInTelegram } from "./Utils"
+import {Base64} from 'js-base64';
 
 enum Env {
 	Dev,
@@ -166,7 +167,7 @@ const GameApi = {
 		if (gameId.startsWith("test-") /*&& env != Env.Prod*/) {
 			//for test
 			const encoded = gameId.slice("test-".length)
-			const url = atob(encoded)
+			const url =  Base64.decode(encoded)
 
 			console.log("decoded url::::", url);
 			return new GameData({

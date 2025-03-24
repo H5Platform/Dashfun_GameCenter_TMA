@@ -3,7 +3,7 @@ import { GameData } from '@/components/DashFunData/GameData';
 import { GameLauncher } from '@/components/GameLauncher/GameLauncher';
 import { TaskApi, TGLink, UserApi } from '@/utils/DashFunApi';
 import { backButton, openTelegramLink, shareURL, useLaunchParams, useSignal, viewport } from '@telegram-apps/sdk-react';
-import { Badge, Button, LargeTitle, Modal, Tabbar } from '@telegram-apps/telegram-ui';
+import { Badge, Button, LargeTitle, Modal } from '@telegram-apps/telegram-ui';
 import { SectionHeader } from '@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionHeader/SectionHeader';
 import { ModalHeader } from '@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalHeader/ModalHeader';
 import { useEffect, useState, type FC } from 'react';
@@ -89,6 +89,8 @@ export const GameWrapper: FC = () => {
 		//任务状态变化，重新获取task count
 		console.log("get task count....")
 		getTaskCount();
+		//获取coin变化
+		updateCoins && updateCoins([game?.id || ""])
 	}
 
 	const spinListener = (_spinId: string, status: number) => {
@@ -204,7 +206,7 @@ export const GameWrapper: FC = () => {
 	];
 
 
-	const [currentTab, setCurrentTab] = useState(tabs[0].id);
+	// const [currentTab, setCurrentTab] = useState(tabs[0].id);
 
 	const avatarWidth = window.innerWidth > 400 ? 40 : 32;
 
@@ -357,7 +359,11 @@ export const GameWrapper: FC = () => {
 							<div className='flex flex-col w-full h-full' style={{
 								backgroundColor: "var(--tg-theme-secondary-bg-color)"
 							}}>
+								{/** 250320 暂时去掉了tab栏，只显示任务列表了 */}
 								<div style={{ paddingBottom: "calc(10vh + 100px) " }}>
+									{tabs[0].component}
+								</div>
+								{/* <div style={{ paddingBottom: "calc(10vh + 100px) " }}>
 									{tabs.find((t) => t.id == currentTab)?.component}
 								</div>
 
@@ -373,7 +379,7 @@ export const GameWrapper: FC = () => {
 											<Icon />
 										</Tabbar.Item>
 									))}
-								</Tabbar>
+								</Tabbar> */}
 							</div>
 						</Modal>
 					)

@@ -24,6 +24,7 @@
     "axios": "^1.7.3",
     "eruda": "^3.0.1",
     "framer-motion": "^12.4.11",
+    "js-base64": "^3.7.7",
     "keepalive-for-react": "^3.0.10",
     "lucide-react": "^0.474.0",
     "ogl": "^1.0.11",
