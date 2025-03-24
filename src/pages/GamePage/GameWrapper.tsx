@@ -216,7 +216,6 @@ export const GameWrapper: FC = () => {
 			paddingTop: "5px",
 			paddingBottom: "5px",
 		}}>
-		<MessageListener />
 		<div className='game-title max-w-screen-sm sm:mx-auto flex items-center gap-2'>
 			<DFProfileAvatar size={avatarWidth} onClick={() => {
 				openTaskUI();
@@ -277,6 +276,7 @@ export const GameWrapper: FC = () => {
 	</SectionHeader >
 
 	return <div id="game-wrapper" className='w-full h-full flex flex-col'>
+		<MessageListener />
 		<div className="game-wrapper max-w-screen-sm sm:mx-auto" style={{ paddingTop: pt, paddingBottom: pb }}>
 			{header}
 			<div id="game-iframe" className=' flex-1 h-full'>

@@ -434,6 +434,25 @@ const PaymentApi = {
 		return dashFunApiUrl + "payment/"
 	},
 
+	requestTGPayment:async (tgToken: string, request: { game_id: string, title: string, desc: string, payload: string, price: number }) => {
+		const api = PaymentApi.apiUrl() + "request/tg"
+		const result = await axios.get(api, {
+			headers: {
+				"Authorization": "tma " + processToken(tgToken)
+			},
+			params: request
+		});
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data;
+			} else {
+				throw result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
+
 	requestPayment: async (tgToken: string, request: { game_id: string, title: string, desc: string, payload: string, price: number }) => {
 		const api = PaymentApi.apiUrl() + "request"
 		const result = await axios.get(api, {

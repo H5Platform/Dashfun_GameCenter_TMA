@@ -1,10 +1,11 @@
 import { Env, getEnv, PaymentApi } from "@/utils/DashFunApi";
 import {
 	initData,
+	invoice,
 	openTelegramLink,
 	useSignal
 } from "@telegram-apps/sdk-react";
-import { FC, useCallback, useEffect } from "react";
+import { FC, useCallback, useEffect, useRef } from "react";
 import { useDashFunGame } from "../DashFun/DashFunGame";
 import { useDashFunUser } from "../DashFun/DashFunUser";
 import { GameData } from "../DashFunData/GameData";
@@ -83,6 +84,44 @@ const onOpenInvoice = (ctx: Context) => {
 	}
 
 	OpenDashFunPaymentEvent.fire(paymentId, onResult);
+
+}
+
+const onRequestAd = (ctx: Context) => {
+	const { method, payload } = ctx.callData
+	const { title, desc } = payload
+
+	PaymentApi.requestTGPayment(ctx.initDataRaw, {
+		game_id: ctx.dfGame.id,
+		title,
+		desc,
+		payload: "ad",
+		price: 1, //所有广告都按扣1星星处理
+	}).then(result => {
+		const { paymentId, invoiceLink } = result;
+		if (invoiceLink) {
+			if (invoiceLink.startsWith("test-")) {
+				sendResult(ctx.source, method, new Result("success", { paymentId, status: "paid" }))
+			} else {
+				console.log("opening invoice", invoiceLink)
+				invoice.open(invoiceLink, "url").then((status) => {
+					console.log(`invoice ${invoiceLink} status changed:`, status);
+					sendResult(ctx.source, method, new Result("success", { paymentId, status }))
+				}).catch(e => {
+					console.error(e);
+					sendResult(ctx.source, method, new Result("error", e))
+				});
+			}
+		} else {
+			const r = new Result("success", { paymentId, status: "canceled" });
+			sendResult(ctx.source, method, r)
+		}
+
+	}).catch(e => {
+		console.error(e);
+		const r = new Result("error", e);
+		sendResult(ctx.source, method, r)
+	})
 
 }
 
@@ -199,6 +238,7 @@ processors[DashFunMessages.getUserProfile] = onGetUserProfile;
 processors[DashFunMessages.openTelegramLink] = onOpenTelegramLink;
 processors[DashFunMessages.openInvoice] = onOpenInvoice;
 processors[DashFunMessages.requestPayment] = onRequestPayment;
+processors[DashFunMessages.requestAd] = onRequestAd;
 processors[DashFunMessages.loading] = onLoading;
 processors[DashFunMessages.getData] = onGetData;
 processors[DashFunMessages.getDataV2] = onGetDataV2;
@@ -212,30 +252,23 @@ const [logInfo] = createLogger("DF-Message", {
 	}
 })
 
+var index = 0;
+
 export const MessageListener: FC = () => {
 	const initDataRaw = useSignal(initData.raw)
 	const dfUser = useDashFunUser();
 	const game = useDashFunGame();
 
-	const eventListener = useCallback((ev: MessageEvent<any>) => {
-		console.log("receive message", ev);
-		const { data } = ev;
-		if (data.dashfun) {
-			const { method } = data.dashfun;
-			const f = processors[method];
-			if (f != null) {
-				logInfo(false, "Processing Message", method, data.dashfun)
-				const context = new Context(
-					ev.source as Window,
-					data.dashfun,
-					game as GameData,
-					dfUser as DashFunUser,
-					initDataRaw as string,
-				)
-				f(context);
-			}
-		}
-	}, [dfUser, game, initDataRaw])
+	const userRef = useRef(dfUser);
+	const gameRef = useRef(game);
+	const initDataRef = useRef(initDataRaw);
+
+	useEffect(() => {
+		userRef.current = dfUser;
+		gameRef.current = game;
+		initDataRef.current = initDataRaw;
+	}, [dfUser, game, initDataRaw]);
+
 
 	useEffect(() => {
 		if (dfUser != null && game != null) {
@@ -245,11 +278,35 @@ export const MessageListener: FC = () => {
 	}, [initData, initDataRaw, dfUser, game]);
 
 	useEffect(() => {
-		window.addEventListener('message', eventListener)
-		return () => {
-			window.removeEventListener('message', eventListener);
+		const eventListener = (ev: MessageEvent<any>) => {
+			console.log("receive message", ev);
+			const { data } = ev;
+			if (data.dashfun) {
+				const { method } = data.dashfun;
+				const f = processors[method];
+				if (f != null) {
+					logInfo(false, "Processing Message", method, data.dashfun)
+					const context = new Context(
+						ev.source as Window,
+						data.dashfun,
+						gameRef.current as GameData,
+						userRef.current as DashFunUser,
+						initDataRef.current as string,
+					)
+					f(context);
+				}
+			}
 		}
-	}, [eventListener])
+		
+		const l = eventListener
+		const i = index++;
+		window.addEventListener('message', l)
+		console.log("add event listener", i)
+		return () => {
+			window.removeEventListener('message', l);
+			console.log("removing event listener", i)
+		}
+	}, [])
 
-	return <></>
+	return <div id="message listener"></div>
 }

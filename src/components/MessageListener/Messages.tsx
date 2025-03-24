@@ -67,6 +67,22 @@ export const DashFunMessages = {
 	requestPayment: "requestPayment",
 
 	/**
+	 * 请求观看广告，目前在tg里就是消费1个星星代替
+	 * 
+	 * payload:{
+	 * 	title: string,
+	 * 	desc: string,
+	 * }
+	 * 
+	 * result:{
+	 * 	state:"success"|"error",
+	 * 	data:{
+	 * 		paymentId:string,
+	 * 	}
+	 */
+	requestAd: "requestAd",
+
+	/**
 	 * payload:{
 	 * 	key:string,
 	 * 	data:object
