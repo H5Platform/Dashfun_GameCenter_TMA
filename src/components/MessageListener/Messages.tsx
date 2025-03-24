@@ -77,7 +77,7 @@ export const DashFunMessages = {
 	 * result:{
 	 * 	state:"success"|"error",
 	 * 	data:{
-	 * 		paymentId:string,
+	 * 		data:string,
 	 * 	}
 	 */
 	requestAd: "requestAd",

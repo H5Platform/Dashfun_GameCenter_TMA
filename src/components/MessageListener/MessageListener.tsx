@@ -98,22 +98,22 @@ const onRequestAd = (ctx: Context) => {
 		payload: "ad",
 		price: 1, //所有广告都按扣1星星处理
 	}).then(result => {
-		const { paymentId, invoiceLink } = result;
+		const { invoiceLink } = result;
 		if (invoiceLink) {
 			if (invoiceLink.startsWith("test-")) {
-				sendResult(ctx.source, method, new Result("success", { paymentId, status: "paid" }))
+				sendResult(ctx.source, method, new Result("success", { data: "success" }))
 			} else {
 				console.log("opening invoice", invoiceLink)
 				invoice.open(invoiceLink, "url").then((status) => {
 					console.log(`invoice ${invoiceLink} status changed:`, status);
-					sendResult(ctx.source, method, new Result("success", { paymentId, status }))
+					sendResult(ctx.source, method, new Result("success", { data: "success" }))
 				}).catch(e => {
 					console.error(e);
-					sendResult(ctx.source, method, new Result("error", e))
+					sendResult(ctx.source, method, new Result("error", { data: "error" }))
 				});
 			}
 		} else {
-			const r = new Result("success", { paymentId, status: "canceled" });
+			const r = new Result("error", { data: "canceled" });
 			sendResult(ctx.source, method, r)
 		}
 
