@@ -5,7 +5,7 @@ import {
 	openTelegramLink,
 	useSignal
 } from "@telegram-apps/sdk-react";
-import { FC, useCallback, useEffect, useRef } from "react";
+import { FC, useEffect, useRef } from "react";
 import { useDashFunGame } from "../DashFun/DashFunGame";
 import { useDashFunUser } from "../DashFun/DashFunUser";
 import { GameData } from "../DashFunData/GameData";
@@ -297,7 +297,7 @@ export const MessageListener: FC = () => {
 				}
 			}
 		}
-		
+
 		const l = eventListener
 		const i = index++;
 		window.addEventListener('message', l)
