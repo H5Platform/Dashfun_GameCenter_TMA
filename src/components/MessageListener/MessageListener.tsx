@@ -94,7 +94,7 @@ const onRequestAd = (ctx: Context) => {
 	PaymentApi.requestTGPayment(ctx.initDataRaw, {
 		game_id: ctx.dfGame.id,
 		title,
-		desc,
+		desc: desc == null || desc == "" ? " " : desc,
 		payload: "ad",
 		price: 1, //所有广告都按扣1星星处理
 	}).then(result => {
