@@ -119,7 +119,6 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked, foote
 							onClick={() => {
 								if (game != null) {
 									shareURL(game.tgLink());
-									window.postMessage({ dashfun: { method: "requestAd", payload: { title: "ad1", desc: "ad1" } } }, "*")
 								}
 							}}
 						>
