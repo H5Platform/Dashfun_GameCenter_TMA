@@ -106,7 +106,7 @@ const onRequestAd = (ctx: Context) => {
 				console.log("opening invoice", invoiceLink)
 				invoice.open(invoiceLink, "url").then((status) => {
 					console.log(`invoice ${invoiceLink} status changed:`, status);
-					sendResult(ctx.source, method, new Result("success", { data: "success" }))
+					sendResult(ctx.source, method, new Result("success", { data: status == "paid" ? "success" : status }))
 				}).catch(e => {
 					console.error(e);
 					sendResult(ctx.source, method, new Result("error", { data: "error" }))
