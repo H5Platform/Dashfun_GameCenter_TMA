@@ -59,7 +59,7 @@ const DFCell: FC<DFCellProps> = (props: DFCellProps) => {
 
         {before && <div className="flex-shrink-0 relative">
             {before}
-            {disableBeforeRing != true && <div className={"absolute top-0 left-0 right-0 bottom-0 ring-[2px] ring-[var(--ring-color)] pointer-events-none rounded-xl"}
+            {disableBeforeRing != true && <div className={"absolute inset-[1px] ring-[2px] ring-[var(--ring-color)] pointer-events-none rounded-xl"}
                 style={{
                     "--ring-color": colorScheme.beforeRing,
                 } as React.CSSProperties}></div>}
