@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import diamondIcon from "@/icons/dashfun-diamond4.png";
 import starIcon from "@/icons/star-icon.png";
 import { Button, Spinner, Text, Title } from "@telegram-apps/telegram-ui";
