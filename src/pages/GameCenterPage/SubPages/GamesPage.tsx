@@ -212,7 +212,7 @@ const GameList: FC<{ listType: number, limit?: number, countPerColumn?: number }
 				let pr = 0;
 
 				const count = Math.min(limit, gamelist.game_list[listType].length);
-				let m = Math.round(count / countPerColumn) * countPerColumn;
+				let m = Math.floor(count / countPerColumn) * countPerColumn;
 				if (count % countPerColumn == 0) {
 					m -= 1;
 				}
