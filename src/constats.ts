@@ -20,6 +20,11 @@ export const RechargePriceType = {
 	TGSTAR: 2,
 }
 
+export const RechargePriceTypeText: { [key: number]: string } = {
+	1: "USD",
+	2: "TGS",
+}
+
 //Task
 export type Task = {
 	id: string

@@ -2,7 +2,7 @@ import { GameData, GameDataList, GameDataParams } from "@/components/DashFunData
 import { DashFunUser } from "@/components/DashFunData/UserData"
 import axios from "axios"
 import { currentChannel, isInTelegram } from "./Utils"
-import {Base64} from 'js-base64';
+import { Base64 } from 'js-base64';
 
 enum Env {
 	Dev,
@@ -167,7 +167,7 @@ const GameApi = {
 		if (gameId.startsWith("test-") /*&& env != Env.Prod*/) {
 			//for test
 			const encoded = gameId.slice("test-".length)
-			const url =  Base64.decode(encoded)
+			const url = Base64.decode(encoded)
 
 			console.log("decoded url::::", url);
 			return new GameData({
@@ -434,7 +434,7 @@ const PaymentApi = {
 		return dashFunApiUrl + "payment/"
 	},
 
-	requestTGPayment:async (tgToken: string, request: { game_id: string, title: string, desc: string, payload: string, price: number }) => {
+	requestTGPayment: async (tgToken: string, request: { game_id: string, title: string, desc: string, payload: string, price: number }) => {
 		const api = PaymentApi.apiUrl() + "request/tg"
 		const result = await axios.get(api, {
 			headers: {
@@ -521,17 +521,32 @@ const PaymentApi = {
 	},
 }
 
+type RechargeOrder = {
+	id: string,
+	user_id: string,
+	pay_from: string,
+	payment_id: string,
+	from: number,
+	price: number,
+	price_type: number,
+	diamond: number,
+	status: number,
+}
+
 const RechargeApi = {
 	apiUrl: (): string => {
 		return dashFunApiUrl + "recharge/"
 	},
 
-	getOptions: async (tgToken: string) => {
+	getOptions: async (tgToken: string, platform: string) => {
 		const api = RechargeApi.apiUrl() + "options"
 		const result = await axios.get(api, {
 			headers: {
 				"Authorization": "tma " + processToken(tgToken)
 			},
+			params: {
+				platform
+			}
 		})
 		if (result.status == 200) {
 			if (result.data.code == 0) {
@@ -544,7 +559,7 @@ const RechargeApi = {
 		}
 	},
 
-	requestOrder: async (tgToken: string, platform: string, optionIndex: number) => {
+	requestOrder: async (tgToken: string, platform: string, optionIndex: number): Promise<RechargeOrder> => {
 		const api = RechargeApi.apiUrl() + "order/create"
 		const result = await axios.post(api, {
 			platform, recharge_option_index: optionIndex, channel: currentChannel()
@@ -555,7 +570,7 @@ const RechargeApi = {
 		})
 		if (result.status == 200) {
 			if (result.data.code == 0) {
-				return result.data.data;
+				return result.data.data as RechargeOrder;
 			} else {
 				return result.data.msg
 			}
@@ -584,7 +599,7 @@ const RechargeApi = {
 		}
 	},
 
-	getOrder: async (orderId: string) => {
+	getOrder: async (orderId: string):Promise<RechargeOrder> => {
 		const api = RechargeApi.apiUrl() + "order/" + orderId
 		const result = await axios.get(api)
 		if (result.status == 200) {
@@ -907,7 +922,7 @@ const SpinWheelApi = {
 
 const tg_link = () => {
 	let botName = "DashFunBot";
-	
+
 	if (isInTelegram()) {
 		switch (env) {
 			case Env.Test:
@@ -921,7 +936,7 @@ const tg_link = () => {
 				break;
 		}
 		return `https://t.me/${botName}`
-	}else{
+	} else {
 		//环境外不需要bot name，但是为了openTelegramLink的统一性，必须返回https://t.me
 		return "https://t.me";
 	}
@@ -929,10 +944,10 @@ const tg_link = () => {
 
 const TGLink = {
 	gameLink: (gameId: string) => {
-		if(isInTelegram()){
-		return `${tg_link()}/Games?startapp=${gameId}`
-		}else{
-		return `${tg_link()}/game?game_id=${gameId}`
+		if (isInTelegram()) {
+			return `${tg_link()}/Games?startapp=${gameId}`
+		} else {
+			return `${tg_link()}/game?game_id=${gameId}`
 		}
 	},
 	centerLink: (userId?: string) => {
@@ -986,4 +1001,4 @@ const getEnv = () => {
 
 
 export { GameApi, PaymentApi, RechargeApi, UserApi, TGLink, TaskApi, CoinApi, SpinWheelApi, LeaderBoardApi, FriendsApi, RechargeLink, getEnv, Env }
-export type { PaymentData }
+export type { PaymentData, RechargeOrder }

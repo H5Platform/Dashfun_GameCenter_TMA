@@ -1,10 +1,10 @@
 import { FC, useEffect, useRef, useState } from "react";
 import diamondIcon from "@/icons/dashfun-diamond4.png";
 import starIcon from "@/icons/star-icon.png";
-import { Button, Caption, Spinner, Text, Title } from "@telegram-apps/telegram-ui";
-import { RechargeApi, RechargeLink } from "@/utils/DashFunApi";
-import { initData, openLink, retrieveLaunchParams, useSignal } from "@telegram-apps/sdk-react";
-import { RechargeOrderStatus, RechargePriceType, toCurrency } from "@/constats";
+import { Button, Spinner, Text, Title } from "@telegram-apps/telegram-ui";
+import { RechargeApi, RechargeLink, RechargeOrder } from "@/utils/DashFunApi";
+import { initData, invoice, retrieveLaunchParams, useLaunchParams, useSignal } from "@telegram-apps/sdk-react";
+import { RechargeOrderStatus, RechargePriceType, RechargePriceTypeText, toCurrency } from "@/constats";
 import { motion } from "framer-motion";
 import Section from "../Section/Section";
 import { useDashFunCoins } from "../DashFun/DashFunCoins";
@@ -24,11 +24,12 @@ import { DFButton, DFCell, DFLabel, DFText } from "../controls";
 type OrderInfo = {
     orderId: string,
     optionIndex: number,
+    channelPayId?: string
 }
 
 const priceToString = (price: number, priceType: number) => {
     if (priceType == RechargePriceType.TGSTAR) {
-        return <div className="flex items-center justify-center flex-row gap-1"><img src={starIcon} className="w-4" />{toCurrency(price) + " Stars"} </div>
+        return <div className="flex items-center justify-center flex-row gap-1"><img src={starIcon} className="w-4" />{toCurrency(price, 0) + " Stars"} </div>
     } else {
         return <p>{"$" + toCurrency(price / 100)}</p>;
     }
@@ -53,11 +54,12 @@ const payingOrder = (userId: string): OrderInfo => {
     }
 }
 
-const saveOrder = (userId: string, orderId: string, optionIndex: number): OrderInfo => {
-    if (userId == "") return { orderId: "", optionIndex: -1 };
+const saveOrder = (userId: string, orderId: string, channelPayId: string, optionIndex: number): OrderInfo => {
+    if (userId == "") return { orderId: "", optionIndex: -1, channelPayId: "" };
     const order: OrderInfo = {
         orderId: orderId,
-        optionIndex: optionIndex
+        optionIndex: optionIndex,
+        channelPayId: channelPayId
     }
     localStorage.setItem(orderSaveKey(userId), JSON.stringify(order));
     return order;
@@ -82,6 +84,7 @@ const DashFunRecharge: FC<{ minRechargeValue: number }> = ({ minRechargeValue = 
     const [selected, setSelected] = useState<number>(-1);
     const initDataRaw = useSignal(initData.raw)
     const user = useDashFunUser();
+    const ps = useLaunchParams();
     const [purchasedOrder, setPurchasedOrder] = useState<any>(null);
 
     const [_1, _2, updateCoins, getCoinInfo] = useDashFunCoins();
@@ -90,7 +93,7 @@ const DashFunRecharge: FC<{ minRechargeValue: number }> = ({ minRechargeValue = 
 
     const getRechargeOptions = async () => {
         // Fetch recharge options
-        const result = await RechargeApi.getOptions(initDataRaw as string);
+        const result = await RechargeApi.getOptions(initDataRaw as string, ps.platform);
         setPriceType(result.price_type);
         setOptions(result.options);
 
@@ -193,7 +196,7 @@ const RechargeSelected: FC<{
     const initDataRaw = useSignal(initData.raw) as string
     const platform = retrieveLaunchParams().platform;
     const user = useDashFunUser();
-    const [rechargeOrder, setRechargeOrder] = useState(null);
+    const [rechargeOrder, setRechargeOrder] = useState<RechargeOrder | null>(null);
 
     const orderRef = useRef(order);
 
@@ -212,7 +215,9 @@ const RechargeSelected: FC<{
                 setRechargeOrder(result);
                 onPurchase && onPurchase(result);
 
-                UserRechargeEvent.fire(result.id, result.price, "USD", result.status == RechargeOrderStatus.Completed ? "success" : "canceled", result.pay_from);
+                const currency = RechargePriceTypeText[result.price_type];
+
+                UserRechargeEvent.fire(result.id, result.price, currency, result.status == RechargeOrderStatus.Completed ? "success" : "canceled", result.pay_from);
 
                 setTimeout(() => {
                     setLoading(false);
@@ -252,10 +257,24 @@ const RechargeSelected: FC<{
         setLoading(true);
         try {
             const result = await RechargeApi.requestOrder(initDataRaw, platform, optionIndex);
-            UserRechargeEvent.fire(result, finalPrice, "USD", "pending", "");
+            const currency = RechargePriceTypeText[priceType];
+            UserRechargeEvent.fire(result.id, finalPrice, currency, "pending", "");
             //保存正在进行的订单到本地
-            const order = saveOrder(user?.id || "", result, optionIndex);
+            const order = saveOrder(user?.id || "", result.id, result.payment_id, optionIndex);
             setOrder(order);
+
+            if (isInTelegram()) {
+                //tg环境下直接请求开启invoice
+                invoice.open(result.payment_id, "url").then((status) => {
+                    if (status != "paid") {
+                        cancelOrder();
+                    }
+                }).catch(e => {
+                    console.error(e);
+                    cancelOrder();
+                });
+            }
+
         } catch (e) {
             console.error(e);
         } finally {
@@ -266,7 +285,8 @@ const RechargeSelected: FC<{
     const cancelOrder = async () => {
         if (order && order.orderId != "") {
             RechargeApi.cancelOrder(initDataRaw, order?.orderId);
-            UserRechargeEvent.fire(order?.orderId, finalPrice, "USD", "canceled", "");
+            const currency = RechargePriceTypeText[priceType];
+            UserRechargeEvent.fire(order?.orderId, finalPrice, currency, "canceled", "");
         }
         setLoading(false);
         clearSavedOrder(user?.id || "");
@@ -294,23 +314,19 @@ const RechargeSelected: FC<{
                 </div>
             </div>
             <div className="w-full flex flex-row items-center justify-center py-2">
-                <DFText size="lg" weight="2">USD</DFText>
+                {priceType == RechargePriceType.USD && <DFText size="lg" weight="2">USD</DFText>}
                 <DFText size="lg" weight="2">
                     {priceToString(finalPrice, priceType)}
                 </DFText>
             </div>
 
             {
-                rechargeOrder == null && order != null && order.orderId != "" && order.optionIndex >= 0 &&
+                //非tg环境下显示充值提示和链接
+                !isInTelegram() && rechargeOrder == null && order != null && order.orderId != "" && order.optionIndex >= 0 &&
                 <div className="w-full flex flex-col items-center justify-center p-2">
                     <DFText size="xs" weight="2"><L langKey={LangKeys.Recharge_Purchase_Link_Tip} /></DFText>
                     {
-                        isInTelegram() ? <div className="w-full text-center cursor-pointer"
-                            onClick={() => {
-                                openLink(rechargeLink, { tryInstantView: true });
-                            }}>
-                            <DFText size="xs" color="var(--tg-theme-link-color)" weight="1">{rechargeLink}</DFText>
-                        </div> : <a href={rechargeLink} target="_blank"><DFText size="xs" color="var(--tg-theme-link-color)" weight="1">{rechargeLink}</DFText></a>
+                        <a href={rechargeLink} target="_blank"><DFText size="xs" color="var(--tg-theme-link-color)" weight="1">{rechargeLink}</DFText></a>
                     }
                 </div>
             }
@@ -345,7 +361,7 @@ const RechargeResult: FC<{ rechargeOrder: any }> = ({ rechargeOrder }) => {
             style={{ width: "150px" }}
         />
         <div className="w-full flex flex-col items-center justify-center p-2">
-            <Caption weight="2">{rechargeOrder.status == RechargeOrderStatus.Completed ? "Purchase Successful" : "Purchase Failed"}</Caption>
+            <DFText size="sm" weight="2">{rechargeOrder.status == RechargeOrderStatus.Completed ? "Purchase Successful" : "Purchase Failed"}</DFText>
         </div>
     </div>
 }
