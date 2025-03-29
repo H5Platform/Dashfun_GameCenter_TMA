@@ -5,12 +5,6 @@
 import { createLogger } from "@/utils/createLogger";
 import { isInTelegram } from "@/utils/Utils";
 
-declare global {
-    interface Window {
-        TelegramWebviewProxy?: TelegramWebviewProxy;
-    }
-}
-
 const [logInfo] = createLogger("DF-EventProxy", {
     bgColor: '#228888',
     textColor: 'white',
@@ -61,3 +55,4 @@ const initProxy = () => {
 }
 
 export default initProxy
+export {TelegramWebviewProxy}

@@ -180,7 +180,7 @@ export const GameGenre = {
 	Strategy: 1003,
 };
 
-export const GameDashFun: GameData = new GameData({
+export const GameDashFun = () => new GameData({
 	id: "DashFun",
 	name: "DashFun",
 	genre: [],
@@ -194,6 +194,7 @@ export const GameDashFun: GameData = new GameData({
 	status: 0,
 	suggest: 0
 });
+
 
 export const formatNumber = (num: number | null | undefined, precision: number = 2): string => {
 	if (num === null || num === undefined) {

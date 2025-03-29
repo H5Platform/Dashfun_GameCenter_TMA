@@ -1,5 +1,5 @@
 import { FC, useCallback, useEffect, useState } from "react";
-import { OpenDashFunPaymentEvent, OpenDashFunRechargeEvent } from "../Event/Events";
+import { OpenDashFunPaymentEvent, OpenDashFunRechargeEvent, UserPaymentEvent } from "../Event/Events";
 import { Button, Modal, Spinner, Subheadline, Text, Title } from "@telegram-apps/telegram-ui";
 import { PaymentApi, PaymentData } from "@/utils/DashFunApi";
 import { useDashFunUser } from "../DashFun/DashFunUser";
@@ -36,6 +36,7 @@ const DashFunPay: FC = () => {
             PaymentApi.getPayment(user.id, game.id, paymentId).then((res) => {
                 setPaymentInfo({ payment: res, onResult });
                 setShow(true);
+                UserPaymentEvent.fire(res, "pending");
             })
         }
     }
@@ -65,6 +66,7 @@ const DashFunPay: FC = () => {
                 await PaymentApi.confirmPayment(initDataRaw, payment.id);
                 updateCoins && updateCoins(["DashFun"]);
                 setPaymentResult({ success: true, msg: "Success" });
+                UserPaymentEvent.fire(payment, "success");
                 setTimeout(() => {
                     if (onResult) {
                         onResult(true, "Success");
@@ -74,6 +76,7 @@ const DashFunPay: FC = () => {
                 }, 2000);
             } catch (e) {
                 setPaymentResult({ success: false, msg: e as string });
+                UserPaymentEvent.fire(payment, "canceled");
                 setTimeout(() => {
                     if (onResult) {
                         onResult(false, e as string);
@@ -158,6 +161,7 @@ const DashFunPay: FC = () => {
                                         setShow(false);
                                         if (onResult) {
                                             onResult(false, "User cancel");
+                                            UserPaymentEvent.fire(payment, "canceled");
                                         }
                                     }}>
                                         <L langKey={LangKeys.Common_Cancel} />

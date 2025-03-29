@@ -20,11 +20,12 @@ import initProxy from "@/components/TelegramWebviewProxy/TelegramWebviewProxy.ts
 
 const path = window.location.href;
 const idx = path.indexOf("/entry/")
+var channel = "";
 if (idx > 0) {
 	//从entry进入，根据参数生成不同环境
 	let params = path.slice(idx + 1).split("/");
 	if (params[0] == "entry") {
-		const channel = params[1];
+		channel = params[1];
 		if (channel == "test" && getEnv() != Env.Prod) {
 			//生成测试环境的数据
 			makeMockTgEnv();
@@ -35,12 +36,26 @@ if (idx > 0) {
 	}
 } else {
 	//从localStroage中获取环境，如果获取不到默认就是tg环境
-	const channel = currentChannel();
+	channel = currentChannel();
 	if (channel == "test" && getEnv() != Env.Prod) {
 		//生成测试环境的数据
 		makeMockTgEnv();
 	}
 }
+
+
+// //增加td_channelid参数，供tg统计使用
+sessionStorage.setItem("__TD_td_channel", channel);
+// const params = new URLSearchParams(window.location.search);
+// if (!params.has("td_channelid")) {
+// 	params.set("td_channelid", channel);
+
+// 	const newSearch = params.toString();
+// 	const newUrl = `${window.location.pathname}?${newSearch}${window.location.hash}`;
+// 	//window.history.replaceState(null, '', newUrl);	
+// }
+
+// window.location.search = window.location.search + "&td_channelid=" + channel;
 
 console.log("Platform:", retrieveLaunchParams().platform);
 

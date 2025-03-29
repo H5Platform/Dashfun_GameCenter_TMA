@@ -1,6 +1,5 @@
 import { FC, useEffect, useState } from "react";
-
-import { Button, Image, Spinner } from "@telegram-apps/telegram-ui";
+import { Spinner } from "@telegram-apps/telegram-ui";
 import { useDashFunGame } from "../DashFun/DashFunGame";
 import { GameData } from "../DashFunData/GameData";
 import { GameLoadingEvent } from "../Event/Events";
@@ -9,6 +8,7 @@ import { toTimeString } from "@/utils/Utils";
 import { initData, shareURL, useSignal } from "@telegram-apps/sdk-react";
 import { Heart, Send } from "lucide-react";
 import { GameApi } from "@/utils/DashFunApi";
+import { DFButton, DFImage, DFText } from "../controls";
 
 export type GLProps = JSX.IntrinsicElements['div'] & {
 	gameId: string | undefined,
@@ -90,43 +90,44 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked, foote
 	}
 
 	return <div className="gl-container">
-		<div className="gl-gamepanel">
+		<div className="flex flex-col p-4 shadow-[0_4px_12px_rgba(0,0,0,0.5)] relative bg-gradient-to-b from-[#1E6493] to-[#0C3D63] rounded-2xl">
+			< div className="absolute inset-[2px] ring-[2px] ring-white/50 pointer-events-none rounded-2xl" ></div>
 			{game == null ? <div className="gl-loading-spinner"><Spinner size="l" /> </div> :
 				<>
 					<div className="gl-gametitle-div">
 						<div className="gl-gameicon">
 							<div className=" relative">
-								<Image src={game.getIconUrl()} size={96}></Image>
+								<DFImage src={game.getIconUrl()} size={96}></DFImage>
 								{
 									(
 										game.status <= 1 &&
-										<div className=" absolute left-0 top-0 bg-red-400 text-white text-xs font-bold rounded-tl-[10px] rounded-br-[10px] p-1">TEST</div>
+										<div className=" absolute left-0 top-[1px] bg-red-400 text-white text-xs font-bold rounded-tl-[10px] rounded-br-[10px] p-1">TEST</div>
 									)
 								}
 							</div>
 						</div>
-						<span className="gl-game-name">{game?.name}</span>
+						<DFText weight="3" size="2xl">{game?.name}</DFText>
 					</div>
-					<div className="gl-game-desc">
-						{game?.desc}
+					<div className="py-4">
+						<DFText weight="1" size="sm">{game?.desc}</DFText>
 					</div>
-					<div className="gl-gamebutton-div">
-						<Button
-							style={{ width: "80%" }}
-							mode="bezeled"
+					<div className="flex flex-row items-center gap-2">
+						<div className="flex-1">
+							<DFButton
+								size="m"
+								mode="normal"
+								onClick={() => {
+									if (game != null) {
+										shareURL(game.tgLink());
+									}
+								}}
+							>
+								<div className="flex justify-center items-center"><Send size="20" strokeWidth={1} absoluteStrokeWidth /> <span className="pl-2">Share game</span></div>
+							</DFButton>
+						</div>
+						<DFButton
 							size="m"
-							stretched
-							onClick={() => {
-								if (game != null) {
-									shareURL(game.tgLink());
-								}
-							}}
-						>
-							<div className="flex justify-center items-center"><Send size="20" strokeWidth={1} absoluteStrokeWidth /> <span className="pl-2">Share game</span></div>
-						</Button>
-						<Button
-							mode="bezeled"
-							size="m"
+							mode="normal"
 							loading={isFavorite == -1}
 							onClick={() => {
 								setFavorite(game?.id || "");
@@ -136,19 +137,19 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked, foote
 								isFavorite == 0 ? <Heart size="24" strokeWidth={2} />
 									: <Heart size="24" strokeWidth={0} fill="#ef4444" />
 							}
-						</Button>
+						</DFButton>
 					</div>
 				</>}
 		</div>
 		<div className="gl-playbutton">
-			<Button size="m" stretched disabled={loading == -1} loading={loading >= 0 && loading < 100} onClick={_ => {
+			<DFButton size="l" disabled={loading == -1} loading={loading >= 0 && loading < 100} onClick={_ => {
 				if (openTime > now) {
 					return;
 				}
 				if (loading >= 100) {
 					onPlayClicked?.call([]);
 				}
-			}}>{playText}</Button>
+			}}>{playText}</DFButton>
 		</div>
 		{footer}
 	</div>

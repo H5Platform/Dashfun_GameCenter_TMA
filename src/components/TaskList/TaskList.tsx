@@ -2,7 +2,7 @@ import { GameData } from "@/components/DashFunData/GameData";
 import { DashFunUser } from "@/components/DashFunData/UserData";
 import { TaskApi, TGLink, UserApi } from "@/utils/DashFunApi";
 import { openLink, openTelegramLink, useLaunchParams } from "@telegram-apps/sdk-react";
-import { Avatar, Button, Cell, CircularProgress, Image, Text } from "@telegram-apps/telegram-ui";
+import { Avatar, Text } from "@telegram-apps/telegram-ui";
 import { FC, useEffect, useState } from "react";
 
 import { CoinInfo, getCoinIcon1, GetTaskIcon, Task, TaskCategory, TaskCategoryText, TaskCondition, TaskRewardType, TaskSave, TaskStatus } from "@/constats";
@@ -12,6 +12,7 @@ import { useDashFunCoins } from "../DashFun/DashFunCoins";
 import { TaskStatusChangedEvent } from "../Event/Events";
 import Section from "../Section/Section";
 import "./TaskList.css";
+import { DFButton, DFCell, DFImage, DFProgressCircle } from "../controls";
 
 export type TaskListype = {
 	game: GameData | null
@@ -111,7 +112,7 @@ export const TaskList: FC<TaskListype> = ({ game, onTaskClicked, tasksData = nul
 			}
 			if (currCategory != -1 && currCategory != task.category) {
 				//category变化了
-				const section = <Section key={"section_" + currCategory} header={getTaskCategoryText(currCategory)}>
+				const section = <Section disableDivider={true} key={"section_" + currCategory} header={<div className=" text-[#F8A508]">{getTaskCategoryText(currCategory)}</div>}>
 					{items}
 				</Section>
 				sections.push(section);
@@ -129,7 +130,7 @@ export const TaskList: FC<TaskListype> = ({ game, onTaskClicked, tasksData = nul
 			}} />)
 		}
 		if (items.length > 0) {
-			const section = <Section key={"section_" + currCategory} header={getTaskCategoryText(currCategory)}>
+			const section = <Section disableDivider={true} key={"section_" + currCategory} header={<div className=" text-[#F8A508]">{getTaskCategoryText(currCategory)}</div>}>
 				{items}
 			</Section>
 			sections.push(section)
@@ -207,12 +208,17 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 				<div className="flex flex-row justify-center items-center">
 					{
 						task.require.type == TaskCondition.BindWallet && task.require.condition == "Ton" ?
-							<Button mode="filled" size="m"><img src="/ton-toncoin-logo-1.svg" /></Button> :
+							<DFButton size="m"><img src="/ton-toncoin-logo-1.svg" /></DFButton> :
 							<div className=" relative w-[50px] h-[50px]">
-								<div className=" absolute left-[-3px] top-[-3px]">
-									<CircularProgress
+								<div className="">
+									{/* <CircularProgress
 										progress={save.progress / task.require.count * 100}
 										size="large"
+									/> */}
+
+									<DFProgressCircle
+										size={48}
+										progress={save.progress / task.require.count}
 									/>
 								</div>
 								<div className="w-[50px] h-[50px] absolute top-0 left-0">
@@ -233,7 +239,16 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 			break;
 		case TaskStatus.Verify_Pending:
 			progress = <>
-				<Button
+				<DFButton size="m"
+					loading={verifying}
+					onClick={(evt) => {
+						evt.stopPropagation()
+						verify()
+					}} >
+					Verify
+				</DFButton>
+
+				{/* <Button
 					mode="filled"
 					size="s"
 					onClick={(evt) => {
@@ -243,22 +258,21 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 					loading={verifying}
 				>
 					VERIFY
-				</Button>
+				</Button> */}
 			</>
 			break;
 		case TaskStatus.Completed:
 			progress = <>
-				<Button
-					mode="filled"
-					size="s"
+				<DFButton
+					size="m"
 					onClick={(evt) => {
 						evt.stopPropagation()
 						claim()
 					}}
 					loading={claiming}
 				>
-					CLAIM
-				</Button>
+					Claim
+				</DFButton>
 			</>
 			break;
 		case TaskStatus.Claimed:
@@ -335,10 +349,11 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 	});
 
 
-	return <Cell
+	return <DFCell
+		mode={task.category == TaskCategory.Done ? "normal" : "highlight"}
 		subtitle={<div className="flex flex-row gap-3">{rewardDom}</div>}
 		//subtitle={`+${task.reward.amount} ${coin?.coin.symbol}`}
-		before={<Image src={GetTaskIcon(task)} size={40} />}
+		before={<DFImage disableRing src={GetTaskIcon(task)} size={48} />}
 		after={progress}
 		onClick={() => {
 			onTaskClicked()
@@ -346,7 +361,7 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 	>
 		{task.name}
 
-	</Cell>
+	</DFCell>
 
 
 	// return <div className="bg-white rounded-xl flex flex-row py-4 px-6 gap-2">

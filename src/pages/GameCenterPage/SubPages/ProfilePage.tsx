@@ -1,12 +1,12 @@
 import { GameListType } from "@/components/DashFunData/GameData";
 import { GameIcon } from "@/components/GameIcon/GameIcon";
 import { L, LangKeys, useLanguage } from "@/components/Language/Language";
-import { Caption, Headline, Text } from "@telegram-apps/telegram-ui";
 import { useEffectOnActive } from "keepalive-for-react";
 import { Heart } from "lucide-react";
 import { FC, PropsWithChildren, ReactNode, useCallback, useEffect, useState } from "react";
 import { useGameCenterData } from "../Components/GameCenterDataProvider";
 import ProfileHeader from "../Components/ProfileHeader";
+import { DFText } from "@/components/controls";
 
 export const GameCenter_Profile: FC = () => {
 	// const tabItems = [
@@ -52,10 +52,11 @@ export const GameCenter_Profile: FC = () => {
 // }
 
 const Section: FC<PropsWithChildren<{ header: string, icon?: ReactNode }>> = ({ header, icon, children }) => {
-	return <div className="w-full flex flex-col p-3 rounded-2xl" style={{ backgroundColor: "var(--tg-theme-section-bg-color)" }}>
+	return <div className="relative w-full rounded-xl p-3 shadow-[0_4px_12px_rgba(0,0,0,0.5)] bg-gradient-to-br from-[#1E6493] to-[#0C3D63]">
+		<div className="absolute inset-0 rounded-xl ring-1 ring-blue-400/50 pointer-events-none z-0"></div>
 		<div className="flex flex-row items-center pb-2">
 			{icon && <div className="mr-2">{icon}</div>}
-			<Headline weight="2">{header}</Headline>
+			<DFText size="xl" weight="2">{header}</DFText>
 		</div>
 		{children}
 	</div>
@@ -92,9 +93,9 @@ const MyGames: FC = () => {
 		>
 			{
 				!loading && (recentList.length == 0 ?
-					<Text weight="3" style={{ color: "var(--tgui--hint_color)", height: 64 }}>
+					<DFText weight="1" size="m" color="#cccccc">
 						<L langKey={LangKeys.ProfileNoRecentGame} />
-					</Text> :
+					</DFText> :
 					<div className="w-full overflow-x-auto hide-scrollbar">
 						<div>
 							<div className="grid grid-flow-col-dense auto-cols-max gap-4 min-h-[64px]">
@@ -102,9 +103,9 @@ const MyGames: FC = () => {
 									const game = gamelist?.getGame(gameId);
 									return <div className="flex flex-col justify-center items-center" style={{ width: 64 }} key={gameId}>
 										<GameIcon game={game} size={64} onClick={() => { console.log("onclick") }}></GameIcon>
-										<Caption className="w-full pt-1 truncate overflow-hidden whitespace-nowrap flex-shrink-0 text-center">
+										<DFText weight="1" size="xs" className="w-full pt-2 truncate overflow-hidden min-w-0 text-center">
 											{game?.name}
-										</Caption>
+										</DFText>
 									</div>
 								})}
 							</div>
@@ -119,9 +120,9 @@ const MyGames: FC = () => {
 		>
 			{
 				!loading && (favoritesList.length == 0 ?
-					<Text weight="3" style={{ color: "var(--tgui--hint_color)", height: 64 }}>
+					<DFText weight="1" color="#cccccc" size="m">
 						<L langKey={LangKeys.ProfileNoFavoritesGame} />
-					</Text> :
+					</DFText> :
 					<div className="w-full overflow-x-auto hide-scrollbar">
 						<div>
 							<div className="grid grid-flow-col-dense auto-cols-max gap-2 min-h-[64px]">
@@ -129,9 +130,9 @@ const MyGames: FC = () => {
 									const game = gamelist?.getGame(gameId);
 									return <div className="flex flex-col justify-center items-center" style={{ width: 64 }} key={gameId}>
 										<GameIcon game={game} size={64} onClick={() => { console.log("onclick") }}></GameIcon>
-										<Caption className="w-full pt-1 truncate overflow-hidden whitespace-nowrap flex-shrink-0 text-center">
+										<DFText weight="1" size="xs" className="w-full pt-2 truncate overflow-hidden min-w-0 text-center">
 											{game?.name}
-										</Caption>
+										</DFText>
 									</div>
 								})}
 							</div>

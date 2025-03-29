@@ -1,4 +1,3 @@
-import profileBorder from "@/assets/ProfileFrame01_Border.png";
 import { FC, useEffect, useState } from "react";
 import { useDashFunAvatar, useDashFunUser } from "../DashFun/DashFunUser";
 import ReactAvatar from "react-avatar";
@@ -15,22 +14,44 @@ export const DFAvatar: FC<{ src: string, size: number, onClick?: () => void }> =
 export const DFProfileAvatar: FC<{ size: number, children?: React.ReactNode, onClick?: () => void }> = ({ size, children, onClick }) => {
 	const avatar = useDashFunAvatar();
 	const user = useDashFunUser();
-	return <div className="relative" style={{ minWidth: size, width: size, height: size }} onClick={onClick}>
+	const innerSize = size - 6;
+	return <div className="relative flex items-center justify-center inset-0 rounded-full bg-gradient-to-br from-[#00c2ff] to-[#0042ff] p-[3px]  shadow-cyan-400/30"
+		style={{ minWidth: size, width: size, height: size }} onClick={onClick}>
+		{/* 内圈背景（可选）+ 头像图 */}
 		<div
-			className="flex justify-center items-center absolute rounded-full"
-			style={{ minWidth: size, width: size, height: size }} >
-			{avatar == "" ? <ReactAvatar name={user?.displayName} round={true} size={(size).toString()} textSizeRatio={2.5} />
+			className="flex justify-center items-center absolute rounded-full bg-gradient-to-br from-blue-800 to-blue-900 "
+			style={{ minWidth: innerSize, width: innerSize, height: innerSize }} >
+			{avatar == "" ? <ReactAvatar name={user?.displayName} round={true} size={(innerSize).toString()} textSizeRatio={2.5} />
 				: <img src={avatar} className="block object-cover absolute " style={{
 					borderRadius: "inherit",
-					width: size - 6, height: size - 6
+					width: innerSize, height: innerSize
 				}} />}
 		</div>
-		<div className="absolute w-full h-full" style={{ backgroundImage: `url(${profileBorder})`, backgroundSize: 'cover' }}></div>
-		<div className="flex justify-center items-center absolute w-0 h-0" style={{ right: 3, bottom: 5 }} >
+		<div className="absolute w-full h-full" >
 			{children}
 		</div>
 	</div>
 }
+
+// const DFProfileAvatar1: FC<{ size: number, children?: React.ReactNode, onClick?: () => void }> = ({ size, children, onClick }) => {
+// 	const avatar = useDashFunAvatar();
+// 	const user = useDashFunUser();
+// 	return <div className="relative" style={{ minWidth: size, width: size, height: size }} onClick={onClick}>
+// 		<div
+// 			className="flex justify-center items-center absolute rounded-full"
+// 			style={{ minWidth: size, width: size, height: size }} >
+// 			{avatar == "" ? <ReactAvatar name={user?.displayName} round={true} size={(size).toString()} textSizeRatio={2.5} />
+// 				: <img src={avatar} className="block object-cover absolute " style={{
+// 					borderRadius: "inherit",
+// 					width: size - 6, height: size - 6
+// 				}} />}
+// 		</div>
+// 		<div className="absolute w-full h-full" style={{ backgroundImage: `url(${profileBorder})`, backgroundSize: 'cover' }}></div>
+// 		<div className="flex justify-center items-center absolute w-0 h-0" style={{ right: 3, bottom: 5 }} >
+// 			{children}
+// 		</div>
+// 	</div>
+// }
 
 export const DFUserAvatar: FC<{ size: number, userId: string, avatarPath: string, displayName: string, onClick?: () => void }> = ({ size, userId, avatarPath, displayName, onClick }) => {
 	const [avatar, setAvatar] = useState("");

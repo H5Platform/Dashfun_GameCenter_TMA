@@ -3,6 +3,7 @@ import { initData, useLaunchParams, useSignal } from "@telegram-apps/sdk-react";
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
 import { GameData } from "../DashFunData/GameData";
 import { useLocation } from "react-router-dom";
+import { GameDataLoadedEvent } from "../Event/Events";
 
 const GameContext = createContext<{
 	game: GameData | null,
@@ -29,6 +30,7 @@ export const GameProvider = ({ children }: PropsWithChildren<{}>) => {
 		const game = await GameApi.findGame(gameId, initDataRaw as string)
 		setGame(game);
 		console.log("game loaded:", game)
+		GameDataLoadedEvent.fire(game);
 	}
 
 	useEffect(() => {

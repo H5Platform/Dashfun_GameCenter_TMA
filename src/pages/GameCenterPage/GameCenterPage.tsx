@@ -70,7 +70,7 @@ const scrolPage = (pathname: string) => {
 
 
 const customPageBg: { [key: string]: string } = {
-	"/game-center/main": "bg-gradient-to-b from-slate-950 to-slate-900"
+	"/game-center/main": ""
 }
 
 export const GameCenterPage: FC = () => {
@@ -127,7 +127,8 @@ export const GameCenterPage: FC = () => {
 	}, [location.pathname])
 
 	return <div className="max-w-screen-sm sm:aligen-center sm:mx-auto h-full">
-		<div id="GameCenterPage" className={"w-full h-full flex flex-col " + (customPageBg[location.pathname] || "")}>
+		<div id="GameCenterPage" className={"w-full h-full flex flex-col bg-gradient-to-b from-[#004275] to-[#00254E] " + (customPageBg[location.pathname] || "")}>
+			<div className="absolute top-[-175px] left-1/2 -translate-x-1/2 w-[80%] h-[350px] bg-[radial-gradient(circle,rgba(0,200,255,0.3)_0%,transparent_70%)] pointer-events-none z-0"></div>
 			<GameCenterDataProvider>
 				{
 					!keepalive && outlet

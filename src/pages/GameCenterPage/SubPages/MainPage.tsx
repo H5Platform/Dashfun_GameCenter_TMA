@@ -1,12 +1,12 @@
 import { GameData, GameListType } from "@/components/DashFunData/GameData";
 import { TGLink } from "@/utils/DashFunApi";
 import { openTelegramLink } from "@telegram-apps/sdk-react";
-import { Button } from "@telegram-apps/telegram-ui";
 import { FC, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGameCenterData } from "../Components/GameCenterDataProvider";
 
 import ProfileHeader from "../Components/ProfileHeader";
+import { DFButton, DFLabel } from "@/components/controls";
 
 
 export const GameCenter_MainPage: FC = () => {
@@ -55,35 +55,69 @@ export const GameCenter_MainPage: FC = () => {
 	return <div id="GameCenter_MainPage" className="w-full p-4 min-h-full flex flex-col gap-2">
 		<ProfileHeader />
 		<div className="py-2 font-semibold text-2xl w-full text-center text-white">Games</div>
-		<div className="w-full grid grid-cols-3 gap-1 pb-8 min-h-full">
+		<div className="w-full grid grid-cols-3 gap-2 pb-8 min-h-full">
 			{games.map((game, index) => {
 				return <GameCard key={index} game={game} width={(pageWidth - 8) / 3} />
 			})}
 		</div>
 
-		<div className="w-full flex items-center justify-between bg-white bg-opacity-10 rounded-2xl px-4 py-2">
-			<span className=" text-white">Join Community</span>
-			<Button mode="filled" size="s" onClick={() => {
-				openTelegramLink("https://t.me/dashfungroup");
-			}}>Join</Button>
-		</div>
+		<DFLabel>
+			<div className="w-full flex justify-between pl-4 items-center">
+				<p>Join Community</p>
+				<DFButton className="w-20" onClick={() => {
+					openTelegramLink("https://t.me/dashfungroup");
+				}}>Join</DFButton>
+			</div>
+		</DFLabel>
 
 		<div className="w-full flex items-center justify-center py-2">
-			<Button mode="filled" size="s" onClick={() => {
+			<DFButton size="m" onClick={() => {
 				nav("/game-center/games");
-			}}>SEE ALL GAMES</Button>
+			}}>SEE ALL GAMES</DFButton>
 		</div>
 	</div>
 }
 
-const GameCard: FC<{ game: GameData, width: number }> = ({ game, width }) => {
-	return <div className=" flex flex-col rounded-2xl p-2 bg-white bg-opacity-10" style={{ width: width }}>
-		<img src={game?.getLogoUrl()} className="object-cover rounded-2xl" style={{ width: width - 16, height: width - 16 }} />
-		<span className="text-sm truncate overflow-hidden min-w-0 py-1 text-white">{game?.name}</span>
-		<div className="w-full text-center text-sm font-semibold py-1 bg-white bg-opacity-20 rounded-full text-white" onClick={() => {
-			const url = TGLink.gameLink(encodeURIComponent(game?.id ?? ""));
-			openTelegramLink(url);
-		}}>PLAY</div>
-	</div>
+const GameCard: FC<{ game: GameData, width: number }> = ({ game }) => {
+	return <div className="relative rounded-xl p-3 shadow-[0_4px_12px_rgba(0,0,0,0.5)] bg-gradient-to-br from-[#1E6493] to-[#0C3D63]">
+		{/* 发光边缘层 */}
+		<div className="absolute inset-0 rounded-xl ring-1 ring-blue-400/50 pointer-events-none z-0"></div>
+
+		{/* 内容层 */}
+		<div className="relative">
+			{/* 游戏图片块：带明显内陷效果 */}
+			<div className="relative w-full aspect-square rounded-lg overflow-hidden">
+				<img
+					src={game?.getLogoUrl()}
+					className="w-full h-full object-cover opacity-90"
+				/>
+
+				<div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-black/40 to-transparent rounded-t-lg pointer-events-none"></div>
+				<div className="absolute top-0 left-0 bottom-0 w-4 bg-gradient-to-r from-black/40 to-transparent rounded-l-lg pointer-events-none"></div>
+				<div className="absolute top-0 right-0 bottom-0 w-4 bg-gradient-to-l from-black/40 to-transparent rounded-r-lg pointer-events-none"></div>
+				<div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-black/40 to-transparent rounded-b-lg pointer-events-none"></div>
+			</div>
+
+			{/* 游戏标题 */}
+			<div className="text-sm truncate overflow-hidden min-w-0 py-1 text-white font-semibold text-center">{game?.name}</div>
+
+			{/* 按钮 */}
+			<DFButton size="s" onClick={() => {
+				const url = TGLink.gameLink(encodeURIComponent(game?.id ?? ""));
+				openTelegramLink(url);
+			}}>PLAY</DFButton>
+		</div>
+	</div >
 }
+
+// const GameCard2: FC<{ game: GameData, width: number }> = ({ game, width }) => {
+// 	return <div className=" flex flex-col rounded-2xl p-2 bg-white bg-opacity-10" style={{ width: width }}>
+// 		<img src={game?.getLogoUrl()} className="object-cover rounded-2xl" style={{ width: width - 16, height: width - 16 }} />
+// 		<span className="text-sm truncate overflow-hidden min-w-0 py-1 text-white">{game?.name}</span>
+// 		<div className="w-full text-center text-sm font-semibold py-1 bg-white bg-opacity-20 rounded-full text-white" onClick={() => {
+// 			const url = TGLink.gameLink(encodeURIComponent(game?.id ?? ""));
+// 			openTelegramLink(url);
+// 		}}>PLAY</div>
+// 	</div>
+// }
 

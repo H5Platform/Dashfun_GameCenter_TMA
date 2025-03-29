@@ -2,8 +2,6 @@ import { useDashFunUser } from '@/components/DashFun/DashFunUser';
 import { GameData } from '@/components/DashFunData/GameData';
 import { GameLauncher } from '@/components/GameLauncher/GameLauncher';
 import { TaskApi, TGLink, UserApi } from '@/utils/DashFunApi';
-import { backButton, openTelegramLink, shareURL, useLaunchParams, useSignal, viewport } from '@telegram-apps/sdk-react';
-import { Badge, Button, LargeTitle, Modal } from '@telegram-apps/telegram-ui';
 import { SectionHeader } from '@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionHeader/SectionHeader';
 import { ModalHeader } from '@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalHeader/ModalHeader';
 import { useEffect, useState, type FC } from 'react';
@@ -15,19 +13,34 @@ import { useDashFunCoins } from '@/components/DashFun/DashFunCoins';
 import { useDashFunSpinWheel } from '@/components/DashFun/DashFunSpinWheel';
 import { SpinWheelConstants } from '@/components/DashFunData/SpinWheelData';
 import { DashFunUser } from '@/components/DashFunData/UserData';
-import { OpenDashFunRechargeEvent, SpinWheelStatusChangedEvent, TaskStatusChangedEvent } from '@/components/Event/Events';
 import { MessageListener } from '@/components/MessageListener/MessageListener';
 import SpinWheel from '@/components/SpinWheel/SpinWheel';
 import { TaskAndCoin } from '@/components/TaskAndCoin/TaskAndCoin';
 import { CoinInfo, TaskStatus } from '@/constats';
-import { Gamepad2, Gift, LoaderPinwheel, Send } from 'lucide-react';
+import { Badge, Gamepad2, Gift, LoaderPinwheel, Send } from 'lucide-react';
 import { DFProfileAvatar } from '@/components/Avatar/Avatar';
 import DashFunRecharge from '@/components/DashFunRecharge/DashFunRecharge';
 import { motion } from 'framer-motion';
 import { ContentWrapper } from '../ContentWrapper';
 import { L, LangKeys } from '@/components/Language/Language';
 import { isInTelegram } from '@/utils/Utils';
+
+import aniLoading1 from "@/assets/animation/loading1.json";
+import aniLoading2 from "@/assets/animation/loading2.json";
+import aniLoading3 from "@/assets/animation/loading3.json";
+// import aniLoading4 from "@/assets/animation/loading4.json";
+import aniLoading5 from "@/assets/animation/loading5.json";
+import { backButton, openTelegramLink, shareURL, useLaunchParams, useSignal, viewport } from '@telegram-apps/sdk-react';
 import DashFunPay from '@/components/DashFunPay/DashFunPay';
+import { TaskStatusChangedEvent, SpinWheelStatusChangedEvent, OpenDashFunRechargeEvent, UserEnterGameEvent } from '@/components/Event/Events';
+import { Player } from '@lottiefiles/react-lottie-player';
+import { LargeTitle, Button, Modal } from '@telegram-apps/telegram-ui';
+import dashFunIcon from "@/icons/dashfun-icon-256.png";
+import { DFBadge, DFButton } from '@/components/controls';
+
+const loadingAnis = [aniLoading1, aniLoading2, aniLoading3, aniLoading5];
+const idx = Math.floor(Math.random() * loadingAnis.length);
+const loadingAni = loadingAnis[idx];
 
 export const GameWrapper: FC = () => {
 	const [play, setPlay] = useState(false);
@@ -222,23 +235,23 @@ export const GameWrapper: FC = () => {
 				getTaskCount();
 			}}>
 				{
-					tc > 0 && (<div className=''>
-						<Badge type='number'>{tc}</Badge>
+					tc > 0 && (<div className='relative w-[90%] h-[90%]'>
+						<DFBadge position="bottom-right" color="red">{tc}</DFBadge>
 					</div>)
 				}
 				{
-					tc == 0 && tp > 0 && (<div className=''>
-						<Badge type='number' className=' bg-gray-500' >{tp}</Badge>
+					tc == 0 && tp > 0 && (<div className='relative w-[90%] h-[90%]'>
+						<DFBadge position="bottom-right" className=''>{tp}</DFBadge>
 					</div>)
 				}
 			</DFProfileAvatar>
 
 			<div className='w-56 gap-2 flex items-center justify-between'>
 				<div className='w-24'>
-					<CoinPanel coin={coin?.coin} userCoinData={coin?.userData} />
+					<CoinPanel coin={coin?.coin} userCoinData={coin?.userData} showBG />
 				</div>
 				<div className='flex-1'>
-					<CoinPanel coin={diamond?.coin} userCoinData={diamond?.userData} showAdd onClick={() => {
+					<CoinPanel showBG coin={diamond?.coin} userCoinData={diamond?.userData} showAdd onClick={() => {
 						setShowRecharge(true);
 					}} />
 				</div>
@@ -265,15 +278,15 @@ export const GameWrapper: FC = () => {
 				}
 			</div> */}
 			<div className='flex gap-1 items-end flex-1 justify-end'>
-				<Button size="s" mode="filled" onClick={() => {
+				<DFButton size="m" onClick={() => {
 					onBackToCenter();
-				}} ><Gamepad2 size="24" strokeWidth={2} absoluteStrokeWidth /> </Button>
-				<Button size="s" mode="white" style={{ color: "#000000" }} onClick={() => {
+				}} ><Gamepad2 size="24" strokeWidth={2} absoluteStrokeWidth /> </DFButton>
+				<DFButton size="m" mode="normal" onClick={() => {
 					onShare();
-				}}><Send size="20" strokeWidth={1.5} absoluteStrokeWidth /></Button>
+				}}><Send size="20" strokeWidth={1.5} absoluteStrokeWidth /></DFButton>
 			</div>
 		</div>
-	</SectionHeader >
+	</SectionHeader>
 
 	return <div id="game-wrapper" className='w-full h-full flex flex-col'>
 		<MessageListener />
@@ -293,15 +306,44 @@ export const GameWrapper: FC = () => {
 						visibility: play ? "" : "hidden"
 					}}
 				/>
-				{showLoading && (<div className={`flex justify-center items-start game-loading ${play ? ", game-loading-fadeout" : ""}`} >
-					{/* <div className='h-[200px] mt-[100px] bg-cover bg-center bg-no-repeat ' style={{
-					backgroundImage: `url('${game?.logoUrl}')`
-				}}></div> */}
-					<div className='max-w-screen-sm mx-auto' style={{ width: "90vw", paddingTop: (pt + 100) + "px" }} >
-						<img src={game?.getLogoUrl()} className='object-contain w-full rounded-3xl shadow-xl'></img>
+				{showLoading && (<div className={`flex flex-col bg-gradient-to-b from-[#004275] to-[#00254E] justify-start items-center game-loading ${play ? ", game-loading-fadeout" : ""}`}
+					style={{ paddingTop: pt, paddingBottom: pb }}>
+					<div className='w-full'>
+						{header}
 					</div>
-
-					<Modal
+					<div className='max-w-screen-sm mx-auto flex flex-col items-center justify-center relative' style={{ width: "90vw", paddingTop: "10px" }}>
+						<img src={dashFunIcon}
+							className='absolute top-[50px] opacity-[0.05]'
+							alt="DashFun" style={{ width: 200, height: 200 }} />
+						<Player
+							autoplay
+							loop={true}
+							src={loadingAni}
+							className='h-[300px] aspect-square'
+						/>
+						<div className='w-full fixed bottom-0 max-w-screen-sm mx-auto '>
+							<GameLauncher gameId={undefined}
+								footer={null}
+								onLoad={g => {
+									setGame(g as GameData);
+								}}
+								onPlayClicked={() => {
+									//上报enterGame
+									if (game != null) {
+										console.log("report user enter game:", game)
+										UserApi.enterGame(initDataRaw as string, game.id)
+										setPlay(true);
+										setShowLoadig(false);
+										UserEnterGameEvent.fire(game);
+										//不要淡出了
+										// setTimeout(() => {
+										// 	setShowLoadig(false);
+										// }, 2000);
+									}
+								}} />
+						</div>
+					</div>
+					{/* <Modal
 						className='max-w-screen-sm sm:mx-auto'
 						dismissible={false}
 						open={play == false}
@@ -313,27 +355,8 @@ export const GameWrapper: FC = () => {
 						}
 					>
 
-						<GameLauncher gameId={undefined}
-							footer={null}
-							onLoad={g => {
-								setGame(g as GameData);
-							}}
-							onPlayClicked={() => {
-								//上报enterGame
-								if (game != null) {
-									console.log("report user enter game:", game)
-									UserApi.enterGame(initDataRaw as string, game.id)
-									setPlay(true);
-									setShowLoadig(false);
-									//不要淡出了
-									// setTimeout(() => {
-									// 	setShowLoadig(false);
-									// }, 2000);
-								}
-							}} />
-
-					</Modal>
-
+						
+					</Modal> */}
 				</div>)
 				}
 				{
@@ -342,7 +365,7 @@ export const GameWrapper: FC = () => {
 							className='max-w-screen-sm sm:mx-auto'
 							open={showTask}
 							header={<ModalHeader style={{
-								backgroundColor: "var(--tg-theme-secondary-bg-color)"
+								backgroundColor: "#004275",
 							}}></ModalHeader>
 								// <div className='flex flex-col bg-gray-200 text-black p-2 w-full items-center justify-center gap-1'>
 								// 	<div className=' w-10 h-1 bg-gray-400 rounded-full mb-2'></div>
@@ -356,8 +379,7 @@ export const GameWrapper: FC = () => {
 							}}
 							snapPoints={[0.9]}
 						>
-							<div className='flex flex-col w-full h-full' style={{
-								backgroundColor: "var(--tg-theme-secondary-bg-color)"
+							<div className='flex flex-col w-full h-full bg-gradient-to-b from-[#004275] to-[#00254E]' style={{
 							}}>
 								{/** 250320 暂时去掉了tab栏，只显示任务列表了 */}
 								<div style={{ paddingBottom: "calc(10vh + 100px) " }}>
@@ -389,17 +411,14 @@ export const GameWrapper: FC = () => {
 		{
 			showRecharge && (
 				<div id="recharge-overlay" className='pointer-events-auto absolute top-0 bottom-0 left-0 right-0 z-[9999]'>
-					<ContentWrapper className='h-full max-w-screen-md md:mx-auto'>
+					<ContentWrapper className='h-full max-w-screen-md md:mx-auto bg-gradient-to-b from-[#004275] to-[#00254E]'>
 						<motion.div
 							className='w-full h-full'
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
 							transition={{ duration: 0.5 }}
 						>
-							<div className='flex flex-col w-full h-full max-h-full min-h-0 ' style={{
-								backgroundColor: "var(--tg-theme-secondary-bg-color)",
-								//paddingBottom: "calc(10vh) "
-							}}>
+							<div className='flex flex-col w-full h-full max-h-full min-h-0 '>
 								{!isInTelegram() &&
 									<div className='p-4'>
 										<Button mode="plain" onClick={() => { setShowRecharge(false) }}>
@@ -417,5 +436,5 @@ export const GameWrapper: FC = () => {
 			)
 		}
 		<DashFunPay />
-	</div>
+	</div >
 }	

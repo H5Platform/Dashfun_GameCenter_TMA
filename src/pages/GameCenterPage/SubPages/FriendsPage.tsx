@@ -6,12 +6,13 @@ import { getCoinIcon1 } from "@/constats";
 import { FriendsApi, TGLink, UserApi } from "@/utils/DashFunApi";
 import { Player } from "@lottiefiles/react-lottie-player";
 import { initData, shareURL, useSignal } from "@telegram-apps/sdk-react";
-import { Button, Cell, Chip, Headline, Spinner } from "@telegram-apps/telegram-ui";
-import { SectionFooter } from "@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionFooter/SectionFooter";
+import { Chip, Spinner } from "@telegram-apps/telegram-ui";
 import { useEffectOnActive } from "keepalive-for-react";
 import { FC, useEffect, useState } from "react";
 import ReactAvatar from "react-avatar";
 import ProfileHeader from "../Components/ProfileHeader";
+import DFButton from "@/components/controls/Button";
+import { DFCell, DFText } from "@/components/controls";
 
 export const GameCenter_FriendsPage: FC = () => {
 	const user = useDashFunUser();
@@ -37,10 +38,16 @@ export const GameCenter_FriendsPage: FC = () => {
 
 	return <div id="GameCenter_FriendsPage" className="w-full h-full flex flex-col px-4 pt-4 gap-4">
 		<ProfileHeader />
-		<Button mode="filled" size="l" onClick={() => {
+		<DFButton size="l" onClick={() => {
 			shareURL(TGLink.centerLink(user?.id));
-		}}>Invite</Button>
-		<Headline weight="2">My Friends</Headline>
+		}}>
+			Invite
+		</DFButton>
+
+		{/* <Button mode="filled" size="l" onClick={() => {
+			shareURL(TGLink.centerLink(user?.id));
+		}}>Invite</Button> */}
+		<DFText size="xl" weight="2">My Friends</DFText>
 		{
 			isLoading && friends.length == 0 ? <div className="w-full flex items-center justify-center">
 				<Spinner size="l" />
@@ -51,7 +58,7 @@ export const GameCenter_FriendsPage: FC = () => {
 
 const FriendsList: FC<{ friends: any[], rewardPoints: any[] }> = ({ friends, rewardPoints }) => {
 	return <div className="overflow-y-auto">
-		<Section>
+		<Section disableDivider gap={2}>
 			{
 				friends.map((f, i) => {
 					return <FriendItem key={i} friend={f} rewardPoints={rewardPoints} />
@@ -90,21 +97,25 @@ const FriendItem: FC<{ friend: any, rewardPoints: any[] }> = ({ friend, rewardPo
 		updateAvatar();
 	}, [avatarFile])
 
-	return <Cell
-		className="w-full flex items-center justify-start py-1"
-		before={<div
-			className="flex justify-center items-center rounded-full"
-			style={{ minWidth: size, width: size, height: size }} >
-			{isLoading ? <Spinner size="s" /> :
-				avatar == "" ? <ReactAvatar name={displayName} round={true} size={size.toString()} textSizeRatio={2} /> : <img src={avatar} className="block object-cover   " style={{
-					borderRadius: "inherit",
-					width: size, height: size
-				}} />}
-		</div>}
-		after={<InvitePrizeLabel inviteType={inviteType} inviteStatus={inviteStatus} rewardPoints={rewardPoints} />}
-	>
-		{displayName}
-	</Cell>
+	return <div className="w-full p-1">
+		<DFCell
+			mode="primary"
+			disableBeforeRing
+			className="w-full flex items-center justify-start py-1"
+			before={<div
+				className="flex justify-center items-center rounded-full"
+				style={{ minWidth: size, width: size, height: size }} >
+				{isLoading ? <Spinner size="s" /> :
+					avatar == "" ? <ReactAvatar name={displayName} round={true} size={size.toString()} textSizeRatio={2} /> : <img src={avatar} className="block object-cover   " style={{
+						borderRadius: "inherit",
+						width: size, height: size
+					}} />}
+			</div>}
+			after={<InvitePrizeLabel inviteType={inviteType} inviteStatus={inviteStatus} rewardPoints={rewardPoints} />}
+		>
+			{displayName}
+		</DFCell>
+	</div>
 }
 
 const NoFriends = () => {
@@ -115,9 +126,9 @@ const NoFriends = () => {
 			src={happyAni}
 			style={{ width: "200px" }}
 		/>
-		<Headline weight="2">Invite Your Friends to DashFun! 🚀🎉</Headline>
-		<SectionFooter className="text-center">Invite your friends and enjoy exciting challenges together. Don't miss out—start playing today!
-			<br />🔥 Get ready for non-stop entertainment! 🔥</SectionFooter>
+		<DFText size="lg" weight="2">Invite Your Friends to DashFun! 🚀🎉</DFText>
+		<DFText weight="1" color="#cccccc" className="text-center">Invite your friends and enjoy exciting challenges together. Don't miss out—start playing today!
+			<br />🔥 Get ready for non-stop entertainment! 🔥</DFText>
 	</div>
 }
 

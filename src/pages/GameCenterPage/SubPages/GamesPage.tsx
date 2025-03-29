@@ -2,7 +2,7 @@ import { GameListType } from "@/components/DashFunData/GameData";
 import { GameIcon } from "@/components/GameIcon/GameIcon";
 import { L, LangKeys } from "@/components/Language/Language";
 import { isPcBrowser } from "@/utils/Utils";
-import { Card, Input, Skeleton, Title } from "@telegram-apps/telegram-ui";
+import { Card, Input, Skeleton } from "@telegram-apps/telegram-ui";
 import { CardCell } from "@telegram-apps/telegram-ui/dist/components/Blocks/Card/components/CardCell/CardCell";
 import { useEffectOnActive } from "keepalive-for-react";
 import { ChevronRight, Search, X } from "lucide-react";
@@ -13,6 +13,7 @@ import { useGameCenterData } from "../Components/GameCenterDataProvider";
 import ProfileHeader from "../Components/ProfileHeader";
 import { TGLink } from "@/utils/DashFunApi";
 import { openTelegramLink } from "@telegram-apps/sdk-react";
+import { DFText } from "@/components/controls";
 
 export const GameCenter_GamesPage: FC = () => {
 	return <div id="GameCenter_GamesPage" className="w-full p-4">
@@ -161,13 +162,13 @@ const PlayRecordBar: FC = () => {
 	} else {
 		return <div className="w-full flex flex-col gap-2">
 			<div className="flex flex-row w-full">
-				<Title weight="2"><L langKey={LangKeys.GameListType} index={GameListType.Played} /></Title>
+				<DFText size="2xl" weight="2"><L langKey={LangKeys.GameListType} index={GameListType.Played} /></DFText>
 			</div>
 			<Skeleton
 				visible={loading}>
 				<div className="w-full overflow-x-auto hide-scrollbar">
 					<div>
-						<div className="grid grid-flow-col-dense auto-cols-max gap-2 min-h-[64px]">
+						<div className="grid grid-flow-col-dense auto-cols-max gap-2 min-h-[68px] pb-2 px-1">
 							{playedList.map((gameId) => {
 								const game = gamelist.getGame(gameId);
 								return <GameIcon key={gameId} game={game} size={64} onClick={() => {
@@ -231,8 +232,8 @@ const GameList: FC<{ listType: number, limit?: number, countPerColumn?: number }
 
 	return <div className="w-full flex flex-col">
 		<div className="flex flex-row w-full pt-2 pb-2">
-			<Title weight="2"><L langKey={LangKeys.GameListType} index={listType} /></Title>
-			<ChevronRight size={30} strokeWidth={3.5} />
+			<DFText size="2xl" weight="2"><L langKey={LangKeys.GameListType} index={listType} /></DFText>
+			<ChevronRight color="white" size={30} strokeWidth={3.5} />
 		</div>
 		<Skeleton
 			visible={loading}

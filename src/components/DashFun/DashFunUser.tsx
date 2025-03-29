@@ -4,6 +4,7 @@ import { Spinner } from "@telegram-apps/telegram-ui";
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
 import { DashFunUser } from "../DashFunData/UserData";
 import { useLocation } from "react-router-dom";
+import { UserLoginEvent } from "../Event/Events";
 
 
 const UserContext = createContext<{
@@ -30,6 +31,7 @@ export const UserProvider = ({ children }: PropsWithChildren<{}>) => {
 		const dfUser = await UserApi.tgLogin(initDataRaw as string, referrerId);
 		dfUser.language = initDataState?.user?.languageCode as string
 		setUser(dfUser);
+		UserLoginEvent.fire(dfUser);
 	}
 
 	const getAvatar = async () => {

@@ -11,7 +11,7 @@
 // } from "@telegram-apps/sdk-react";
 import { AppRoot } from "@telegram-apps/telegram-ui";
 import { useEffect, type FC } from "react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 
 import { AppRoute, routes } from "@/navigation/routes.tsx";
 import { miniApp, postEvent, useLaunchParams } from "@telegram-apps/sdk-react";
@@ -19,6 +19,7 @@ import { UserProvider } from "./DashFun/DashFunUser";
 import { LanguageProvider } from "./Language/Language";
 import { Page } from "./Page";
 import { CoinProvider } from "./DashFun/DashFunCoins";
+import TalkingDataLoader from "./TalkingDataLoader/TalkingDataLoader";
 
 const setupRoute = (route: AppRoute, wrapPage: boolean = true) => {
   let P = () => wrapPage ? <Page back={route.back} allowYScroll={route.allowYScroll}><route.Component /></Page>
@@ -63,10 +64,12 @@ export const App: FC = () => {
       platform={["macos", "ios"].includes(lp.platform) ? "ios" : "base"}
       className="w-full h-full"
     >
-      <BrowserRouter>
+      <TalkingDataLoader />
+      <BrowserRouter >
         <LanguageProvider>
           <UserProvider>
             <CoinProvider>
+              <RouterListener />
               <Routes>
                 {routesArr}
                 <Route path="*" element={<Navigate to="/" />} />
@@ -79,3 +82,17 @@ export const App: FC = () => {
     </AppRoot>
   );
 };
+
+const RouterListener = () => {
+  const location = useLocation();
+  useEffect(() => {
+    // const { aplus_queue } = window;
+    // if (aplus_queue) {
+    //   aplus_queue.push({
+    //     action: 'aplus.sendPV',
+    //     arguments: [{ is_auto: false }] // 此处上报的数据暂时在后台没有展示
+    //   });
+    // }
+  }, [location])
+  return null;
+}

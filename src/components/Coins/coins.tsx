@@ -1,6 +1,6 @@
 import btnAdd from "@/assets/Btn_Add_Green.png";
 import { Coin, CoinUserData, getCoinIcon1 } from "@/constats";
-import { Avatar, ButtonCell, Cell, Section } from "@telegram-apps/telegram-ui";
+import { Avatar, ButtonCell } from "@telegram-apps/telegram-ui";
 import { SectionFooter } from "@telegram-apps/telegram-ui/dist/components/Blocks/Section/components/SectionFooter/SectionFooter";
 import { Wallet } from "lucide-react";
 import { FC } from "react";
@@ -8,6 +8,7 @@ import { useDashFunCoins } from "../DashFun/DashFunCoins";
 import { GameData } from "../DashFunData/GameData";
 import { DashFunUser } from "../DashFunData/UserData";
 import Number from "../Utils/Number";
+import { DFCell } from "../controls";
 
 export const Coins: FC<{ game: GameData | null, user: DashFunUser | null, onSelected: (coin: Coin) => void }> = ({ game }) => {
 
@@ -27,14 +28,15 @@ export const Coins: FC<{ game: GameData | null, user: DashFunUser | null, onSele
 		: null
 
 	return <div className=" w-full justify-center items-center p-4">
-		<Section>
-			<Cell
-				subtitle={"Your Earning: " + coin?.userData.amount.toLocaleString('en-US', { style: "decimal" }) + " " + coin?.coin.symbol}
-				before={<Avatar src={getCoinIcon1(coin?.coin ?? null)} size={40} />}
-			>
-				{coin?.coin.name}
-			</Cell>
-			{/* <ButtonCell
+		<DFCell
+			mode="primary"
+			disableBeforeRing={true}
+			subtitle={"Your Earning: " + coin?.userData.amount.toLocaleString('en-US', { style: "decimal" }) + " " + coin?.coin.symbol}
+			before={<Avatar src={getCoinIcon1(coin?.coin ?? null)} size={40} />}
+		>
+			{coin?.coin.name}
+		</DFCell>
+		{/* <ButtonCell
 				className="" disabled={true}
 				before={<i className="fa-solid fa-wallet"></i>}
 			>Withdraw</ButtonCell>
@@ -44,17 +46,16 @@ export const Coins: FC<{ game: GameData | null, user: DashFunUser | null, onSele
 					<SectionFooter>Minimum withdrawal amount is {coin?.coin.min_withdraw} {coin?.coin.symbol}</SectionFooter>
 				)
 			} */}
-			{withdraw}
-		</Section>
+		{withdraw}
 	</div>
 }
 
-export const CoinPanel: FC<{ coin: Coin | null | undefined, userCoinData: CoinUserData | null | undefined, showAdd?: boolean, forceDark?: boolean, onClick?: () => void }> = ({ coin, userCoinData, showAdd = false, forceDark = false, onClick }) => {
+export const CoinPanel: FC<{ coin: Coin | null | undefined, userCoinData: CoinUserData | null | undefined, showAdd?: boolean, showBG?: boolean, forceDark?: boolean, onClick?: () => void }> = ({ coin, userCoinData, showAdd = false, showBG = false, forceDark = false, onClick }) => {
 	return <div className="flex flex-row w-full justify-center items-center relative " style={{ height: 28 }} onClick={onClick}>
-		<div className="w-full flex flex-row" style={{ height: 24 }}>
+		{showBG && <div className="w-full flex flex-row" style={{ height: 24 }}>
 			<div className={` bg-blue-400 rounded-l-md w-full h-full ${forceDark ? " bg-opacity-30" : " bg-opacity-70"}`}></div>
 			<div className=" h-full" style={{ width: 14 }}></div>
-		</div>
+		</div>}
 		<Number className="absolute text-white text-sm font-semibold w-full text-right pr-[34px]" value={userCoinData?.amount || 0}></Number>
 		<div className="rounded-full absolute right-0 overflow-hidden">
 			<img className="" src={getCoinIcon1(coin)} style={{ height: 28 }} />

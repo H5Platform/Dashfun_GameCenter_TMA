@@ -1,7 +1,7 @@
 import { FC, useEffect, useRef, useState } from "react";
 import diamondIcon from "@/icons/dashfun-diamond4.png";
 import starIcon from "@/icons/star-icon.png";
-import { Button, Caption, Cell, Spinner, Text, Title } from "@telegram-apps/telegram-ui";
+import { Button, Caption, Spinner, Text, Title } from "@telegram-apps/telegram-ui";
 import { RechargeApi, RechargeLink } from "@/utils/DashFunApi";
 import { initData, openLink, retrieveLaunchParams, useSignal } from "@telegram-apps/sdk-react";
 import { RechargeOrderStatus, RechargePriceType, toCurrency } from "@/constats";
@@ -18,6 +18,8 @@ import aniFailed from "@/assets/animation/failed.json";
 import "./DashFunRecharge.css"
 import { Player } from "@lottiefiles/react-lottie-player";
 import CountUp from "../CountUp/CountUp";
+import { UserRechargeEvent } from "../Event/Events";
+import { DFButton, DFCell, DFLabel, DFText } from "../controls";
 
 type OrderInfo = {
     orderId: string,
@@ -33,7 +35,8 @@ const priceToString = (price: number, priceType: number) => {
 }
 
 const calcFinalPrice = (price: number, off: number) => {
-    return off > 0 ? price * ((1000 - off) / 1000) : price;
+    const p = off > 0 ? price * ((1000 - off) / 1000) : price;
+    return Math.floor(p);
 }
 
 const payingOrder = (userId: string): OrderInfo => {
@@ -119,24 +122,26 @@ const DashFunRecharge: FC<{ minRechargeValue: number }> = ({ minRechargeValue = 
 
     const headerHeight = 200;
     return <div id="recharge" className="w-full h-full items-center justify-start flex flex-col gap-2">
-        <div className="fixed flex flex-col items-center justify-center gap-2 w-full z-10 backdrop-blur-md"
+        <div className={"fixed flex flex-col items-center justify-center gap-2 w-full z-10 backdrop-blur-md"}
             style={{ height: headerHeight, minHeight: headerHeight }}>
             <img src={diamondIcon} className='h-[100px] object-contain py-2' />
-            <div className="px-4 py-2 rounded-full" style={{ backgroundColor: "var(--tgui--section_bg_color)" }}>
-                <Text weight="2"><L langKey={LangKeys.Common_Balance} />:&nbsp;
-                    {
-                        //toCurrency(diamondCoin?.userData.amount || 0, 0)
-                    }
-                    <CountUp
-                        from={diamondCoin?.userData.amount || 0}
-                        to={(diamondCoin?.userData.amount || 0) +
-                            (purchasedOrder && purchasedOrder.status == RechargeOrderStatus.Completed ? purchasedOrder.diamond : 0)}
-                        separator=","
-                        duration={1}
-                    />
-                </Text>
-            </div>
-            <Title>
+            <DFLabel>
+                <div className="px-4 py-2">
+                    <Text weight="2" className="text-white"><L langKey={LangKeys.Common_Balance} />:&nbsp;
+                        {
+                            //toCurrency(diamondCoin?.userData.amount || 0, 0)
+                        }
+                        <CountUp
+                            from={diamondCoin?.userData.amount || 0}
+                            to={(diamondCoin?.userData.amount || 0) +
+                                (purchasedOrder && purchasedOrder.status == RechargeOrderStatus.Completed ? purchasedOrder.diamond : 0)}
+                            separator=","
+                            duration={1}
+                        />
+                    </Text>
+                </div>
+            </DFLabel>
+            <Title className="text-white">
                 {
                     minRechargeValue == 0 ?
                         <><L langKey={LangKeys.Common_Get} /> <L langKey={LangKeys.Common_DashFunDiamond} /></> :
@@ -192,6 +197,8 @@ const RechargeSelected: FC<{
 
     const orderRef = useRef(order);
 
+    const finalPrice = calcFinalPrice(option?.price || 0, option?.price_off || 0);
+
     const checkOrderStatus = async () => {
         const order = orderRef.current;
         console.log("checking order status", order);
@@ -204,6 +211,9 @@ const RechargeSelected: FC<{
             ) {
                 setRechargeOrder(result);
                 onPurchase && onPurchase(result);
+
+                UserRechargeEvent.fire(result.id, result.price, "USD", result.status == RechargeOrderStatus.Completed ? "success" : "canceled", result.pay_from);
+
                 setTimeout(() => {
                     setLoading(false);
                     clearSavedOrder(user?.id || "");
@@ -242,6 +252,7 @@ const RechargeSelected: FC<{
         setLoading(true);
         try {
             const result = await RechargeApi.requestOrder(initDataRaw, platform, optionIndex);
+            UserRechargeEvent.fire(result, finalPrice, "USD", "pending", "");
             //保存正在进行的订单到本地
             const order = saveOrder(user?.id || "", result, optionIndex);
             setOrder(order);
@@ -255,6 +266,7 @@ const RechargeSelected: FC<{
     const cancelOrder = async () => {
         if (order && order.orderId != "") {
             RechargeApi.cancelOrder(initDataRaw, order?.orderId);
+            UserRechargeEvent.fire(order?.orderId, finalPrice, "USD", "canceled", "");
         }
         setLoading(false);
         clearSavedOrder(user?.id || "");
@@ -264,18 +276,16 @@ const RechargeSelected: FC<{
         }
     }
 
-    const finalPrice = calcFinalPrice(option?.price || 0, option?.price_off || 0);
-
     const rechargeLink = RechargeLink.orderLink(order?.orderId || "");
 
     return <div className="w-full h-full items-center justify-start flex flex-col gap-2 pt-4">
-        <Section >
+        <Section disableDivider>
             <div className="w-full flex flex-row items-center justify-center py-2">
                 <img src={diamondIcon} className="w-8" />
                 <div className="px-2 flex flex-col items-start justify-center">
-                    <div className="w-auto">
+                    <div className="w-auto flex text-white items-center">
                         <L langKey={LangKeys.Common_Buy} />&nbsp;
-                        <Text weight="2">{toCurrency(option?.diamond || 0, 0)}</Text>&nbsp;
+                        <DFText size="xl" weight="2">{toCurrency(option?.diamond || 0, 0)}</DFText>&nbsp;
                         <L langKey={LangKeys.Common_DashFunDiamond} />
                     </div>
                     <p className="text-sm" style={{ color: "var(--tgui--hint_color)" }}>
@@ -284,35 +294,35 @@ const RechargeSelected: FC<{
                 </div>
             </div>
             <div className="w-full flex flex-row items-center justify-center py-2">
-                <Text weight="2">USD</Text>
-                <Text weight="2">
+                <DFText size="lg" weight="2">USD</DFText>
+                <DFText size="lg" weight="2">
                     {priceToString(finalPrice, priceType)}
-                </Text>
+                </DFText>
             </div>
 
             {
                 rechargeOrder == null && order != null && order.orderId != "" && order.optionIndex >= 0 &&
                 <div className="w-full flex flex-col items-center justify-center p-2">
-                    <Caption weight="2"><L langKey={LangKeys.Recharge_Purchase_Link_Tip} /></Caption>
+                    <DFText size="xs" weight="2"><L langKey={LangKeys.Recharge_Purchase_Link_Tip} /></DFText>
                     {
                         isInTelegram() ? <div className="w-full text-center cursor-pointer"
                             onClick={() => {
                                 openLink(rechargeLink, { tryInstantView: true });
                             }}>
-                            <Caption style={{ color: "var(--tg-theme-link-color)" }}>{rechargeLink}</Caption>
-                        </div> : <a href={rechargeLink} target="_blank"><Caption style={{ color: "var(--tg-theme-link-color)" }}>{rechargeLink}</Caption></a>
+                            <DFText size="xs" color="var(--tg-theme-link-color)" weight="1">{rechargeLink}</DFText>
+                        </div> : <a href={rechargeLink} target="_blank"><DFText size="xs" color="var(--tg-theme-link-color)" weight="1">{rechargeLink}</DFText></a>
                     }
                 </div>
             }
             {
                 rechargeOrder == null && <div className="w-full flex items-center justify-center py-3">
-                    <Button size="m"
+                    <DFButton size="m"
                         loading={loading}
                         disabled={loading}
                         onClick={() => {
                             requestOrder();
                         }}
-                    ><L langKey={LangKeys.Common_Purchase} /></Button>
+                    ><L langKey={LangKeys.Common_Purchase} /></DFButton>
                     <Button onClick={() => cancelOrder()} mode="plain"><L langKey={LangKeys.Common_Cancel} /></Button>
                 </div>
             }
@@ -371,8 +381,7 @@ const RechargeItem: FC<{ option: RechargeOption, priceType: number, onClick: () 
     const { diamond, price, price_off: off } = option;
     const finalPrice = calcFinalPrice(price, off);
 
-    return <Cell className="w-full rounded-2xl relative"
-        style={{ backgroundColor: "var(--tgui--section_bg_color)" }}
+    return <DFCell className="w-full rounded-2xl relative"
         after={priceToString(finalPrice, priceType)}
         onClick={onClick}>
         {off >= 10 && <div className="absolute w-full h-full top-0 left-0 overflow-clip rounded-2xl">
@@ -381,11 +390,11 @@ const RechargeItem: FC<{ option: RechargeOption, priceType: number, onClick: () 
                 OFF
             </div>
         </div>}
-        <div className="w-full flex flex-row items-center pl-[30px]">
+        <div className="w-full flex flex-row items-center pl-[45px]">
             <img src={diamondIcon} className="w-5" />
             <div className="pr-2 text-right font-semibold">{toCurrency(diamond, 0)}</div>
         </div>
-    </Cell>
+    </DFCell>
 }
 
 // /**
