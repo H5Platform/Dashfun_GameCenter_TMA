@@ -381,7 +381,7 @@ const RechargeItem: FC<{ option: RechargeOption, priceType: number, onClick: () 
     const { diamond, price, price_off: off } = option;
     const finalPrice = calcFinalPrice(price, off);
 
-    return <DFCell className="w-full rounded-2xl relative"
+    return <DFCell className="w-full rounded-2xl relative" mode="primary"
         after={priceToString(finalPrice, priceType)}
         onClick={onClick}>
         {off >= 10 && <div className="absolute w-full h-full top-0 left-0 overflow-clip rounded-2xl">
