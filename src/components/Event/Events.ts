@@ -4,6 +4,7 @@ import { GameData } from "../DashFunData/GameData";
 import { PaymentData } from "@/utils/DashFunApi";
 
 const EventTypes = {
+	Unloading: 0,
 	GameLoading: 1,
 	TaskStatusChanged: 50,
 	CoinChanged: 100,
@@ -261,6 +262,18 @@ class UserRechargeEvents extends EventBase {
 	}
 }
 
+class UnloadingEvents extends EventBase {
+	constructor() {
+		super(EventTypes.Unloading);
+	}
+	addListener(listener: () => void): void {
+		super.addListener(listener);
+	}
+	fire(): void {
+		super.fire();
+	}
+}
+
 
 //game events
 const UserLoginEvent = new UserLoginEvents();
@@ -269,9 +282,13 @@ const UserEnterGameEvent = new UserEnterGameEvents();
 const UserPaymentEvent = new UserPaymentEvents();
 const UserRechargeEvent = new UserRechargeEvents();
 
+const UnloadingEvent = new UnloadingEvents();
+
 export {
 	OpenDashFunRechargeEvent, GameLoadingEvent, CoinChangedEvent, TaskStatusChangedEvent,
 	SpinWheelStatusChangedEvent, OpenDashFunPaymentEvent,
 
-	UserLoginEvent, GameDataLoadedEvent, UserEnterGameEvent, UserPaymentEvent, UserRechargeEvent
+	UserLoginEvent, GameDataLoadedEvent, UserEnterGameEvent, UserPaymentEvent, UserRechargeEvent,
+
+	UnloadingEvent
 }

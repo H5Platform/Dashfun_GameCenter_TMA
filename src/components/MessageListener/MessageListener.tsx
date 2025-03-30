@@ -10,10 +10,11 @@ import { useDashFunGame } from "../DashFun/DashFunGame";
 import { useDashFunUser } from "../DashFun/DashFunUser";
 import { GameData } from "../DashFunData/GameData";
 import { DashFunUser } from "../DashFunData/UserData";
-import { GameLoadingEvent, OpenDashFunPaymentEvent } from "../Event/Events";
+import { GameLoadingEvent, OpenDashFunPaymentEvent, UnloadingEvent } from "../Event/Events";
 import GameSaveMgr from "../GameSaveMgr/GameSaveMgr";
 import { DashFunMessages } from "./Messages";
 import { createLogger } from "@/utils/createLogger";
+import { isInTelegram } from "@/utils/Utils";
 
 class Context {
 	callData: any;
@@ -252,8 +253,6 @@ const [logInfo] = createLogger("DF-Message", {
 	}
 })
 
-var index = 0;
-
 export const MessageListener: FC = () => {
 	const initDataRaw = useSignal(initData.raw)
 	const dfUser = useDashFunUser();
@@ -298,13 +297,21 @@ export const MessageListener: FC = () => {
 			}
 		}
 
+		const unloadLitener = (ev: BeforeUnloadEvent) => {
+			UnloadingEvent.fire();
+			if (!isInTelegram()) {
+				ev.preventDefault();
+				ev.returnValue = "";
+			}
+		}
+
 		const l = eventListener
-		const i = index++;
 		window.addEventListener('message', l)
-		console.log("add event listener", i)
+
+		window.addEventListener('beforeunload', unloadLitener);
+
 		return () => {
 			window.removeEventListener('message', l);
-			console.log("removing event listener", i)
 		}
 	}, [])
 

@@ -1,6 +1,7 @@
 import { GameApi } from "@/utils/DashFunApi";
 import DBMgr from "../DBMgr/DBMgr";
 import Mutex from "../Mutex/Mutex";
+import { UnloadingEvent } from "../Event/Events";
 
 export class GameSaveData {
     id: string = "";
@@ -54,11 +55,17 @@ export default class GameSaveMgr {
             this.saveGameSaveData();
         }, SAVE_TO_SERVER_INTERVAL);
 
-        window.addEventListener('beforeunload', () => {
+        UnloadingEvent.addListener(() => {
             this.saveTime = 0;
             this.saveGameSaveData();
             clearInterval(this.intervalHandler as NodeJS.Timeout);
         });
+
+        // window.addEventListener('beforeunload', () => {
+        //     this.saveTime = 0;
+        //     this.saveGameSaveData();
+        //     clearInterval(this.intervalHandler as NodeJS.Timeout);
+        // });
     }
 
     public setContext(userId: string, userToken: string, gameId: string) {

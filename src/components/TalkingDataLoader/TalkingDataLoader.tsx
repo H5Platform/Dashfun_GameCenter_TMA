@@ -2,7 +2,7 @@ import { Env, getEnv, PaymentData } from "@/utils/DashFunApi";
 import { useEffect, useRef, useState } from "react";
 import { DashFunUser } from "../DashFunData/UserData";
 import { GameData } from "../DashFunData/GameData";
-import { GameDataLoadedEvent, UserEnterGameEvent, UserLoginEvent, UserPaymentEvent, UserRechargeEvent } from "../Event/Events";
+import { GameDataLoadedEvent, UnloadingEvent, UserEnterGameEvent, UserLoginEvent, UserPaymentEvent, UserRechargeEvent } from "../Event/Events";
 import { ProfileType } from "../globalDefines";
 import { createLogger } from "@/utils/createLogger";
 const [logInfo] = createLogger("DF-TDAPP", {
@@ -81,6 +81,14 @@ const TalkingDataLoader = () => {
             window.TDAPP.flush();
     }
 
+    const onUnload = () => {
+        const game = gameRef.current;
+        logInfo(false, "User Unload", game?.id, game?.name)
+        window.TDAPP?.onEvent("用户离开游戏", game?.id, { game_id: game?.id, game_name: game?.name })
+        if (window.TDAPP?.flush)
+            window.TDAPP.flush();
+    }
+
 
     useEffect(() => {
         const script = document.createElement('script');
@@ -114,12 +122,14 @@ const TalkingDataLoader = () => {
         UserEnterGameEvent.addListener(onUserEnterGame)
         UserPaymentEvent.addListener(onUserPayment)
         UserRechargeEvent.addListener(onUserRecharge)
+        UnloadingEvent.addListener(onUnload);
         return () => {
             UserLoginEvent.removeListener(onUserLogin)
             GameDataLoadedEvent.removeListener(onGameDataLoaded)
             UserEnterGameEvent.removeListener(onUserEnterGame)
             UserPaymentEvent.removeListener(onUserPayment)
             UserRechargeEvent.removeListener(onUserRecharge)
+            UnloadingEvent.removeListener(onUnload);
         }
     }, []);
 

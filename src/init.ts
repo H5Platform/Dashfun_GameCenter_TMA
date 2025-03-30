@@ -1,6 +1,7 @@
 import {
 	$debug,
 	backButton,
+	closingBehavior,
 	initData,
 	init as initSDK,
 	mainButton,
@@ -35,6 +36,10 @@ export function init(debug: boolean, platform: string): void {
 	themeParams.mount();
 	// miniApp.setHeaderColor("#eab308")
 	swipeBehavior.isSupported() && swipeBehavior.mount();
+	closingBehavior.mount();
+
+	closingBehavior.enableConfirmation.ifAvailable();
+
 	initData.restore();
 
 	void viewport
