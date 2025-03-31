@@ -16,7 +16,7 @@ import { DashFunUser } from '@/components/DashFunData/UserData';
 import { MessageListener } from '@/components/MessageListener/MessageListener';
 import SpinWheel from '@/components/SpinWheel/SpinWheel';
 import { TaskAndCoin } from '@/components/TaskAndCoin/TaskAndCoin';
-import { CoinInfo, TaskStatus } from '@/constats';
+import { CoinInfo, DashFunCoins, TaskStatus } from '@/constats';
 import { Badge, Gamepad2, Gift, LoaderPinwheel, Send } from 'lucide-react';
 import { DFProfileAvatar } from '@/components/Avatar/Avatar';
 import DashFunRecharge from '@/components/DashFunRecharge/DashFunRecharge';
@@ -117,12 +117,12 @@ export const GameWrapper: FC = () => {
 
 	useEffect(() => {
 		if (userCoinData != null) {
-			if (game != null) {
-				const info = getCoinInfo(game.id, "gameId");
+			// if (game != null) {
+				const info = getCoinInfo(DashFunCoins.DashFunXP, "name");
 				if (info != null) {
 					setCoin(info);
 				}
-			}
+			// }
 		}
 	}, [coins, userCoinData])
 

@@ -7,6 +7,7 @@ import type { DFProgressCircleProps } from "./ProgressCircle";
 import DFImage, { DFImageProps } from "./Image";
 import DFText, { DFTextProps } from "./Text";
 import DFBadge from "./Badge";
+import MixedText from "./MixedText";
 
-export { DFButton, DFLabel, DFCell, DFProgressCircle, DFImage, DFText, DFBadge };
+export { DFButton, DFLabel, DFCell, DFProgressCircle, DFImage, DFText, DFBadge, MixedText };
 export type { DFCellProps, DFProgressCircleProps, DFImageProps, DFTextProps };

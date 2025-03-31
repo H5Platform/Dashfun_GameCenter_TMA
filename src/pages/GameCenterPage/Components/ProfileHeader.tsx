@@ -15,7 +15,7 @@ const ProfileHeader: FC<{ disableClick?: boolean }> = ({ disableClick = false })
 	const [_1, _2, _3, getCoinInfo] = useDashFunCoins();
 
 	const dp = getCoinInfo("DashFunPoint", "name");
-	const dc = getCoinInfo("DashFunCoin", "name");
+	// const dc = getCoinInfo("DashFunCoin", "name");
 	const dd = getCoinInfo("DashFunDiamond", "name");
 
 	//<div className="flex flex-col items-center w-full gap-2 rounded-xl px-3 py-2 bg-white bg-opacity-10 border-2 border-opacity-30 border-gray-200 " >
@@ -42,9 +42,9 @@ const ProfileHeader: FC<{ disableClick?: boolean }> = ({ disableClick = false })
 			</div>
 		</div>
 
-		<div className="flex p-1 items-center justify-between w-full gap-2 bg-gray-900 bg-opacity-30 rounded-full ">
+		<div className="flex p-1 items-center justify-between w-full gap-10 bg-gray-900 bg-opacity-30 rounded-full ">
 			<CoinPanel coin={dp?.coin} userCoinData={dp?.userData} forceDark={forceDark} />
-			<CoinPanel coin={dc?.coin} userCoinData={dc?.userData} forceDark={forceDark} />
+			{/* <CoinPanel coin={dc?.coin} userCoinData={dc?.userData} forceDark={forceDark} /> */}
 			<CoinPanel coin={dd?.coin} userCoinData={dd?.userData} forceDark={forceDark} showAdd onClick={() => {
 				navigator("/game-center/recharge");
 			}} />

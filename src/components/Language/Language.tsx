@@ -32,8 +32,8 @@ const en: { [key: string]: string | string[] } = {
 	"Recharge_Purchase_Link_Tip": "Open the link below to complete the purchase.",
 
 	"DashFunPay_ConfirmPurchase": "Confirm Your Purchase",
-	"DashFunPay_PurchaseTip": "Do you want to buy %title in %game for %price ?",
-	"DashFunPay_ConfirmButton": "Confirm and Pay %price"
+	"DashFunPay_PurchaseTip": "Do you want to buy %title in %game for %icon%price ?",
+	"DashFunPay_ConfirmButton": "Confirm and Pay %icon%price"
 }
 
 export const LangKeys = {
@@ -104,6 +104,23 @@ export const L = ({ langKey, index = 0 }: { langKey: string, index?: number }) =
 	} else {
 		return l;
 	}
+}
+
+export const LV2 = ({ langKey, values }: { langKey: string, values: { [key: string]: string } }) => {
+	const [get] = useLanguage();
+
+	const l = get(langKey);
+	if (l == null) return null;
+	if (Array.isArray(l)) {
+		return <></>
+	}
+	let str = l as string;
+
+	for (const key in values) {
+		str = str.replace(`%${key}`, values[key]);
+	}
+
+	return <p dangerouslySetInnerHTML={{ __html: str }} />
 }
 
 export const LV = ({ langKey, values }: { langKey: string, values: { [key: string]: string } }) => {
