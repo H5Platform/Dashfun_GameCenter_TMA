@@ -39,7 +39,7 @@ const DashFunPay: FC = () => {
     useEffect(() => {
         userRef.current = user;
     }, [user])
-    
+
     useEffect(() => {
         gameRef.current = game;
     }, [game])
@@ -115,9 +115,10 @@ const DashFunPay: FC = () => {
     }, []);
 
     const { payment, onResult } = paymentInfo || {};
-    return <div id="dashfun-pay" className="fixed bottom-0 z-50" style={{ display: show ? "block" : "none" }}>
+    return <div id="dashfun-pay" className="fixed bottom-0 z-50">
         <Modal
-            className='max-w-screen-sm sm:mx-auto pay-modal '
+            className='max-w-screen-sm sm:mx-auto pay-modal will-change-transform transform-gpu transition-opacity'
+            style={{ opacity: show ? 1 : 0.99 }}
             dismissible={false}
             open={show}
         >
