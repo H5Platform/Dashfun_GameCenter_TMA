@@ -115,10 +115,9 @@ const DashFunPay: FC = () => {
     }, []);
 
     const { payment, onResult } = paymentInfo || {};
-    return <div id="dashfun-pay" className="fixed bottom-0 z-50">
+    return <div id="dashfun-pay" className="fixed bottom-0 z-50 ">
         <Modal
-            className='max-w-screen-sm sm:mx-auto pay-modal will-change-transform transform-gpu transition-opacity'
-            style={{ opacity: show ? 1 : 0.99 }}
+            className='max-w-screen-sm sm:mx-auto pay-modal'
             dismissible={false}
             open={show}
         >
