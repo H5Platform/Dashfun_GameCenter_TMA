@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { OpenDashFunPaymentEvent, OpenDashFunRechargeEvent, UserPaymentEvent } from "../Event/Events";
 import { Modal, Spinner } from "@telegram-apps/telegram-ui";
 import { PaymentApi, PaymentData } from "@/utils/DashFunApi";
@@ -33,7 +33,20 @@ const DashFunPay: FC = () => {
     const [_1, _2, updateCoins, getCoinInfo] = useDashFunCoins();
     const [get] = useLanguage();
 
+    const userRef = useRef(user);
+    const gameRef = useRef(game);
+
+    useEffect(() => {
+        userRef.current = user;
+    }, [user])
+    
+    useEffect(() => {
+        gameRef.current = game;
+    }, [game])
+
     const evtListener = (paymentId: string, onResult: (success: boolean, msg: string) => void) => {
+        const user = userRef.current;
+        const game = gameRef.current;
         if (user != null && game != null) {
             PaymentApi.getPayment(user.id, game.id, paymentId).then((res) => {
                 setPaymentInfo({ payment: res, onResult });
@@ -48,7 +61,9 @@ const DashFunPay: FC = () => {
         setConfirming(false);
     }, []);
 
-    const confirmPayment = useCallback(async () => {
+    const confirmPayment = async () => {
+        const user = userRef.current;
+        const game = gameRef.current;
         const { payment, onResult } = paymentInfo || {};
         const userDiamond = getCoinInfo(DashFunCoins.DashFunDiamond, "name");
         if (user != null && game != null && userDiamond != null && payment != null) {
@@ -90,14 +105,14 @@ const DashFunPay: FC = () => {
                 setConfirming(false);
             }
         }
-    }, [user, game, paymentInfo]);
+    }
 
     useEffect(() => {
         OpenDashFunPaymentEvent.addListener(evtListener);
         return () => {
             OpenDashFunPaymentEvent.removeListener(evtListener);
         }
-    }, [user, game]);
+    }, []);
 
     const { payment, onResult } = paymentInfo || {};
     return <div id="dashfun-pay" className="fixed bottom-0 z-50" style={{ display: show ? "block" : "none" }}>
