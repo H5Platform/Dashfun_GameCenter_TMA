@@ -139,22 +139,22 @@ const InvitePrizeLabel: FC<{ inviteType: 1 | 2, inviteStatus: 1 | 2, rewardPoint
 	if (rewardPoint == null) return <></>;
 
 	const xp = getCoinInfo("DashFunPoint", "name");
-	const coin = getCoinInfo("DashFunCoin", "name");
+	// const coin = getCoinInfo("DashFunCoin", "name");
 
 	const xpReward = inviteStatus == 1 ? 0 : rewardPoint.RewardPoint;
-	const coinReward = inviteStatus == 1 ? 0 : rewardPoint.RewardCoin;
+	// const coinReward = inviteStatus == 1 ? 0 : rewardPoint.RewardCoin;
 
 
 	return <div className="flex flex-row items-center justify-center gap-2">
 		<Chip mode="mono">
-			<div className="flex flex-row items-center justify-center gap-1 rounded-xl">
+			<div className="flex flex-row items-center justify-center gap-1 rounded-xl text-white">
 				{xpReward} <img src={getCoinIcon1(xp?.coin)} style={{ height: 20 }} />
 			</div>
 		</Chip>
-		<Chip mode="mono">
+		{/* <Chip mode="mono">
 			<div className="flex flex-row items-center justify-center gap-1 rounded-xl">
 				{coinReward} <img src={getCoinIcon1(coin?.coin)} style={{ height: 20 }} />
 			</div>
-		</Chip>
+		</Chip> */}
 	</div>
 }

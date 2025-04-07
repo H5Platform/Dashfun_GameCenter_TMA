@@ -1,4 +1,4 @@
-import { Button, Caption, Divider, Input, Spinner, Text } from "@telegram-apps/telegram-ui";
+import { Button, Divider, Input, Spinner } from "@telegram-apps/telegram-ui";
 import { Search, X } from "lucide-react";
 import { FC, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +12,7 @@ import { Player } from "@lottiefiles/react-lottie-player";
 import searchAni from "@/assets/animation/search.json";
 import noResult from "@/assets/animation/no-result.json";
 import GameCell from "../Components/GameCell";
+import { DFText } from "@/components/controls";
 
 const sizePerPage = 5;
 export const GameCenter_SearchPage: FC = () => {
@@ -102,7 +103,7 @@ const MonstPopular: FC = () => {
 	const topTenShuffledAll = shuffledAll.slice(0, 10);
 
 	return <div className="w-full flex flex-col gap-4 ">
-		<Text className=" font-semibold">Most Popular</Text>
+		<DFText weight="2" size="lg" className=" font-semibold">Most Popular</DFText>
 		<div className="w-full overflow-x-auto hide-scrollbar">
 			<div>
 				<div className="grid grid-flow-col-dense auto-cols-max gap-2 min-h-[64px]">
@@ -113,7 +114,7 @@ const MonstPopular: FC = () => {
 							}}>
 							</GameIcon>
 							<div className="w-[80px] min-w-0 truncate text-center">
-								<Caption>{game?.name}</Caption>
+								<DFText weight="1" size="xs">{game?.name}</DFText>
 							</div>
 						</div>
 					})}
