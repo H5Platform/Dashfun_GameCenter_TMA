@@ -34,6 +34,7 @@ export const RechargePriceTypeText: { [key: number]: string } = {
 export type Task = {
 	id: string
 	create_time: number
+	priority:number
 	game_id: string
 	category: number
 	name: string
