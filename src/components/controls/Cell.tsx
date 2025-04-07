@@ -74,7 +74,7 @@ const DFCell: FC<DFCellProps> = (props: DFCellProps) => {
             </div>
         </div>
 
-        {after && <div className="flex-shrink-0 relative">
+        {after && <div className="flex-shrink-0 relative text-inherit">
             {after}
         </div>}
     </div>

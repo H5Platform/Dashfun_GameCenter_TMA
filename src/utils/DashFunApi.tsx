@@ -559,10 +559,10 @@ const RechargeApi = {
 		}
 	},
 
-	requestOrder: async (tgToken: string, platform: string, optionIndex: number): Promise<RechargeOrder> => {
+	requestOrder: async (tgToken: string, gameId: string, platform: string, optionIndex: number): Promise<RechargeOrder> => {
 		const api = RechargeApi.apiUrl() + "order/create"
 		const result = await axios.post(api, {
-			platform, recharge_option_index: optionIndex, channel: currentChannel()
+			platform, recharge_option_index: optionIndex, channel: currentChannel(), game_id: gameId
 		}, {
 			headers: {
 				"Authorization": "tma " + processToken(tgToken)
@@ -599,7 +599,7 @@ const RechargeApi = {
 		}
 	},
 
-	getOrder: async (orderId: string):Promise<RechargeOrder> => {
+	getOrder: async (orderId: string): Promise<RechargeOrder> => {
 		const api = RechargeApi.apiUrl() + "order/" + orderId
 		const result = await axios.get(api)
 		if (result.status == 200) {

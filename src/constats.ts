@@ -3,8 +3,13 @@ import dashfunIcon from "./icons/dashfun-icon.svg";
 import dashfunPointIcon from "./icons/dashfun-xp-icon.png";
 import dashfunCoinIcon from "./icons/dashfun-coin-icon.png";
 import dashfunDiamond from "./icons/dashfun-diamond4.png";
+import leaderboardIcon from "./icons/leaderboard.png";
+import starIcon from "./icons/icon-tgstar.png";
 import iconX from "./icons/icon-x.png";
 import iconTg from "./icons/icon-telegram.png";
+import walletIcon from "./icons/icon-wallet.png";
+
+import dialyLoginIcon from "./icons/icon-calendar.png";
 import { getImageUrl } from "./utils/DashFunApi";
 
 
@@ -48,6 +53,12 @@ export type Task = {
 
 export const GetTaskIcon = (task: Task): string => {
 	switch (task.require.type) {
+		case TaskCondition.DailyLogin:
+			return dialyLoginIcon;
+		case TaskCondition.LeaderboardRank:
+			return leaderboardIcon;
+		case TaskCondition.SpendTGStar:
+			return starIcon;
 		case TaskCondition.FollowX:
 			return iconX;
 		case TaskCondition.JoinTGChannel:
@@ -56,8 +67,11 @@ export const GetTaskIcon = (task: Task): string => {
 			return getImageUrl(task.game_id, "icon.png");
 		case TaskCondition.PlaySpecificGame:
 			return getImageUrl(task.require.condition, "icon.png");
-		case TaskCondition.SpendStars:
+		case TaskCondition.SpendDiamond:
+		case TaskCondition.Recharge:
 			return dashfunDiamond;
+		case TaskCondition.BindWallet:
+			return walletIcon;
 		default:
 			return dashfunIcon;
 	}
@@ -76,11 +90,15 @@ export const TaskCondition = {
 	LevelUp: 3,
 	JoinTGChannel: 4,
 	FollowX: 5,
-	SpendStars: 6,
+	SpendDiamond: 6,
 	BindWallet: 7,
 	PlaySpecificGame: 8,
 	InviteFriends: 9,
 	EnterDashFun: 10,
+	DailyLogin: 11,
+	Recharge: 12,
+	SpendTGStar: 13,
+	LeaderboardRank: 14,
 }
 
 export const TaskStatus = {
@@ -95,6 +113,7 @@ export const TaskRewardType = {
 	DashFunToken: 1,//奖励DashFunToken
 	DashFunPoint: 2,
 	GamePoint: 3, //奖励游戏对应的点数
+	Diamond: 4,
 }
 
 export const TaskCategory = {

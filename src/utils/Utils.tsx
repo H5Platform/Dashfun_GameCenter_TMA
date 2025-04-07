@@ -33,3 +33,7 @@ export const orderSaveKey = (userId: string) => {
 export const currentChannel = () => {
 	return localStorage.getItem(channelSaveKey()) || "tg";
 }
+
+export const isInGameCenter = () => {
+	return window.location.href.includes("game-center");
+}

@@ -20,8 +20,7 @@ export const GameCenter_TaskPage: FC = () => {
 			<DFText weight="2" size="2xl" className="py-4 w-full text-center">Tasks</DFText>
 		</div>
 
-		<TaskList game={game} user={null} onTaskClicked={t => {
-			console.log(t);
+		<TaskList game={game} user={null} onTaskClicked={_ => {
 		}} />
 	</div >
 }

@@ -118,10 +118,10 @@ export const GameWrapper: FC = () => {
 	useEffect(() => {
 		if (userCoinData != null) {
 			// if (game != null) {
-				const info = getCoinInfo(DashFunCoins.DashFunXP, "name");
-				if (info != null) {
-					setCoin(info);
-				}
+			const info = getCoinInfo(DashFunCoins.DashFunXP, "name");
+			if (info != null) {
+				setCoin(info);
+			}
 			// }
 		}
 	}, [coins, userCoinData])
@@ -427,7 +427,7 @@ export const GameWrapper: FC = () => {
 									</div>
 								}
 								<div className='w-full min-h-0 flex-1'>
-									<DashFunRecharge minRechargeValue={minRechargeValue} />
+									<DashFunRecharge gameId={game?.id || ""} minRechargeValue={minRechargeValue} />
 								</div>
 							</div>
 						</motion.div>

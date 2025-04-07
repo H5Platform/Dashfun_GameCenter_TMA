@@ -76,7 +76,7 @@ type RechargeOption = {
     price_off: number
 }
 
-const DashFunRecharge: FC<{ minRechargeValue: number }> = ({ minRechargeValue = 0 }) => {
+const DashFunRecharge: FC<{ minRechargeValue: number, gameId: string }> = ({ minRechargeValue = 0, gameId = "" }) => {
     const [priceType, setPriceType] = useState(1);
     const [options, setOptions] = useState<RechargeOption[]>([]);
     const [isChecking, setIsChecking] = useState(false);
@@ -169,7 +169,9 @@ const DashFunRecharge: FC<{ minRechargeValue: number }> = ({ minRechargeValue = 
                 </div>
                 <div className="flex w-full min-w-full h-full p-4"
                     style={{ paddingTop: headerHeight }}>
-                    <RechargeSelected optionIndex={selected}
+                    <RechargeSelected
+                        gameId={gameId}
+                        optionIndex={selected}
                         option={selected >= 0 && options.length > 0 ? options[selected] : undefined}
                         priceType={priceType}
                         onBack={() => {
@@ -189,8 +191,8 @@ const DashFunRecharge: FC<{ minRechargeValue: number }> = ({ minRechargeValue = 
 }
 
 const RechargeSelected: FC<{
-    optionIndex: number, option?: RechargeOption, priceType: number, onBack?: () => void, onPurchase?: (rechargeOrder: any) => void
-}> = ({ optionIndex, option, priceType, onBack, onPurchase }) => {
+    gameId: string, optionIndex: number, option?: RechargeOption, priceType: number, onBack?: () => void, onPurchase?: (rechargeOrder: any) => void
+}> = ({ gameId = "", optionIndex, option, priceType, onBack, onPurchase }) => {
     const [loading, setLoading] = useState(false);
     const [order, setOrder] = useState<OrderInfo>();
     const initDataRaw = useSignal(initData.raw) as string
@@ -256,7 +258,7 @@ const RechargeSelected: FC<{
     const requestOrder = async () => {
         setLoading(true);
         try {
-            const result = await RechargeApi.requestOrder(initDataRaw, platform, optionIndex);
+            const result = await RechargeApi.requestOrder(initDataRaw, gameId, platform, optionIndex);
             const currency = RechargePriceTypeText[priceType];
             UserRechargeEvent.fire(result.id, finalPrice, currency, "pending", "");
             //保存正在进行的订单到本地

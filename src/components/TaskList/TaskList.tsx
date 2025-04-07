@@ -2,23 +2,50 @@ import { GameData } from "@/components/DashFunData/GameData";
 import { DashFunUser } from "@/components/DashFunData/UserData";
 import { TaskApi, TGLink, UserApi } from "@/utils/DashFunApi";
 import { openLink, openTelegramLink, useLaunchParams } from "@telegram-apps/sdk-react";
-import { Avatar, Text } from "@telegram-apps/telegram-ui";
+import { Avatar } from "@telegram-apps/telegram-ui";
 import { FC, useEffect, useState } from "react";
 
 import { CoinInfo, getCoinIcon1, GetTaskIcon, Task, TaskCategory, TaskCategoryText, TaskCondition, TaskRewardType, TaskSave, TaskStatus } from "@/constats";
 import { useTonConnectModal, useTonConnectUI } from "@tonconnect/ui-react";
 import { ChevronRight, CircleCheckBig } from "lucide-react";
 import { useDashFunCoins } from "../DashFun/DashFunCoins";
-import { TaskStatusChangedEvent } from "../Event/Events";
+import { OpenDashFunRechargeEvent, TaskStatusChangedEvent } from "../Event/Events";
 import Section from "../Section/Section";
 import "./TaskList.css";
-import { DFButton, DFCell, DFImage, DFProgressCircle } from "../controls";
+import { DFButton, DFCell, DFImage, DFProgressBar, DFProgressCircle, DFText, MixedText } from "../controls";
+import { useNavigate } from "react-router-dom";
+import { isInGameCenter } from "@/utils/Utils";
+import diamondIcon from "@/icons/dashfun-diamond4.png";
 
 export type TaskListype = {
 	game: GameData | null
 	user: DashFunUser | null
 	tasksData?: { tasks: any[], user_data: { [key: string]: TaskSave } } | null
 	onTaskClicked: (params: { task: Task, save: TaskSave, processed: boolean }) => void
+}
+
+
+const TaskTypeSetting: {
+	[key: number]: {
+		progressType: "bar" | "circle" | "none",
+	}
+} = {
+}
+
+TaskTypeSetting[TaskCondition.LeaderboardRank] = {
+	progressType: "none",
+}
+TaskTypeSetting[TaskCondition.Recharge] = {
+	progressType: "bar",
+}
+TaskTypeSetting[TaskCondition.SpendDiamond] = {
+	progressType: "bar",
+}
+TaskTypeSetting[TaskCondition.SpendTGStar] = {
+	progressType: "bar",
+}
+TaskTypeSetting[TaskCondition.DailyLogin] = {
+	progressType: "none",
 }
 
 const getTaskLink = (task: Task): string => {
@@ -37,6 +64,16 @@ const getTaskLink = (task: Task): string => {
 	}
 	if (task.require.type == TaskCondition.BindWallet) {
 		return "openwallet:ton"
+	}
+	if (task.require.type == TaskCondition.LeaderboardRank) {
+		return "nav:/game-center/tops"
+	}
+	if (task.require.type == TaskCondition.Recharge) {
+		if (isInGameCenter()) {
+			return "nav:/game-center/recharge";
+		} else {
+			return "event:/OpenDashFunRechargeEvent";
+		}
 	}
 	return ""
 }
@@ -154,6 +191,7 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 	const [claiming, setClaiming] = useState(false);
 	const [verifying, setVerifying] = useState(false);
 	const { state, open, close } = useTonConnectModal();
+	const nav = useNavigate();
 
 	const [_1, _2, _3, getCoinInfo] = useDashFunCoins();
 
@@ -204,6 +242,12 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 	switch (save.status) {
 		case TaskStatus.InProgress:
 		case TaskStatus.ReturnInProgress:
+			let text = `${save.progress}/${task.require.count}`
+
+			let progressDom = <DFText color="inherit" weight="2" className="text-center items-center justify-center flex w-full h-full text-sm font-semibold">
+				{text}
+			</DFText>
+
 			progress = <div className="flex flex-col w-full justify-center items-center">
 				<div className="flex flex-row justify-center items-center">
 					{
@@ -216,15 +260,18 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 										size="large"
 									/> */}
 
-									<DFProgressCircle
-										size={48}
-										progress={save.progress / task.require.count}
-									/>
+									{(TaskTypeSetting[task.require.type]?.progressType != "bar"
+										&& TaskTypeSetting[task.require.type]?.progressType != "none"
+										&& <DFProgressCircle
+											size={48}
+											progress={save.progress / task.require.count}
+										/>)}
 								</div>
 								<div className="w-[50px] h-[50px] absolute top-0 left-0">
-									<Text className=" text-center items-center justify-center flex w-full h-full text-sm font-semibold">
-										{save.progress}/{task.require.count}
-									</Text>
+									{progressDom}
+									{(TaskTypeSetting[task.require.type]?.progressType == "bar" && <div className="h-2 w-full absolute bottom-0 left-0">
+										<DFProgressBar size={50} progress={save.progress / task.require.count} />
+									</div>)}
 								</div>
 							</div>
 					}
@@ -282,7 +329,6 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 	}
 
 	const onTaskClicked = () => {
-		console.log("tesk clicked", task)
 		let processed = false;
 		if (save.status == TaskStatus.InProgress || save.status == TaskStatus.ReturnInProgress || save.status == TaskStatus.Verify_Pending) {
 			const link = getTaskLink(task);
@@ -291,6 +337,13 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 					openTelegramLink(link)
 				} else if (link.startsWith("openwallet")) {
 					open();
+				} else if (link.startsWith("nav:")) {
+					nav(link.substring(4))
+				} else if (link.startsWith("event:")) {
+					const event = link.substring(7);
+					if (event == "OpenDashFunRechargeEvent") {
+						OpenDashFunRechargeEvent.fire(0)
+					}
 				} else {
 					openLink(link)
 				}
@@ -337,6 +390,9 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 			case TaskRewardType.GamePoint:
 				coinInfo = getCoinInfo(game.id, "gameId");
 				break;
+			case TaskRewardType.Diamond:
+				coinInfo = getCoinInfo("DashFunDiamond", "name");
+				break;
 		}
 
 		if (coinInfo != null) {
@@ -359,7 +415,13 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 			onTaskClicked()
 		}}
 	>
-		{task.name}
+
+		<MixedText
+			template={task.name}
+			variables={{
+				Diamond: { type: "image", src: diamondIcon, style: { width: "20px", height: "20px", marginRight: 0, marginBottom: 2 } },
+			}}
+		/>
 
 	</DFCell>
 
