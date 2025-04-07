@@ -64,7 +64,7 @@ const LeaderboardItem: FC<{ item: TopListItem, highlight?: boolean }> = ({ item,
 	return <div className="w-full px-2">
 		<DFCell className="w-full" mode={highlight ? "highlight" : "normal"}
 			after={<div className="flex flex-row items-center gap-1">
-				<div className="w-16 text-right">{toCurrency(item.score)}</div>
+				<div className="w-16 text-right">{toCurrency(item.score, 0)}</div>
 				<img src={xpIcon} className="w-5 h-5" />
 			</div>}
 		>

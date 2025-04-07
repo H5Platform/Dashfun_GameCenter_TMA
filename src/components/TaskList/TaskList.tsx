@@ -114,10 +114,10 @@ export const TaskList: FC<TaskListype> = ({ game, onTaskClicked, tasksData = nul
 					return -1;
 				} else if (a.category != b.category) {
 					return a.category - b.category;
-				} else if (a.priority != b.priority) {
-					return a.priority - b.priority;
 				} else if (saveA.status !== saveB.status) {
 					return saveB.status - saveA.status;
+				} else if (a.priority != b.priority) {
+					return a.priority - b.priority;
 				}
 
 				return b.create_time - a.create_time;
