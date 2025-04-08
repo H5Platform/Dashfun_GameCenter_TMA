@@ -54,27 +54,31 @@ export const GameCenter_MainPage: FC = () => {
 
 	return <div id="GameCenter_MainPage" className="w-full p-4 min-h-full flex flex-col gap-2">
 		<ProfileHeader />
-		<div className="py-2 font-semibold text-2xl w-full text-center text-white">Games</div>
-		<div className="w-full grid grid-cols-3 gap-2 pb-8 min-h-full">
-			{games.map((game, index) => {
-				return <GameCard key={index} game={game} width={(pageWidth - 8) / 3} />
-			})}
-		</div>
 
-		<DFLabel>
-			<div className="w-full flex justify-between pl-4 items-center">
-				<p>Join Community</p>
-				<DFButton className="w-20" onClick={() => {
-					openTelegramLink("https://t.me/dashfungroup");
-				}}>Join</DFButton>
-			</div>
-		</DFLabel>
+		<div className="w-full pt-4">
+			<DFLabel>
+				<div className="w-full flex justify-between pl-4 items-center">
+					<p>Join Community</p>
+					<DFButton className="w-20" onClick={() => {
+						openTelegramLink("https://t.me/dashfungroup");
+					}}>Join</DFButton>
+				</div>
+			</DFLabel>
+		</div>
 
 		<div className="w-full flex items-center justify-center py-2">
 			<DFButton size="m" onClick={() => {
 				nav("/game-center/games");
 			}}>SEE ALL GAMES</DFButton>
 		</div>
+
+		<div className="w-full grid grid-cols-3 gap-2 pb-8 min-h-full">
+			{games.map((game, index) => {
+				return <GameCard key={index} game={game} width={(pageWidth - 8) / 3} />
+			})}
+		</div>
+
+
 	</div>
 }
 

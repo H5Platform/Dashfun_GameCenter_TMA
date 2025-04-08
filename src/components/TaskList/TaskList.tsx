@@ -89,7 +89,40 @@ const getTaskLink = (task: Task): string => {
 
 export const getTaskCategoryText = (taskCategory: number) => {
 	return TaskCategoryText[taskCategory] || ""
+}
 
+const sortTask = (tasklist: Task[], user_data: { [key: string]: TaskSave }): Task[] => {
+	tasklist.sort((a: Task, b: Task) => {
+		const saveA = user_data[a.id as string];
+		const saveB = user_data[b.id as string];
+
+		if (saveA.status == TaskStatus.Completed) {
+			//已完成的任务，分类在Claimable，放在最上头
+			a.category = TaskCategory.Claimable
+			return -1;
+		} else if (saveB.status == TaskStatus.Completed) {
+			//已完成的任务，分类在Claimable，放在最上头
+			b.category = TaskCategory.Claimable
+			return 1;
+		} else if (saveA.status == TaskStatus.Claimed) {
+			//已领取的任务排在最后，归类改为Done
+			a.category = TaskCategory.Done;
+			return 1;
+		} else if (saveB.status == TaskStatus.Claimed) {
+			//已领取的任务排在最后，归类改为Done
+			b.category = TaskCategory.Done;
+			return -1;
+		} else if (a.category != b.category) {
+			return a.category - b.category;
+		} else if (saveA.status !== saveB.status) {
+			return saveB.status - saveA.status;
+		} else if (a.priority != b.priority) {
+			return a.priority - b.priority;
+		}
+
+		return b.create_time - a.create_time;
+	});
+	return tasklist;
 }
 
 export const TaskList: FC<TaskListype> = ({ game, onTaskClicked, tasksData = null }) => {
@@ -101,27 +134,7 @@ export const TaskList: FC<TaskListype> = ({ game, onTaskClicked, tasksData = nul
 		if (game != null) {
 			const r = await TaskApi.getTaskList(initDataRaw as string, game.id);
 			console.log("tasks:", r)
-			const tasklist = r.tasks;
-			tasklist.sort((a: Task, b: Task) => {
-				const saveA = r.user_data[a.id];
-				const saveB = r.user_data[b.id];
-				//已领取的任务排在最后，归类改为Done
-				if (saveA.status == TaskStatus.Claimed) {
-					a.category = TaskCategory.Done;
-					return 1;
-				} else if (saveB.status == TaskStatus.Claimed) {
-					b.category = TaskCategory.Done;
-					return -1;
-				} else if (a.category != b.category) {
-					return a.category - b.category;
-				} else if (saveA.status !== saveB.status) {
-					return saveB.status - saveA.status;
-				} else if (a.priority != b.priority) {
-					return a.priority - b.priority;
-				}
-
-				return b.create_time - a.create_time;
-			});
+			const tasklist = sortTask(r.tasks, r.user_data);
 			setTasks(tasklist)
 			setTaskSaves(r.user_data)
 		}
@@ -159,14 +172,26 @@ export const TaskList: FC<TaskListype> = ({ game, onTaskClicked, tasksData = nul
 				currCategory = task.category;
 			}
 			const save = taskSaves[task.id]
-			items.push(<TaskListItem key={task + "_" + task.id} task={task} save={save} game={game as GameData} onClicked={(item) => {
-				if (item.processed) {
-					setTaskSaves({ ...taskSaves, [task.id]: item.save })
-				}
-				if (onTaskClicked != null) {
-					onTaskClicked(item)
-				}
-			}} />)
+			items.push(<TaskListItem key={task + "_" + task.id} task={task} save={save} game={game as GameData}
+				onClicked={(item) => {
+					if (item.processed) {
+						const saves = { ...taskSaves, [task.id]: item.save }
+						setTaskSaves(saves)
+					}
+					if (onTaskClicked != null) {
+						onTaskClicked(item)
+					}
+				}}
+				onStatusChanged={(task, save) => {
+					setTimeout(() => {
+						const saves = { ...taskSaves, [task.id]: save }
+						setTaskSaves(saves)
+						//状态变化1秒后重新排序任务列表
+						const tasklist = sortTask(tasks, saves);
+						setTasks(tasklist)
+					}, 1000);
+				}}
+			/>)
 		}
 		if (items.length > 0) {
 			const section = <Section disableDivider={true} key={"section_" + currCategory} header={<div className=" text-[#F8A508]">{getTaskCategoryText(currCategory)}</div>}>
@@ -186,7 +211,11 @@ export const TaskList: FC<TaskListype> = ({ game, onTaskClicked, tasksData = nul
 	// </div>
 }
 
-const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: (item: { task: Task, save: TaskSave, processed: boolean }) => void }> = ({ task, save, game, onClicked }) => {
+const TaskListItem: FC<{
+	task: Task, save: TaskSave, game: GameData,
+	onClicked: (item: { task: Task, save: TaskSave, processed: boolean }) => void,
+	onStatusChanged?: (task: Task, save: TaskSave) => void
+}> = ({ task, save, game, onClicked, onStatusChanged }) => {
 
 	let progress = null;
 	const initDataRaw = useLaunchParams().initDataRaw;
@@ -216,6 +245,7 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 			console.log("claim result:", r);
 			save.status = r.status;
 			setClaiming(false);
+			onStatusChanged?.(task, save);
 			TaskStatusChangedEvent.fire(task.id, r.status);
 		}
 	}
@@ -231,6 +261,7 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 				setTimeout(() => {
 					setVerifying(false);
 					TaskStatusChangedEvent.fire(task.id, r.status);
+					onStatusChanged?.(task, save);
 				}, time);
 			} finally {
 				setTimeout(() => {
@@ -394,6 +425,9 @@ const TaskListItem: FC<{ task: Task, save: TaskSave, game: GameData, onClicked: 
 				break;
 			case TaskRewardType.Diamond:
 				coinInfo = getCoinInfo("DashFunDiamond", "name");
+				break;
+			case TaskRewardType.Ticket:
+				coinInfo = getCoinInfo("DashFunTicket", "name");
 				break;
 		}
 

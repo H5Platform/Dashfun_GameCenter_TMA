@@ -3,6 +3,7 @@ import { DashFunUser } from "@/components/DashFunData/UserData"
 import axios from "axios"
 import { currentChannel, isInTelegram } from "./Utils"
 import { Base64 } from 'js-base64';
+import { SpinWheelInfo } from "@/constats";
 
 enum Env {
 	Dev,
@@ -855,15 +856,15 @@ const SpinWheelApi = {
 		return dashFunApiUrl + "spinwheel/"
 	},
 
-	getInfo: async (tgToken: string, gameId: string) => {
+	getInfo: async (tgToken: string): Promise<SpinWheelInfo> => {
 		const api = SpinWheelApi.apiUrl() + "get"
 		const result = await axios.get(api, {
 			headers: {
 				"Authorization": "tma " + processToken(tgToken)
 			},
-			params: {
-				game_id: gameId,
-			}
+			// params: {
+			// 	game_id: gameId,
+			// }
 		})
 		if (result.status == 200) {
 			if (result.data.code == 0) {
@@ -876,15 +877,15 @@ const SpinWheelApi = {
 		}
 	},
 
-	spin: async (tgToken: string, gameId: string) => {
+	spin: async (tgToken: string): Promise<SpinWheelInfo> => {
 		const api = SpinWheelApi.apiUrl() + "spin"
 		const result = await axios.get(api, {
 			headers: {
 				"Authorization": "tma " + processToken(tgToken)
 			},
-			params: {
-				game_id: gameId,
-			}
+			// params: {
+			// 	game_id: gameId,
+			// }
 		})
 		if (result.status == 200) {
 			if (result.data.code == 0) {
@@ -897,15 +898,15 @@ const SpinWheelApi = {
 		}
 	},
 
-	claim: async (tgToken: string, gameId: string) => {
+	claim: async (tgToken: string): Promise<SpinWheelInfo> => {
 		const api = SpinWheelApi.apiUrl() + "claim"
 		const result = await axios.get(api, {
 			headers: {
 				"Authorization": "tma " + processToken(tgToken)
 			},
-			params: {
-				game_id: gameId,
-			}
+			// params: {
+			// 	game_id: gameId,
+			// }
 		})
 		if (result.status == 200) {
 			if (result.data.code == 0) {

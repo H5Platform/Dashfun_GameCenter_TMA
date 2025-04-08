@@ -20,6 +20,7 @@ import { LanguageProvider } from "./Language/Language";
 import { Page } from "./Page";
 import { CoinProvider } from "./DashFun/DashFunCoins";
 import TalkingDataLoader from "./TalkingDataLoader/TalkingDataLoader";
+import { SpinWheelProvider } from "./DashFun/DashFunSpinWheel";
 
 const setupRoute = (route: AppRoute, wrapPage: boolean = true) => {
   let P = () => wrapPage ? <Page back={route.back} allowYScroll={route.allowYScroll}><route.Component /></Page>
@@ -69,12 +70,14 @@ export const App: FC = () => {
         <LanguageProvider>
           <UserProvider>
             <CoinProvider>
-              <RouterListener />
-              <Routes>
-                {routesArr}
-                <Route path="*" element={<Navigate to="/" />} />
-              </Routes>
-              {/* <RouterProvider router={appRoutes} /> */}
+              <SpinWheelProvider>
+                <RouterListener />
+                <Routes>
+                  {routesArr}
+                  <Route path="*" element={<Navigate to="/" />} />
+                </Routes>
+                {/* <RouterProvider router={appRoutes} /> */}
+              </SpinWheelProvider>
             </CoinProvider>
           </UserProvider>
         </LanguageProvider>

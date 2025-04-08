@@ -4,6 +4,7 @@ import dashfunPointIcon from "./icons/dashfun-xp-icon.png";
 import dashfunCoinIcon from "./icons/dashfun-coin-icon.png";
 import dashfunDiamond from "./icons/dashfun-diamond4.png";
 import leaderboardIcon from "./icons/leaderboard.png";
+import dashfunTicket from "./icons/dashfun-ticket.png";
 import starIcon from "./icons/icon-tgstar.png";
 import iconX from "./icons/icon-x.png";
 import iconTg from "./icons/icon-telegram.png";
@@ -17,6 +18,7 @@ export const DashFunCoins = {
 	DashFunXP: "DashFunPoint",
 	DashFunCoin: "DashFunCoin",
 	DashFunDiamond: "DashFunDiamond",
+	DashFunTicket: "DashFunTicket",
 }
 
 //Recharge
@@ -34,7 +36,7 @@ export const RechargePriceTypeText: { [key: number]: string } = {
 export type Task = {
 	id: string
 	create_time: number
-	priority:number
+	priority: number
 	game_id: string
 	category: number
 	name: string
@@ -115,12 +117,14 @@ export const TaskRewardType = {
 	DashFunPoint: 2,
 	GamePoint: 3, //奖励游戏对应的点数
 	Diamond: 4,
+	Ticket: 5,
 }
 
 export const TaskCategory = {
 	Challenges: 1,
 	Daily: 2,
 	Done: 4, //已完成的任务，客户端单独归类
+	Claimable: 5, //可领取奖励的任务，客户端单独归类
 }
 
 export const TaskCategoryText: { [key: number]: string } = {
@@ -128,6 +132,7 @@ export const TaskCategoryText: { [key: number]: string } = {
 	2: "Daily",
 	3: "7 Days Challenges",
 	4: "Done", //已完成的任务，客户端单独归类
+	5: "Ready To Claim"
 }
 
 export type TaskSave = {
@@ -192,6 +197,8 @@ export const getCoinIcon = (coinName: "DashFunCoin" | "DashFunPoint" | "DashFunD
 			return dashfunPointIcon;
 		case "DashFunDiamond":
 			return dashfunDiamond;
+		case "DashFunTicket":
+			return dashfunTicket;
 		default:
 			return dashfunIcon;
 	}
@@ -239,4 +246,51 @@ export const formatNumber = (num: number | null | undefined, precision: number =
 
 export const toCurrency = (num: number, digits: number = 2): string => {
 	return num.toLocaleString('en-US', { style: "decimal", minimumFractionDigits: digits, maximumFractionDigits: digits });
+}
+
+export enum SpinWheelRewardType {
+	DashFunPoint = 1,
+}
+
+export type SpinWheelReward = {
+	reward_index: number,
+	reward_type: SpinWheelRewardType,
+	reward_value: number,
+}
+
+export enum SpinWheelUserStatus {
+	Spin = 1,
+	Claimable = 2,
+	Claimed = 3,
+}
+
+export type SpinWheelInfo = {
+	user_id: string,
+	game_id: string,
+	spinwheel_id: string,
+	rewards: SpinWheelReward[],
+	/**
+	 * 中奖索引
+	 */
+	reward_index: number,
+	reward_value: number,
+	status: SpinWheelUserStatus,
+	/**
+	 * 已抽奖次数
+	 */
+	count: number,
+	/**
+	 * 抽奖需要的票的数量，数组长度就是抽奖次数上限
+	 */
+	tickets_needed: number[],
+
+	/**
+	 * 票的价格
+	 */
+	ticket_price: number,
+
+	/**
+	 * 重置次数时间
+	 */
+	reset_time: number,
 }

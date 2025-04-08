@@ -22,6 +22,7 @@ import { GameCenter_TopPage } from "@/pages/GameCenterPage/SubPages/TopsPage";
 import EntryPage from "@/pages/Entry/EntryPage";
 import GameCenter_RechargePage from "@/pages/GameCenterPage/SubPages/RechargePage";
 import { GameProvider } from "@/components/DashFun/DashFunGame";
+import { GameCenter_SpinWheelPage } from "@/pages/GameCenterPage/SubPages/SpinWheelPage";
 
 export interface AppRoute {
   id: string;
@@ -69,14 +70,15 @@ export const routes: AppRoute[] = [
   {
     id: "gamecenter", path: "/game-center", Component: GameCenterPage, allowYScroll: false, back: "nop",
     subRoutes: [
-      { id: "gamecenter-main", path: "main", Component: GameCenter_MainPage, allowYScroll: true, back: "close", title: "Main", icon: <Cpu absoluteStrokeWidth /> },
-      { id: "gamecenter-games", path: "games", Component: GameCenter_GamesPage, allowYScroll: true, back: "/game-center/main", title: "Games", icon: <Gamepad2 absoluteStrokeWidth /> },
-      { id: "gamecenter-tasks", path: "tasks", Component: GameCenter_TaskPage, allowYScroll: true, back: "/game-center/main", title: "Tasks", icon: <Gift absoluteStrokeWidth /> },
-      { id: "gamecenter-friends", path: "friends", Component: GameCenter_FriendsPage, allowYScroll: true, back: "/game-center/main", title: "Friends", icon: <Users absoluteStrokeWidth /> },
-      { id: "gamecenter-tops", path: "tops", Component: GameCenter_TopPage, allowYScroll: true, back: "/game-center/main", title: "Top", icon: <Trophy absoluteStrokeWidth /> },
+      { id: "gamecenter-main", path: "main", Component: GameCenter_MainPage, allowYScroll: true, back: "close", title: "Main", icon: <Cpu absoluteStrokeWidth size={28} /> },
+      { id: "gamecenter-games", path: "games", Component: GameCenter_GamesPage, allowYScroll: true, back: "/game-center/main", title: "Games", icon: <Gamepad2 absoluteStrokeWidth size={28} /> },
+      { id: "gamecenter-tasks", path: "tasks", Component: GameCenter_TaskPage, allowYScroll: true, back: "/game-center/main", title: "Tasks", icon: <Gift absoluteStrokeWidth size={28} /> },
+      { id: "gamecenter-friends", path: "friends", Component: GameCenter_FriendsPage, allowYScroll: true, back: "/game-center/main", title: "Friends", icon: <Users absoluteStrokeWidth size={28} /> },
+      { id: "gamecenter-tops", path: "tops", Component: GameCenter_TopPage, allowYScroll: true, back: "/game-center/main", title: "Top", icon: <Trophy absoluteStrokeWidth size={28} /> },
       { id: "gamecenter-search", path: "search", Component: GameCenter_SearchPage, allowYScroll: true, back: "/game-center/games" },
       { id: "gamecenter-profile", path: "profile", Component: GameCenter_Profile, allowYScroll: true, back: "/game-center/main" },
-      { id: "gamecenter-recharge", path: "recharge", Component: GameCenter_RechargePage, allowYScroll: true, back: "" }
+      { id: "gamecenter-recharge", path: "recharge", Component: GameCenter_RechargePage, allowYScroll: true, back: "" },
+      { id: "gamecenter-spin", path: "spin", Component: GameCenter_SpinWheelPage, allowYScroll: true, back: "/game-center/tasks" }
     ]
   },
 

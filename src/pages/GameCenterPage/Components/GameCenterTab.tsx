@@ -1,7 +1,11 @@
+import { DFBadge } from "@/components/controls";
+import { TaskStatusChangedEvent } from "@/components/Event/Events";
+import { TaskStatus } from "@/constats";
 import { AppRoute, routes } from "@/navigation/routes";
-import { useSignal, viewport } from "@telegram-apps/sdk-react";
+import { TaskApi } from "@/utils/DashFunApi";
+import { useLaunchParams, useSignal, viewport } from "@telegram-apps/sdk-react";
 import { Tabbar } from "@telegram-apps/telegram-ui";
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 //selectedTab不用了，改为使用location自动判断选中的是哪个tab
@@ -11,6 +15,27 @@ export const GameCenterTab = forwardRef<GameCenterTabRef>(({ }, ref) => {
 	const bottom = useSignal(viewport.safeAreaInsetBottom);
 	const navigate = useNavigate();
 	const l = useLocation();
+	const initDataRaw = useLaunchParams().initDataRaw;
+	const [taskCount, setTaskCount] = useState<{ [key: number]: number }>({})
+
+	const getTaskCount = async () => {
+		const count = await TaskApi.getCount(initDataRaw as string, "DashFun")
+		setTaskCount(count);
+	}
+
+	const evtListener = (_taskId: string, _status: number) => {
+		//任务状态变化，重新获取task count
+		getTaskCount();
+	}
+
+	useEffect(() => {
+		getTaskCount();
+		TaskStatusChangedEvent.addListener(evtListener);
+		return () => {
+			TaskStatusChangedEvent.removeListener(evtListener);
+		}
+	}, [])
+
 
 	const gamecenter = routes.find(r => r.id == "gamecenter") as AppRoute;
 	const main = gamecenter.subRoutes?.find(r => r.id == "gamecenter-main") as AppRoute;
@@ -31,6 +56,8 @@ export const GameCenterTab = forwardRef<GameCenterTabRef>(({ }, ref) => {
 		return "/game-center/" + path;
 	}
 
+	const tc = taskCount == null || taskCount[TaskStatus.Completed] == null ? 0 : taskCount[TaskStatus.Completed]
+
 	const tabs: AppRoute[] = [
 		tasks,
 		games,
@@ -42,7 +69,6 @@ export const GameCenterTab = forwardRef<GameCenterTabRef>(({ }, ref) => {
 	const tabItems = [];
 	for (let index = 0; index < tabs.length; index++) {
 		const { path, title, icon } = tabs[index];
-		const Icon = () => <div className="my-1">{icon}</div>
 		const selected = l.pathname.endsWith(path);
 		tabItems.push(<Tabbar.Item
 			key={path}
@@ -55,7 +81,10 @@ export const GameCenterTab = forwardRef<GameCenterTabRef>(({ }, ref) => {
 				}
 			}}
 		>
-			<Icon />
+			<div className="relative flex justify-center items-center my-1">
+				{title == tasks.title && <DFBadge color="red">{tc}</DFBadge>}
+				{icon}
+			</div>
 		</Tabbar.Item>)
 	}
 

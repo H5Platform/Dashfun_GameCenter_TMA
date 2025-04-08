@@ -36,7 +36,7 @@ import { TaskStatusChangedEvent, SpinWheelStatusChangedEvent, OpenDashFunRecharg
 import { Player } from '@lottiefiles/react-lottie-player';
 import { LargeTitle, Button, Modal } from '@telegram-apps/telegram-ui';
 import dashFunIcon from "@/icons/dashfun-icon-256.png";
-import { DFBadge, DFButton } from '@/components/controls';
+import { DFBadge, DFButton, DFText } from '@/components/controls';
 
 const loadingAnis = [aniLoading1, aniLoading2, aniLoading3, aniLoading5];
 const idx = Math.floor(Math.random() * loadingAnis.length);
@@ -321,6 +321,7 @@ export const GameWrapper: FC = () => {
 							src={loadingAni}
 							className='h-[300px] aspect-square'
 						/>
+						<DFText weight='2' size="lg">First-time loading might take a while</DFText>
 						<div className='w-full fixed bottom-0 max-w-screen-sm mx-auto '>
 							<GameLauncher gameId={undefined}
 								footer={null}

@@ -7,6 +7,7 @@ import { ContentWrapper } from "../ContentWrapper";
 import { GameCenterTab, GameCenterTabRef } from "./Components/GameCenterTab";
 import "./GameCenterPage.css";
 import { GameCenterDataProvider } from "./Components/GameCenterDataProvider";
+import DashFunPay from "@/components/DashFunPay/DashFunPay";
 
 
 // const pageHideTabBar = [
@@ -27,6 +28,9 @@ const pageSetting: PageSettings = {
 		hideTabBar: true,
 		// /game-center/search需要特殊处理，如果放在keepalive里面，会导致input的autoFocus失效
 		doNotKeepAlive: true,
+	},
+	"/game-center/spin": {
+		hideTabBar: true,
 	},
 	"/game-center/profile": {
 		hideTabBar: true,
@@ -142,6 +146,7 @@ export const GameCenterPage: FC = () => {
 				{(!hideTabBar && <GameCenterTab ref={tabRef} />)}
 			</GameCenterDataProvider>
 		</div>
+		<DashFunPay />
 	</div>
 }
 

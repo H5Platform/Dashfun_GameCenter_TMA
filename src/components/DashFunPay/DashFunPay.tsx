@@ -11,10 +11,12 @@ import { initData, useSignal } from "@telegram-apps/sdk-react";
 import { Player } from "@lottiefiles/react-lottie-player";
 import aniSuccess from "@/assets/animation/successful.json";
 import aniFailed from "@/assets/animation/failed.json";
-import { DashFunCoins, formatNumber } from "@/constats";
+import { DashFunCoins, formatNumber, GameDashFun } from "@/constats";
 
 import "./DashFunPay.css";
 import { DFButton, DFLabel, DFText, MixedText } from "../controls";
+import { isInGameCenter } from "@/utils/Utils";
+import { useNavigate } from "react-router-dom";
 
 /**
  * 付费组件，只能使用在游戏中，game-center中无法使用
@@ -29,9 +31,10 @@ const DashFunPay: FC = () => {
 
     const initDataRaw = useSignal(initData.raw) as string;
     const user = useDashFunUser();
-    const game = useDashFunGame();
+    let game = useDashFunGame();
     const [_1, _2, updateCoins, getCoinInfo] = useDashFunCoins();
     const [get] = useLanguage();
+    const nav = useNavigate();
 
     const userRef = useRef(user);
     const gameRef = useRef(game);
@@ -44,11 +47,26 @@ const DashFunPay: FC = () => {
         gameRef.current = game;
     }, [game])
 
+    if (isInGameCenter()) {
+        game = GameDashFun()
+    }
+
     const evtListener = (paymentId: string, onResult: (success: boolean, msg: string) => void) => {
         const user = userRef.current;
         const game = gameRef.current;
-        if (user != null && game != null) {
-            PaymentApi.getPayment(user.id, game.id, paymentId).then((res) => {
+        if (user != null) {
+            let gameId = game?.id;
+
+            //game center默认游戏id为DashFun
+            if (isInGameCenter()) {
+                gameId = "DashFun"
+            }
+
+            if (gameId == null) {
+                return;
+            }
+
+            PaymentApi.getPayment(user.id, gameId, paymentId).then((res) => {
                 setPaymentInfo({ payment: res, onResult });
                 setShow(true);
                 UserPaymentEvent.fire(res, "pending");
@@ -75,7 +93,12 @@ const DashFunPay: FC = () => {
                     onResult(false, "net enough balance");
                 }
                 //通知开启充值页面，以及最小充值金额
-                OpenDashFunRechargeEvent.fire(payment.price - userDiamond.userData.amount);
+                if (isInGameCenter()) {
+                    //game-center中直接nav到充值页面
+                    nav("/game-center/recharge");
+                } else {
+                    OpenDashFunRechargeEvent.fire(payment.price - userDiamond.userData.amount);
+                }
                 return;
             }
             setConfirming(true);
@@ -154,6 +177,7 @@ const DashFunPay: FC = () => {
                                     {<img src={game?.getIconUrl()} className="w-10 h-full block object-cover rounded-full" />}
                                     <DFText size="lg" weight="2">{game.name}</DFText>
                                 </div>
+
                             </DFLabel>
                         </div>
                     }

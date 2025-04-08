@@ -1,8 +1,10 @@
 import { SpinWheelApi } from "@/utils/DashFunApi";
-import { initData, useLaunchParams } from "@telegram-apps/sdk-react";
-import { useEffect, useState } from "react"
+import { initData, useLaunchParams, useSignal } from "@telegram-apps/sdk-react";
+import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react"
 import { useDashFunGame } from "./DashFunGame";
 import { SpinWheelConstants, SpinWheelData, SpinWheelReward } from "../DashFunData/SpinWheelData";
+import { SpinWheelInfo } from "@/constats";
+import { useDashFunUser } from "./DashFunUser";
 
 export const useDashFunSpinWheel = (): [spinwheel: SpinWheelData, spin: () => Promise<SpinWheelData | null>, claim: () => Promise<SpinWheelReward | null>] => {
 	const [spinwheel, setSpinwheel] = useState<SpinWheelData | null>(null)
@@ -12,7 +14,7 @@ export const useDashFunSpinWheel = (): [spinwheel: SpinWheelData, spin: () => Pr
 	const getSpinwheel = async () => {
 		console.log("getSpinwheel", game, initData)
 		if (game == null || initData == null) return;
-		const sw = await SpinWheelApi.getInfo(initDataRaw as string as string, game?.id as string);
+		const sw = await SpinWheelApi.getInfo(initDataRaw as string as string);
 		const d = new SpinWheelData(sw.spinwheel_id, sw.game_id, sw.status)
 		// 不加的话用户切换到其他页面再切回来，会丢失已经转到的位置
 		d.rewardIndex = sw.reward_index;
@@ -31,7 +33,7 @@ export const useDashFunSpinWheel = (): [spinwheel: SpinWheelData, spin: () => Pr
 		console.log("spin:", spinwheel)
 		if (game == null || initData == null || spinwheel == null || spinwheel.canSpin() == false) return null;
 
-		const r = await SpinWheelApi.spin(initDataRaw as string as string, game?.id as string);
+		const r = await SpinWheelApi.spin(initDataRaw as string as string);
 
 		if (typeof (r) == "string") {
 			throw r;
@@ -47,7 +49,7 @@ export const useDashFunSpinWheel = (): [spinwheel: SpinWheelData, spin: () => Pr
 	const claim = async (): Promise<SpinWheelReward | null> => {
 		if (game == null || initData == null || spinwheel == null || spinwheel.canClaim() == false) return null;
 
-		const r = await SpinWheelApi.claim(initDataRaw as string as string, game?.id as string);
+		const r = await SpinWheelApi.claim(initDataRaw as string as string);
 
 		if (typeof (r) == "string") {
 			throw r;
@@ -66,4 +68,71 @@ export const useDashFunSpinWheel = (): [spinwheel: SpinWheelData, spin: () => Pr
 
 
 	return [spinwheel as SpinWheelData, spin, claim]
+}
+
+const SpinWheelContext = createContext<{
+	spinwheel: SpinWheelInfo | null,
+	spin: () => Promise<SpinWheelInfo | null> | null,
+	claim: () => Promise<SpinWheelInfo | null> | null,
+	refresh: () => Promise<void> | null,
+} | null>(null);
+
+export const SpinWheelProvider = ({ children }: PropsWithChildren<{}>) => {
+	const user = useDashFunUser();
+	const [info, setInfo] = useState<SpinWheelInfo | null>(null)
+	const initDataRaw = useSignal(initData.raw)
+
+	const getSpinwheel = async () => {
+		if (user == null || initDataRaw == null) return;
+		const info = await SpinWheelApi.getInfo(initDataRaw as string);
+		setInfo(info);
+	}
+
+	const spin = async () => {
+		if (user == null || initDataRaw == null || info == null) return null;
+		const r = await SpinWheelApi.spin(initDataRaw as string);
+		if (typeof (r) == "string") {
+			throw r;
+		}
+		setInfo(r);
+		return r;
+	}
+
+	const claim = async () => {
+		if (user == null || initDataRaw == null || info == null) return null;
+		const r = await SpinWheelApi.claim(initDataRaw as string);
+		if (typeof (r) == "string") {
+			throw r;
+		}
+		setInfo(r);
+		return r;
+	}
+
+	const refresh = async () => {
+		if (user == null || initDataRaw == null) return;
+		await getSpinwheel();
+	}
+
+	useEffect(() => {
+		getSpinwheel();
+	}, [user?.id])
+
+	return <SpinWheelContext.Provider value={{ spinwheel: info, spin, claim, refresh }}>
+		{children}
+	</SpinWheelContext.Provider>
+}
+
+export const useSpinWheel = (): {
+	spinWheel: SpinWheelInfo | null,
+	spin: () => Promise<SpinWheelInfo | null> | null,
+	claim: () => Promise<SpinWheelInfo | null> | null,
+	refresh: () => Promise<void> | null,
+} => {
+	const context = useContext(SpinWheelContext);
+	return {
+		spinWheel: context?.spinwheel || null,
+		spin: context?.spin || (() => Promise.resolve(null)),
+		claim: context?.claim || (() => Promise.resolve(null)),
+		refresh: context?.refresh || (() => Promise.resolve()),
+	};
 }
