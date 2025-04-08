@@ -211,13 +211,13 @@ export const GameCenter_SpinWheelPage: FC = () => {
 				<img
 					src={pointerImg}
 					alt="pointer"
-					className="absolute top-0 left-0 w-full h-full z-[4] pointer-events-none"
+					className="absolute top-0 left-0 w-full h-full z-[2] pointer-events-none"
 					style={{ filter: "drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5))" }}
 				/>
 				<img
 					src={wheelRingImg}
 					alt="ring"
-					className="absolute top-0 left-0 w-full h-full z-[3] pointer-events-none"
+					className="absolute top-0 left-0 w-full h-full z-[1] pointer-events-none"
 				/>
 				<motion.div
 					animate={controls}
