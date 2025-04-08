@@ -265,7 +265,7 @@ export const GameCenter_SpinWheelPage: FC = () => {
 					</DFLabel>
 				}
 				{((isSpinning || spinWheel?.status != SpinWheelUserStatus.Claimable) && remaining > 0 && <DFButton size="l" onClick={spinAni} disabled={isSpinning}>
-					{isSpinning ? "Spining" : "Spin Now!"}
+					{isSpinning ? "Spinning" : "Spin Now!"}
 				</DFButton>)}
 
 				{((!isSpinning && spinWheel?.status == SpinWheelUserStatus.Claimable) && <DFButton size="l" onClick={doClaim} disabled={isClaiming}>
