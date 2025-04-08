@@ -253,7 +253,7 @@ export const GameCenter_SpinWheelPage: FC = () => {
 					})}
 				</motion.div>
 			</div>
-			<div className="flex flex-col w-full p-4 flex-1 fixed bottom-0 left-0">
+			<div className="flex flex-col w-full p-4 flex-1 fixed bottom-4 left-0">
 				{(remaining == 0 && spinWheel?.status == SpinWheelUserStatus.Claimed) &&
 					<DFLabel>
 						<div className="flex py-2 items-center justify-center">
