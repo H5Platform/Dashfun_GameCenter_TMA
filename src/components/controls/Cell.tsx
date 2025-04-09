@@ -13,7 +13,7 @@ export type DFCellProps = {
 
 
 const DFCell: FC<DFCellProps> = (props: DFCellProps) => {
-    const { children, mode = "highlight", subtitle, disableBeforeRing, before, after, onClick } = props;
+    const { children, mode = "highlight", className, subtitle, disableBeforeRing, before, after, onClick } = props;
 
     var colorScheme = {
         bgFrom: "#071B28",
@@ -45,8 +45,8 @@ const DFCell: FC<DFCellProps> = (props: DFCellProps) => {
 
     }
 
-    return <div className="w-full py-3 px-3 gap-2 flex justify-center items-center text-[var(--text-color)] relative \
-                shadow-[0_4px_6px_rgba(0,0,0,0.5)] rounded-xl bg-[linear-gradient(to_bottom,var(--from),var(--to))] " onClick={onClick}
+    return <div className={"w-full py-3 px-3 gap-2 flex justify-center items-center text-[var(--text-color)] relative \
+                shadow-[0_4px_6px_rgba(0,0,0,0.5)] rounded-xl bg-[linear-gradient(to_bottom,var(--from),var(--to))] " + className} onClick={onClick}
         style={{
             "--from": colorScheme.bgFrom,
             "--to": colorScheme.bgTo,

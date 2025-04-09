@@ -7,6 +7,18 @@ type DFTextProps = {
     className?: string;
 }
 
+const sizeMap = {
+    xs: { fontSize: "12px", lineHeight: "16px" },
+    sm: { fontSize: "14px", lineHeight: "20px" },
+    m: { fontSize: "16px", lineHeight: "24px" },
+    lg: { fontSize: "18px", lineHeight: "28px" },
+    xl: { fontSize: "20px", lineHeight: "28px" },
+    "2xl": { fontSize: "24px", lineHeight: "32px" },
+    "3xl": { fontSize: "30px", lineHeight: "36px" },
+    "4xl": { fontSize: "36px", lineHeight: "40px" },
+    "5xl": { fontSize: "48px", lineHeight: 1 },
+}
+
 const DFText: React.FC<DFTextProps> = ({ children, onClick, weight, size = "sm", color = "white", className }) => {
 
     let fontWeight = 400;
@@ -24,9 +36,10 @@ const DFText: React.FC<DFTextProps> = ({ children, onClick, weight, size = "sm",
             fontWeight = 400;
     }
 
-    return <div className={`text-${size} ${className == null ? "" : className}`} style={{
+    return <div className={`${className == null ? "" : className}`} style={{
         fontWeight: fontWeight,
         color: color,
+        ...sizeMap[size],
     }}
         onClick={onClick}>
         {children}
