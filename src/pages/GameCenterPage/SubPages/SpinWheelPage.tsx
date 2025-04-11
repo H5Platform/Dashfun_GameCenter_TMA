@@ -277,8 +277,8 @@ export const GameCenter_SpinWheelPage: FC = () => {
 								key={i}
 								className="absolute left-1/2 top-1/2 w-20 h-[75%] \
 								text-center text-sm text-white font-bold\
-								flex flex-col items-center
-								"
+								flex flex-col items-center"
+								
 								style={{
 									transform: `translateY(-50%) translateX(-50%) rotate(${angle}deg) `
 								}}

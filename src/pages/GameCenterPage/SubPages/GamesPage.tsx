@@ -85,7 +85,7 @@ const Banner: FC = () => {
 						style={{ height: cardHeight, width: "auto", objectFit: "cover" }}
 					/>
 					<CardCell readOnly>
-						{game?.desc}
+						{game?.name}
 					</CardCell>
 				</Fragment>
 			</Card>
