@@ -217,9 +217,15 @@ const RechargeSelected: FC<{
                 setRechargeOrder(result);
                 onPurchase && onPurchase(result);
 
-                const currency = RechargePriceTypeText[result.price_type];
+                let currency = RechargePriceTypeText[result.price_type];
+                let price = result.price;
 
-                UserRechargeEvent.fire(result.id, result.price, currency, result.status == RechargeOrderStatus.Completed ? "success" : "canceled", result.pay_from);
+                if (result.price_type == RechargePriceType.TGSTAR) {
+                    currency = RechargePriceTypeText[1]; // TG Star按照50 Stars = 1 USD换算
+                    price = Math.round((result.price / 50.0) * 100) / 100;
+                }
+
+                UserRechargeEvent.fire(result.id, price, currency, result.status == RechargeOrderStatus.Completed ? "success" : "canceled", result.pay_from);
 
                 setTimeout(() => {
                     setLoading(false);
