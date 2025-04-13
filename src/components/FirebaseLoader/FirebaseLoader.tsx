@@ -90,7 +90,7 @@ const FirebaseLoader = () => {
             evtName = "DashFun_Payment_Canceled";
         }
 
-        logEvent(analytics, "DashFun_Payment", {
+        logEvent(analytics, evtName, {
             payment_id: payment.id,
             payment_price: payment.price,
             payment_currency: "Diamond",
