@@ -2,7 +2,7 @@ import { Env, getEnv, PaymentData } from "@/utils/DashFunApi";
 import { useEffect, useRef, useState } from "react";
 import { DashFunUser } from "../DashFunData/UserData";
 import { GameData } from "../DashFunData/GameData";
-import { GameDataLoadedEvent, UnloadingEvent, UserEnterGameEvent, UserLoginEvent, UserPaymentEvent, UserRechargeEvent } from "../Event/Events";
+import { GameDataLoadedEvent, TopupItem, UnloadingEvent, UserEnterGameEvent, UserLoginEvent, UserPaymentEvent, UserRechargeEvent } from "../Event/Events";
 import { ProfileType } from "../globalDefines";
 import { createLogger } from "@/utils/createLogger";
 const [logInfo] = createLogger("DF-TDAPP", {
@@ -58,24 +58,24 @@ const TalkingDataLoader = () => {
             window.TDAPP.flush();
     }
 
-    const onUserRecharge = (orderId: string, amount: number, currencyType: string, status: "pending" | "success" | "canceled", payFrom: string) => {
+    const onUserRecharge = (orderId: string, status: "pending" | "success" | "canceled", payFrom: string, item: TopupItem) => {
         const game = gameRef.current;
-        logInfo(false, "User Recharge", orderId, amount, currencyType, payFrom, status)
+        logInfo(false, "User Recharge", orderId, { ...item }, payFrom, status)
         if (status == "pending") {
             window.TDAPP?.onPlaceOrder({
-                orderId, amount, currencyType
+                orderId, amount: item.itemPrice, currencyType: item.itemCurrency
             });
-            window.TDAPP?.onEvent("充值订单_创建", orderId, { order_id: orderId, amount, currencyType, game_id: game?.id || "DashFun", game_name: game?.name || "DashFun" })
+            window.TDAPP?.onEvent("充值订单_创建", orderId, { order_id: orderId, amount: item.itemPrice, currencyType: item.itemCurrency, game_id: game?.id || "DashFun", game_name: game?.name || "DashFun" })
         } else if (status == "success") {
             window.TDAPP?.onOrderPaySucc({
-                orderId, amount, currencyType, paymentType: payFrom
+                orderId, amount: item.itemPrice, currencyType: item.itemCurrency, paymentType: payFrom
             })
-            window.TDAPP?.onEvent("充值订单_成功", orderId, { order_id: orderId, amount, currencyType, game_id: game?.id || "DashFun", game_name: game?.name || "DashFun" })
+            window.TDAPP?.onEvent("充值订单_成功", orderId, { order_id: orderId, amount: item.itemPrice, currencyType: item.itemCurrency, game_id: game?.id || "DashFun", game_name: game?.name || "DashFun" })
         } else if (status == "canceled") {
             window.TDAPP?.onCancelOrder({
-                orderId, amount, currencyType
+                orderId, amount: item.itemPrice, currencyType: item.itemCurrency
             });
-            window.TDAPP?.onEvent("充值订单_取消", orderId, { order_id: orderId, amount, currencyType, game_id: game?.id || "DashFun", game_name: game?.name || "DashFun" })
+            window.TDAPP?.onEvent("充值订单_取消", orderId, { order_id: orderId, amount: item.itemPrice, currencyType: item.itemCurrency, game_id: game?.id || "DashFun", game_name: game?.name || "DashFun" })
         }
         if (window.TDAPP?.flush)
             window.TDAPP.flush();

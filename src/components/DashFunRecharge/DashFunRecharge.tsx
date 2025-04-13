@@ -18,7 +18,7 @@ import aniFailed from "@/assets/animation/failed.json";
 import "./DashFunRecharge.css"
 import { Player } from "@lottiefiles/react-lottie-player";
 import CountUp from "../CountUp/CountUp";
-import { UserRechargeEvent } from "../Event/Events";
+import { UserRechargeEvent, TopupItem } from "../Event/Events";
 import { DFButton, DFCell, DFLabel, DFText } from "../controls";
 
 type OrderInfo = {
@@ -220,12 +220,14 @@ const RechargeSelected: FC<{
                 let currency = RechargePriceTypeText[result.price_type];
                 let price = result.price;
 
-                if (result.price_type == RechargePriceType.TGSTAR) {
-                    currency = RechargePriceTypeText[1]; // TG Star按照50 Stars = 1 USD换算
-                    price = Math.round((result.price / 50.0) * 100) / 100;
-                }
+                const item = new TopupItem(
+                    "Diamond",
+                    option?.diamond || 0,
+                    price,
+                    currency
+                )
 
-                UserRechargeEvent.fire(result.id, price, currency, result.status == RechargeOrderStatus.Completed ? "success" : "canceled", result.pay_from);
+                UserRechargeEvent.fire(result.id, result.status == RechargeOrderStatus.Completed ? "success" : "canceled", result.pay_from, item);
 
                 setTimeout(() => {
                     setLoading(false);
@@ -266,7 +268,7 @@ const RechargeSelected: FC<{
         try {
             const result = await RechargeApi.requestOrder(initDataRaw, gameId, platform, optionIndex);
             const currency = RechargePriceTypeText[priceType];
-            UserRechargeEvent.fire(result.id, finalPrice, currency, "pending", "");
+            UserRechargeEvent.fire(result.id, "pending", "", new TopupItem("Diamonds", option?.diamond || 0, finalPrice, currency));
             //保存正在进行的订单到本地
             const order = saveOrder(user?.id || "", result.id, result.payment_id, optionIndex);
             setOrder(order);
@@ -295,7 +297,7 @@ const RechargeSelected: FC<{
         if (order && order.orderId != "") {
             RechargeApi.cancelOrder(initDataRaw, order?.orderId);
             const currency = RechargePriceTypeText[priceType];
-            UserRechargeEvent.fire(order?.orderId, finalPrice, currency, "canceled", "");
+            UserRechargeEvent.fire(order?.orderId, "canceled", "", new TopupItem("Diamonds", option?.diamond || 0, finalPrice, currency));
         }
         setLoading(false);
         clearSavedOrder(user?.id || "");
