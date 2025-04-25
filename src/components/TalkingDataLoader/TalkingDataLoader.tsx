@@ -2,7 +2,7 @@ import { Env, getEnv, PaymentData } from "@/utils/DashFunApi";
 import { useEffect, useRef, useState } from "react";
 import { DashFunUser } from "../DashFunData/UserData";
 import { GameData } from "../DashFunData/GameData";
-import { GameDataLoadedEvent, TopupItem, UnloadingEvent, UserActivedEvent, UserEnterGameEvent, UserLoginEvent, UserPaymentEvent, UserRechargeEvent } from "../Event/Events";
+import { GameDataLoadedEvent, TopupItem, UnloadingEvent, UserActivedEvent, UserEnterGameEvent, UserLoginEvent, UserPaymentEvent, UserRechargeEvent, UserXpReached5kEvent } from "../Event/Events";
 import { ProfileType } from "../globalDefines";
 import { createLogger } from "@/utils/createLogger";
 const [logInfo] = createLogger("DF-TDAPP", {
@@ -94,6 +94,11 @@ const TalkingDataLoader = () => {
         window.TDAPP?.onEvent("用户激活", userId, { userId: userId })
     }
 
+    const onUserXpReached5k = (userId:string)=>{
+        logInfo(false, "User XP Reached 5k", userId)
+        window.TDAPP?.onEvent("用户XP达到5000", userId, { userId: userId })
+    }
+
     useEffect(() => {
         const script = document.createElement('script');
         const setting = {
@@ -128,6 +133,7 @@ const TalkingDataLoader = () => {
         UserRechargeEvent.addListener(onUserRecharge)
         UnloadingEvent.addListener(onUnload);
         UserActivedEvent.addListener(onUserActived)
+        UserXpReached5kEvent.addListener(onUserXpReached5k)
         return () => {
             UserLoginEvent.removeListener(onUserLogin)
             GameDataLoadedEvent.removeListener(onGameDataLoaded)
@@ -136,6 +142,7 @@ const TalkingDataLoader = () => {
             UserRechargeEvent.removeListener(onUserRecharge)
             UnloadingEvent.removeListener(onUnload);
             UserActivedEvent.removeListener(onUserActived)
+            UserXpReached5kEvent.removeListener(onUserXpReached5k)
         }
     }, []);
 

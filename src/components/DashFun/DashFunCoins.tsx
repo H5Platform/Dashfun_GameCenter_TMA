@@ -2,7 +2,7 @@ import { Coin, CoinInfo, CoinUserData, TaskStatus } from "@/constats"
 import { CoinApi } from "@/utils/DashFunApi"
 import { useLaunchParams } from "@telegram-apps/sdk-react"
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useReducer, useState } from "react"
-import { SpinWheelStatusChangedEvent, TaskStatusChangedEvent, UserActivedEvent } from "../Event/Events"
+import { SpinWheelStatusChangedEvent, TaskStatusChangedEvent, UserActivedEvent, UserXpReached5kEvent } from "../Event/Events"
 import { SpinWheelConstants } from "../DashFunData/SpinWheelData"
 import { Spinner } from "@telegram-apps/telegram-ui"
 
@@ -176,12 +176,19 @@ export const CoinProvider = ({ children }: PropsWithChildren<{}>) => {
 				if (dashfunXp != null) {
 					Object.values(action.payload).forEach(userData => {
 						if (userData.coin_id == dashfunXp.id) {
+							//记录xp已经达到5000的用户，只要到了就算，只记录一次
+							if (userData.amount >= 5000) {
+								const saveKey = `DashFun-Xp-5K-${userData.user_id}`;
+								const v = localStorage.getItem(saveKey);
+								if (v == null) {
+									localStorage.setItem(saveKey, "1");
+									UserXpReached5kEvent.fire(userData.user_id);
+								}
+							}
 							//dashfunxp，需要记录变化到5000以上的用户，做为激活用户统计
 							const oldData = state[dashfunXp.id];
-							console.log("user data:", userData, "oldData:", oldData)
 							if (oldData != null && oldData.amount < 5000 && userData.amount >= 5000) {
 								//发送激活用户事件
-								console.log("user active:", userData.user_id, userData.amount)
 								UserActivedEvent.fire(userData.user_id);
 							}
 						}
