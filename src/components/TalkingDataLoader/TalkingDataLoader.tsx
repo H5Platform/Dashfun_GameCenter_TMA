@@ -2,7 +2,7 @@ import { Env, getEnv, PaymentData } from "@/utils/DashFunApi";
 import { useEffect, useRef, useState } from "react";
 import { DashFunUser } from "../DashFunData/UserData";
 import { GameData } from "../DashFunData/GameData";
-import { GameDataLoadedEvent, TopupItem, UnloadingEvent, UserEnterGameEvent, UserLoginEvent, UserPaymentEvent, UserRechargeEvent } from "../Event/Events";
+import { GameDataLoadedEvent, TopupItem, UnloadingEvent, UserActivedEvent, UserEnterGameEvent, UserLoginEvent, UserPaymentEvent, UserRechargeEvent } from "../Event/Events";
 import { ProfileType } from "../globalDefines";
 import { createLogger } from "@/utils/createLogger";
 const [logInfo] = createLogger("DF-TDAPP", {
@@ -89,6 +89,10 @@ const TalkingDataLoader = () => {
             window.TDAPP.flush();
     }
 
+    const onUserActived = (userId: string) => {
+        logInfo(false, "User Actived", userId)
+        window.TDAPP?.onEvent("用户激活", userId, { userId: userId })
+    }
 
     useEffect(() => {
         const script = document.createElement('script');
@@ -123,6 +127,7 @@ const TalkingDataLoader = () => {
         UserPaymentEvent.addListener(onUserPayment)
         UserRechargeEvent.addListener(onUserRecharge)
         UnloadingEvent.addListener(onUnload);
+        UserActivedEvent.addListener(onUserActived)
         return () => {
             UserLoginEvent.removeListener(onUserLogin)
             GameDataLoadedEvent.removeListener(onGameDataLoaded)
@@ -130,6 +135,7 @@ const TalkingDataLoader = () => {
             UserPaymentEvent.removeListener(onUserPayment)
             UserRechargeEvent.removeListener(onUserRecharge)
             UnloadingEvent.removeListener(onUnload);
+            UserActivedEvent.removeListener(onUserActived)
         }
     }, []);
 

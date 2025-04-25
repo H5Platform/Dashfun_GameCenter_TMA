@@ -5,7 +5,7 @@ import { DashFunUser } from "../DashFunData/UserData"
 import { initializeApp } from "firebase/app";
 import { getAnalytics, logEvent } from "firebase/analytics";
 import { Env, getEnv, PaymentData } from "@/utils/DashFunApi";
-import { UserLoginEvent, GameDataLoadedEvent, UserEnterGameEvent, UserPaymentEvent, UserRechargeEvent, UnloadingEvent, TopupItem } from "../Event/Events";
+import { UserLoginEvent, GameDataLoadedEvent, UserEnterGameEvent, UserPaymentEvent, UserRechargeEvent, UnloadingEvent, TopupItem, UserActivedEvent } from "../Event/Events";
 import { createLogger } from "@/utils/createLogger";
 
 const [logInfo] = createLogger("DF-FBA", {
@@ -57,6 +57,13 @@ const FirebaseLoader = () => {
         logEvent(analytics, "login", {
             method: "Telegram",
             user_id: user.id,
+        });
+    }
+
+    const onUserActived = (userId: string) => {
+        logInfo(false, "User Actived", userId)
+        logEvent(analytics, "user_actived", {
+            user_id: userId,
         });
     }
 
@@ -156,6 +163,7 @@ const FirebaseLoader = () => {
         UserPaymentEvent.addListener(onUserPayment)
         UserRechargeEvent.addListener(onUserRecharge)
         UnloadingEvent.addListener(onUnload);
+        UserActivedEvent.addListener(onUserActived)
         return () => {
             UserLoginEvent.removeListener(onUserLogin)
             GameDataLoadedEvent.removeListener(onGameDataLoaded)
@@ -163,6 +171,7 @@ const FirebaseLoader = () => {
             UserPaymentEvent.removeListener(onUserPayment)
             UserRechargeEvent.removeListener(onUserRecharge)
             UnloadingEvent.removeListener(onUnload);
+            UserActivedEvent.removeListener(onUserActived)
         }
     }, []);
 

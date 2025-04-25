@@ -17,6 +17,7 @@ const EventTypes = {
 	UserEnterGame: 1003,
 	UserPayment: 1004,
 	UserRecharge: 1005,
+	UserActived: 1006,
 }
 
 
@@ -196,6 +197,19 @@ class UserLoginEvents extends EventBase {
 	}
 }
 
+class UserActivedEvents extends EventBase {
+	constructor() {
+		super(EventTypes.UserActived);
+	}
+
+	addListener(listener: (userId: string) => void): void {
+		super.addListener(listener);
+	}
+
+	fire(userId: string): void {
+		super.fire(userId)
+	}
+}
 
 class GameDataLoadedEvents extends EventBase {
 	constructor() {
@@ -313,6 +327,7 @@ class UnloadingEvents extends EventBase {
 
 //game events
 const UserLoginEvent = new UserLoginEvents();
+const UserActivedEvent = new UserActivedEvents();
 const GameDataLoadedEvent = new GameDataLoadedEvents();
 const UserEnterGameEvent = new UserEnterGameEvents();
 const UserPaymentEvent = new UserPaymentEvents();
@@ -327,5 +342,5 @@ export {
 	SpinWheelStatusChangedEvent, OpenDashFunPaymentEvent,
 
 	UserLoginEvent, GameDataLoadedEvent, UserEnterGameEvent, UserPaymentEvent, UserRechargeEvent,
-	UnloadingEvent
+	UnloadingEvent, UserActivedEvent
 }
