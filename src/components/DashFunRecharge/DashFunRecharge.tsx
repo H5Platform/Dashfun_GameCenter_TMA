@@ -273,7 +273,7 @@ const RechargeSelected: FC<{
             const order = saveOrder(user?.id || "", result.id, result.payment_id, optionIndex);
             setOrder(order);
 
-            if (isInTelegram()) {
+            if (isInTelegram() && result.price_type == RechargePriceType.TGSTAR) {
                 //tg环境下直接请求开启invoice
                 invoice.open(result.payment_id, "url").then((status) => {
                     if (status != "paid") {
@@ -332,8 +332,8 @@ const RechargeSelected: FC<{
             </div>
 
             {
-                //非tg环境下显示充值提示和链接
-                !isInTelegram() && rechargeOrder == null && order != null && order.orderId != "" && order.optionIndex >= 0 &&
+                //非tg环境下，或者充值金额不是star时，显示充值提示和链接
+                (!isInTelegram() || priceType != RechargePriceType.TGSTAR) && rechargeOrder == null && order != null && order.orderId != "" && order.optionIndex >= 0 &&
                 <div className="w-full flex flex-col items-center justify-center p-2">
                     <DFText size="xs" weight="2"><L langKey={LangKeys.Recharge_Purchase_Link_Tip} /></DFText>
                     {
