@@ -23,6 +23,7 @@
     "@tonconnect/ui-react": "^2.0.5",
     "axios": "^1.7.3",
     "eruda": "^3.0.1",
+    "firebase": "^11.6.0",
     "framer-motion": "^12.4.11",
     "js-base64": "^3.7.7",
     "keepalive-for-react": "^3.0.10",

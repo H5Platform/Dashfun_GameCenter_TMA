@@ -2,7 +2,7 @@ import { Coin, CoinInfo, CoinUserData, TaskStatus } from "@/constats"
 import { CoinApi } from "@/utils/DashFunApi"
 import { useLaunchParams } from "@telegram-apps/sdk-react"
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useReducer, useState } from "react"
-import { SpinWheelStatusChangedEvent, TaskStatusChangedEvent } from "../Event/Events"
+import { SpinWheelStatusChangedEvent, TaskStatusChangedEvent, UserActivedEvent, UserXpReached5kEvent } from "../Event/Events"
 import { SpinWheelConstants } from "../DashFunData/SpinWheelData"
 import { Spinner } from "@telegram-apps/telegram-ui"
 
@@ -142,8 +142,10 @@ const CoinContext = createContext<{
 	updateCoins: (gameIds: string[]) => Promise<void>
 } | null>(null);
 
-
-
+/**
+ * name to coin的缓存
+ */
+let coinsCache: { [key: string]: Coin } = {}
 
 export const CoinProvider = ({ children }: PropsWithChildren<{}>) => {
 	// key = coin id
@@ -156,6 +158,10 @@ export const CoinProvider = ({ children }: PropsWithChildren<{}>) => {
 				action.payload.forEach(coin => {
 					updatedCoins[coin.id] = coin;
 				});
+				Object.values(updatedCoins).forEach(coin => {
+					coinsCache[coin.name] = coin;
+				});
+				console.log("coin provider set coins:", updatedCoins, coinsCache)
 				return updatedCoins;
 			default:
 				return state;
@@ -165,6 +171,29 @@ export const CoinProvider = ({ children }: PropsWithChildren<{}>) => {
 	const userCoinDataReducer = (state: { [key: string]: CoinUserData }, action: { type: string, payload: { [key: string]: CoinUserData } }) => {
 		switch (action.type) {
 			case 'ADD_USER_COIN_DATA':
+				const dashfunXp = coinsCache["DashFunPoint"];
+
+				if (dashfunXp != null) {
+					Object.values(action.payload).forEach(userData => {
+						if (userData.coin_id == dashfunXp.id) {
+							//记录xp已经达到5000的用户，只要到了就算，只记录一次
+							if (userData.amount >= 5000) {
+								const saveKey = `DashFun-Xp-5K-${userData.user_id}`;
+								const v = localStorage.getItem(saveKey);
+								if (v == null) {
+									localStorage.setItem(saveKey, "1");
+									UserXpReached5kEvent.fire(userData.user_id);
+								}
+							}
+							//dashfunxp，需要记录变化到5000以上的用户，做为激活用户统计
+							const oldData = state[dashfunXp.id];
+							if (oldData != null && oldData.amount < 5000 && userData.amount >= 5000) {
+								//发送激活用户事件
+								UserActivedEvent.fire(userData.user_id);
+							}
+						}
+					});
+				}
 				return { ...state, ...action.payload };
 			default:
 				return state;

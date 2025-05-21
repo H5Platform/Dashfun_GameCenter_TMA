@@ -1,4 +1,4 @@
-import { Coin } from "@/constats";
+import { Coin, RechargePriceType, RechargePriceTypeText } from "@/constats";
 import { DashFunUser } from "../DashFunData/UserData";
 import { GameData } from "../DashFunData/GameData";
 import { PaymentData } from "@/utils/DashFunApi";
@@ -17,6 +17,8 @@ const EventTypes = {
 	UserEnterGame: 1003,
 	UserPayment: 1004,
 	UserRecharge: 1005,
+	UserActived: 1006,
+	UserXpReached5k: 1007,
 }
 
 
@@ -196,6 +198,33 @@ class UserLoginEvents extends EventBase {
 	}
 }
 
+class UserXpReached5kEvents extends EventBase {
+	constructor() {
+		super(EventTypes.UserXpReached5k);
+	}
+
+	addListener(listener: (userId: string) => void): void {
+		super.addListener(listener);
+	}
+
+	fire(userId: string): void {
+		super.fire(userId)
+	}
+}
+
+class UserActivedEvents extends EventBase {
+	constructor() {
+		super(EventTypes.UserActived);
+	}
+
+	addListener(listener: (userId: string) => void): void {
+		super.addListener(listener);
+	}
+
+	fire(userId: string): void {
+		super.fire(userId)
+	}
+}
 
 class GameDataLoadedEvents extends EventBase {
 	constructor() {
@@ -248,19 +277,55 @@ class UserPaymentEvents extends EventBase {
 	}
 }
 
+class TopupItem {
+	itemName: string;
+	itemAmount: number;
+	itemPrice: number;
+	itemCurrency: string;
+	constructor(itemName: string, itemAmount: number, itemPrice: number, itemCurrency: string) {
+		this.itemName = itemName;
+		this.itemAmount = itemAmount;
+		this.itemPrice = itemPrice;
+		this.itemCurrency = itemCurrency;
+
+		if (this.itemCurrency == RechargePriceTypeText[RechargePriceType.TGSTAR]) {
+			this.itemCurrency = RechargePriceTypeText[RechargePriceType.USD]; // TG Star按照50 Stars = 1 USD换算
+			this.itemPrice = Math.round((this.itemPrice / 50.0) * 100) / 100;
+		}
+	}
+
+	/**
+	 * Firebase 上报价格是以元为单位
+	 * @returns {number} 价格单位是美元
+	 */
+	getPrice() {
+		return this.itemPrice / 100;
+	}
+
+	toFirebaseItem(affiliation: string = "DashFun") {
+		return {
+			item_name: this.itemAmount + " " + this.itemName,
+			price: this.getPrice(),
+			quantity: 1,
+			affiliation
+		}
+	}
+}
+
 class UserRechargeEvents extends EventBase {
 	constructor() {
 		super(EventTypes.UserRecharge);
 	}
 
-	addListener(listener: (orderId: string, amount: number, currencyType: string, status: "pending" | "success" | "canceled", payFrom: string) => void): void {
+	addListener(listener: (orderId: string, status: "pending" | "success" | "canceled", payFrom: string, item: TopupItem) => void): void {
 		super.addListener(listener);
 	}
 
-	fire(orderId: string, amount: number, currencyType: string, status: "pending" | "success" | "canceled", payFrom: string): void {
-		super.fire(orderId, amount, currencyType, status, payFrom);
+	fire(orderId: string, status: "pending" | "success" | "canceled", payFrom: string, item: TopupItem): void {
+		super.fire(orderId, status, payFrom, item);
 	}
 }
+
 
 class UnloadingEvents extends EventBase {
 	constructor() {
@@ -277,18 +342,21 @@ class UnloadingEvents extends EventBase {
 
 //game events
 const UserLoginEvent = new UserLoginEvents();
+const UserActivedEvent = new UserActivedEvents();
 const GameDataLoadedEvent = new GameDataLoadedEvents();
 const UserEnterGameEvent = new UserEnterGameEvents();
 const UserPaymentEvent = new UserPaymentEvents();
 const UserRechargeEvent = new UserRechargeEvents();
+const UserXpReached5kEvent = new UserXpReached5kEvents();
 
 const UnloadingEvent = new UnloadingEvents();
 
 export {
+	TopupItem,
+
 	OpenDashFunRechargeEvent, GameLoadingEvent, CoinChangedEvent, TaskStatusChangedEvent,
 	SpinWheelStatusChangedEvent, OpenDashFunPaymentEvent,
 
 	UserLoginEvent, GameDataLoadedEvent, UserEnterGameEvent, UserPaymentEvent, UserRechargeEvent,
-
-	UnloadingEvent
+	UnloadingEvent, UserActivedEvent, UserXpReached5kEvent
 }

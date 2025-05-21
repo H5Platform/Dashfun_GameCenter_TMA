@@ -21,6 +21,7 @@ import { UserProvider } from "./DashFun/DashFunUser";
 import { LanguageProvider } from "./Language/Language";
 import { Page } from "./Page";
 import TalkingDataLoader from "./TalkingDataLoader/TalkingDataLoader";
+import FirebaseLoader from "./FirebaseLoader/FirebaseLoader";
 
 const setupRoute = (route: AppRoute, wrapPage: boolean = true) => {
   let P = () => wrapPage ? <Page back={route.back} allowYScroll={route.allowYScroll}><route.Component /></Page>
@@ -66,6 +67,7 @@ export const App: FC = () => {
       className="w-full h-full"
     >
       <TalkingDataLoader />
+      <FirebaseLoader />
       <BrowserRouter >
         <LanguageProvider>
           <UserProvider>

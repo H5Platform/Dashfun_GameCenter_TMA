@@ -18,7 +18,7 @@ import aniFailed from "@/assets/animation/failed.json";
 import "./DashFunRecharge.css"
 import { Player } from "@lottiefiles/react-lottie-player";
 import CountUp from "../CountUp/CountUp";
-import { UserRechargeEvent } from "../Event/Events";
+import { UserRechargeEvent, TopupItem } from "../Event/Events";
 import { DFButton, DFCell, DFLabel, DFText } from "../controls";
 
 type OrderInfo = {
@@ -217,9 +217,17 @@ const RechargeSelected: FC<{
                 setRechargeOrder(result);
                 onPurchase && onPurchase(result);
 
-                const currency = RechargePriceTypeText[result.price_type];
+                let currency = RechargePriceTypeText[result.price_type];
+                let price = result.price;
 
-                UserRechargeEvent.fire(result.id, result.price, currency, result.status == RechargeOrderStatus.Completed ? "success" : "canceled", result.pay_from);
+                const item = new TopupItem(
+                    "Diamond",
+                    option?.diamond || 0,
+                    price,
+                    currency
+                )
+
+                UserRechargeEvent.fire(result.id, result.status == RechargeOrderStatus.Completed ? "success" : "canceled", result.pay_from, item);
 
                 setTimeout(() => {
                     setLoading(false);
@@ -260,12 +268,12 @@ const RechargeSelected: FC<{
         try {
             const result = await RechargeApi.requestOrder(initDataRaw, gameId, platform, optionIndex);
             const currency = RechargePriceTypeText[priceType];
-            UserRechargeEvent.fire(result.id, finalPrice, currency, "pending", "");
+            UserRechargeEvent.fire(result.id, "pending", "", new TopupItem("Diamonds", option?.diamond || 0, finalPrice, currency));
             //保存正在进行的订单到本地
             const order = saveOrder(user?.id || "", result.id, result.payment_id, optionIndex);
             setOrder(order);
 
-            if (isInTelegram()) {
+            if (isInTelegram() && result.price_type == RechargePriceType.TGSTAR) {
                 //tg环境下直接请求开启invoice
                 invoice.open(result.payment_id, "url").then((status) => {
                     if (status != "paid") {
@@ -289,7 +297,7 @@ const RechargeSelected: FC<{
         if (order && order.orderId != "") {
             RechargeApi.cancelOrder(initDataRaw, order?.orderId);
             const currency = RechargePriceTypeText[priceType];
-            UserRechargeEvent.fire(order?.orderId, finalPrice, currency, "canceled", "");
+            UserRechargeEvent.fire(order?.orderId, "canceled", "", new TopupItem("Diamonds", option?.diamond || 0, finalPrice, currency));
         }
         setLoading(false);
         clearSavedOrder(user?.id || "");
@@ -324,9 +332,9 @@ const RechargeSelected: FC<{
             </div>
 
             {
-                //非tg环境下显示充值提示和链接
-                !isInTelegram() && rechargeOrder == null && order != null && order.orderId != "" && order.optionIndex >= 0 &&
-                <div className="w-full flex flex-col items-center justify-center p-2 gap-2">
+                //非tg环境下，或者充值金额不是star时，显示充值提示和链接
+                (!isInTelegram() || priceType != RechargePriceType.TGSTAR) && rechargeOrder == null && order != null && order.orderId != "" && order.optionIndex >= 0 &&
+                <div className="w-full flex flex-col items-center justify-center p-2">
                     <DFText size="xs" weight="2"><L langKey={LangKeys.Recharge_Purchase_Link_Tip} /></DFText>
                     {
                         <a href={rechargeLink} target="_blank"><DFText size="xs" color="var(--tg-theme-link-color)" weight="1">{rechargeLink}</DFText></a>

@@ -5,7 +5,7 @@ import { openLink, openTelegramLink, useLaunchParams } from "@telegram-apps/sdk-
 import { Avatar } from "@telegram-apps/telegram-ui";
 import { FC, useEffect, useState } from "react";
 
-import { CoinInfo, getCoinIcon1, GetTaskIcon, Task, TaskCategory, TaskCategoryText, TaskCondition, TaskRewardType, TaskSave, TaskStatus } from "@/constats";
+import { CoinInfo, formatNumber, getCoinIcon1, GetTaskIcon, Task, TaskCategory, TaskCategoryText, TaskCondition, TaskRewardType, TaskSave, TaskStatus } from "@/constats";
 import { useTonConnectModal, useTonConnectUI } from "@tonconnect/ui-react";
 import { ChevronRight, CircleCheckBig } from "lucide-react";
 import { useDashFunCoins } from "../DashFun/DashFunCoins";
@@ -275,7 +275,10 @@ const TaskListItem: FC<{
 	switch (save.status) {
 		case TaskStatus.InProgress:
 		case TaskStatus.ReturnInProgress:
-			let text = `${save.progress}/${task.require.count}`
+			const curr = formatNumber(save.progress, 2);
+			const req = formatNumber(task.require.count, 2);
+
+			let text = `${curr}/${req}`
 
 			let progressDom = <DFText color="inherit" weight="2" className="text-center items-center justify-center flex w-full h-full text-sm font-semibold">
 				{text}
