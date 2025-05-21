@@ -3,7 +3,7 @@ import diamondIcon from "@/icons/dashfun-diamond4.png";
 import starIcon from "@/icons/star-icon.png";
 import { Button, Spinner, Text, Title } from "@telegram-apps/telegram-ui";
 import { RechargeApi, RechargeLink, RechargeOrder } from "@/utils/DashFunApi";
-import { initData, invoice, retrieveLaunchParams, useLaunchParams, useSignal } from "@telegram-apps/sdk-react";
+import { initData, invoice, openLink, openTelegramLink, retrieveLaunchParams, useLaunchParams, useSignal } from "@telegram-apps/sdk-react";
 import { RechargeOrderStatus, RechargePriceType, RechargePriceTypeText, toCurrency } from "@/constats";
 import { motion } from "framer-motion";
 import Section from "../Section/Section";
@@ -125,7 +125,7 @@ const DashFunRecharge: FC<{ minRechargeValue: number, gameId: string }> = ({ min
 
     const headerHeight = 200;
     return <div id="recharge" className="w-full h-full items-center justify-start flex flex-col gap-2">
-        <div className={"fixed flex flex-col items-center justify-center gap-2 w-full z-10 backdrop-blur-md"}
+        <div className={"fixed flex flex-col items-center justify-center gap-2 w-full z-10 backdrop-blur-md max-w-screen-sm sm:aligen-center sm:mx-auto "}
             style={{ height: headerHeight, minHeight: headerHeight }}>
             <img src={diamondIcon} className='h-[100px] object-contain py-2' />
             <DFLabel>
@@ -326,11 +326,15 @@ const RechargeSelected: FC<{
             {
                 //非tg环境下显示充值提示和链接
                 !isInTelegram() && rechargeOrder == null && order != null && order.orderId != "" && order.optionIndex >= 0 &&
-                <div className="w-full flex flex-col items-center justify-center p-2">
+                <div className="w-full flex flex-col items-center justify-center p-2 gap-2">
                     <DFText size="xs" weight="2"><L langKey={LangKeys.Recharge_Purchase_Link_Tip} /></DFText>
                     {
                         <a href={rechargeLink} target="_blank"><DFText size="xs" color="var(--tg-theme-link-color)" weight="1">{rechargeLink}</DFText></a>
                     }
+                    <DFButton onClick={() => {
+                        openLink(rechargeLink);
+
+                    }}>Open Topup Link</DFButton>
                 </div>
             }
             {
