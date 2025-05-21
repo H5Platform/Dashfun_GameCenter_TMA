@@ -1,25 +1,25 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { RechargeOrderStatus, RechargePriceType, RechargePriceTypeText, toCurrency } from "@/constats";
 import diamondIcon from "@/icons/dashfun-diamond4.png";
 import starIcon from "@/icons/star-icon.png";
-import { Button, Spinner, Text, Title } from "@telegram-apps/telegram-ui";
 import { RechargeApi, RechargeLink, RechargeOrder } from "@/utils/DashFunApi";
-import { initData, invoice, openLink, openTelegramLink, retrieveLaunchParams, useLaunchParams, useSignal } from "@telegram-apps/sdk-react";
-import { RechargeOrderStatus, RechargePriceType, RechargePriceTypeText, toCurrency } from "@/constats";
-import { motion } from "framer-motion";
-import Section from "../Section/Section";
-import { useDashFunCoins } from "../DashFun/DashFunCoins";
-import { L, LangKeys } from "../Language/Language";
-import { useDashFunUser } from "../DashFun/DashFunUser";
 import { isInTelegram, orderSaveKey } from "@/utils/Utils";
+import { initData, invoice, openLink, retrieveLaunchParams, useLaunchParams, useSignal } from "@telegram-apps/sdk-react";
+import { Button, Spinner, Text, Title } from "@telegram-apps/telegram-ui";
+import { motion } from "framer-motion";
+import { FC, useEffect, useRef, useState } from "react";
+import { useDashFunCoins } from "../DashFun/DashFunCoins";
+import { useDashFunUser } from "../DashFun/DashFunUser";
+import { L, LangKeys } from "../Language/Language";
+import Section from "../Section/Section";
 
-import aniSuccess from "@/assets/animation/successful.json";
 import aniFailed from "@/assets/animation/failed.json";
+import aniSuccess from "@/assets/animation/successful.json";
 
-import "./DashFunRecharge.css"
 import { Player } from "@lottiefiles/react-lottie-player";
 import CountUp from "../CountUp/CountUp";
-import { UserRechargeEvent, TopupItem } from "../Event/Events";
+import { TopupItem, UserRechargeEvent } from "../Event/Events";
 import { DFButton, DFCell, DFLabel, DFText } from "../controls";
+import "./DashFunRecharge.css";
 
 type OrderInfo = {
     orderId: string,
