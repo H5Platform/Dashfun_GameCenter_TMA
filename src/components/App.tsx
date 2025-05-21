@@ -15,12 +15,12 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-route
 
 import { AppRoute, routes } from "@/navigation/routes.tsx";
 import { miniApp, postEvent, useLaunchParams } from "@telegram-apps/sdk-react";
+import { CoinProvider } from "./DashFun/DashFunCoins";
+import { SpinWheelProvider } from "./DashFun/DashFunSpinWheel";
 import { UserProvider } from "./DashFun/DashFunUser";
 import { LanguageProvider } from "./Language/Language";
 import { Page } from "./Page";
-import { CoinProvider } from "./DashFun/DashFunCoins";
 import TalkingDataLoader from "./TalkingDataLoader/TalkingDataLoader";
-import { SpinWheelProvider } from "./DashFun/DashFunSpinWheel";
 import FirebaseLoader from "./FirebaseLoader/FirebaseLoader";
 
 const setupRoute = (route: AppRoute, wrapPage: boolean = true) => {

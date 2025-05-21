@@ -1,25 +1,25 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { RechargeOrderStatus, RechargePriceType, RechargePriceTypeText, toCurrency } from "@/constats";
 import diamondIcon from "@/icons/dashfun-diamond4.png";
 import starIcon from "@/icons/star-icon.png";
-import { Button, Spinner, Text, Title } from "@telegram-apps/telegram-ui";
 import { RechargeApi, RechargeLink, RechargeOrder } from "@/utils/DashFunApi";
-import { initData, invoice, retrieveLaunchParams, useLaunchParams, useSignal } from "@telegram-apps/sdk-react";
-import { RechargeOrderStatus, RechargePriceType, RechargePriceTypeText, toCurrency } from "@/constats";
-import { motion } from "framer-motion";
-import Section from "../Section/Section";
-import { useDashFunCoins } from "../DashFun/DashFunCoins";
-import { L, LangKeys } from "../Language/Language";
-import { useDashFunUser } from "../DashFun/DashFunUser";
 import { isInTelegram, orderSaveKey } from "@/utils/Utils";
+import { initData, invoice, openLink, retrieveLaunchParams, useLaunchParams, useSignal } from "@telegram-apps/sdk-react";
+import { Button, Spinner, Text, Title } from "@telegram-apps/telegram-ui";
+import { motion } from "framer-motion";
+import { FC, useEffect, useRef, useState } from "react";
+import { useDashFunCoins } from "../DashFun/DashFunCoins";
+import { useDashFunUser } from "../DashFun/DashFunUser";
+import { L, LangKeys } from "../Language/Language";
+import Section from "../Section/Section";
 
-import aniSuccess from "@/assets/animation/successful.json";
 import aniFailed from "@/assets/animation/failed.json";
+import aniSuccess from "@/assets/animation/successful.json";
 
-import "./DashFunRecharge.css"
 import { Player } from "@lottiefiles/react-lottie-player";
 import CountUp from "../CountUp/CountUp";
-import { UserRechargeEvent, TopupItem } from "../Event/Events";
+import { TopupItem, UserRechargeEvent } from "../Event/Events";
 import { DFButton, DFCell, DFLabel, DFText } from "../controls";
+import "./DashFunRecharge.css";
 
 type OrderInfo = {
     orderId: string,
@@ -125,7 +125,7 @@ const DashFunRecharge: FC<{ minRechargeValue: number, gameId: string }> = ({ min
 
     const headerHeight = 200;
     return <div id="recharge" className="w-full h-full items-center justify-start flex flex-col gap-2">
-        <div className={"fixed flex flex-col items-center justify-center gap-2 w-full z-10 backdrop-blur-md"}
+        <div className={"fixed flex flex-col items-center justify-center gap-2 w-full z-10 backdrop-blur-md max-w-screen-sm sm:aligen-center sm:mx-auto "}
             style={{ height: headerHeight, minHeight: headerHeight }}>
             <img src={diamondIcon} className='h-[100px] object-contain py-2' />
             <DFLabel>
@@ -339,6 +339,10 @@ const RechargeSelected: FC<{
                     {
                         <a href={rechargeLink} target="_blank"><DFText size="xs" color="var(--tg-theme-link-color)" weight="1">{rechargeLink}</DFText></a>
                     }
+                    <DFButton onClick={() => {
+                        openLink(rechargeLink);
+
+                    }}>Open Topup Link</DFButton>
                 </div>
             }
             {

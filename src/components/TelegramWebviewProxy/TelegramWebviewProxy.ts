@@ -15,6 +15,7 @@ const [logInfo] = createLogger("DF-EventProxy", {
 
 const ProcessEvents = [
     "web_app_open_tg_link",
+    "web_app_open_link",
 ]
 
 class TelegramWebviewProxy {
@@ -22,28 +23,43 @@ class TelegramWebviewProxy {
         console.log("TelegramWebviewProxy postEvent----", args);
         logInfo(false, "Posting Event", args[0])
         if (ProcessEvents.includes(args[0])) {
-            this.processEvent(args[0], ...args.slice(1));
+            processEvent(args[0], ...args.slice(1));
         }
         return;
     }
+}
 
-    processEvent(event: string, ...args: any[]) {
-        logInfo(false, "Processing Event", event, args)
-        switch (event) {
-            case "web_app_open_tg_link":
-                //打开链接
-                const params = JSON.parse(args[0]);
-                openLink(params["path_full"]);
-                break;
-        }
-        return;
+function processEvent(event: string, ...args: any[]) {
+    logInfo(false, "Processing Event", event, args)
+    switch (event) {
+        case "web_app_open_tg_link":
+            //打开链接
+            const params = JSON.parse(args[0]);
+            openLink(params["path_full"]);
+            break;
+        case "web_app_open_link":
+            //打开链接
+            const params2 = JSON.parse(args[0]);
+            openLink(params2["url"]);
+            break;
     }
+    return;
 }
 
 const openLink = (url: string) => {
     if (url.startsWith("/game")) {
         const to = `${window.location.origin}${url}`;
         window.open(to, "_blank")
+    } else if (url.startsWith("/share")) {
+        const cleanedUrl = url.replace("/share/url?url=", "");
+        const decodedUrl = decodeURIComponent(cleanedUrl);
+        const to = `${window.location.origin}${decodedUrl}`;
+        console.log(to);
+    } else if (url.startsWith("/")) {
+        const to = "https://t.me" + url;
+        window.open(to, "_blank")
+    } else {
+        window.open(url, "_blank")
     }
 }
 
@@ -55,4 +71,4 @@ const initProxy = () => {
 }
 
 export default initProxy
-export {TelegramWebviewProxy}
+export { TelegramWebviewProxy }
