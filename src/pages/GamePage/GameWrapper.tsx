@@ -30,7 +30,7 @@ import aniLoading2 from "@/assets/animation/loading2.json";
 import aniLoading3 from "@/assets/animation/loading3.json";
 // import aniLoading4 from "@/assets/animation/loading4.json";
 import aniLoading5 from "@/assets/animation/loading5.json";
-import { backButton, openTelegramLink, shareURL, useLaunchParams, useSignal, viewport } from '@telegram-apps/sdk-react';
+import { backButton, openLink, openTelegramLink, shareURL, useLaunchParams, useSignal, viewport } from '@telegram-apps/sdk-react';
 import DashFunPay from '@/components/DashFunPay/DashFunPay';
 import { TaskStatusChangedEvent, SpinWheelStatusChangedEvent, OpenDashFunRechargeEvent, UserEnterGameEvent } from '@/components/Event/Events';
 import { Player } from '@lottiefiles/react-lottie-player';
@@ -86,7 +86,11 @@ export const GameWrapper: FC = () => {
 	}
 
 	const onBackToCenter = () => {
-		openTelegramLink(TGLink.centerLink())
+		if (isInTelegram()) {
+			openTelegramLink(TGLink.centerLink());
+		} else {
+			openLink(TGLink.centerLink());
+		}
 		//util.openTelegramLink(TGLink.botLink())
 	}
 
@@ -281,9 +285,9 @@ export const GameWrapper: FC = () => {
 				<DFButton size="m" onClick={() => {
 					onBackToCenter();
 				}} ><Gamepad2 size="24" strokeWidth={2} absoluteStrokeWidth /> </DFButton>
-				<DFButton size="m" mode="normal" onClick={() => {
+				{(isInTelegram() && <DFButton size="m" mode="normal" onClick={() => {
 					onShare();
-				}}><Send size="20" strokeWidth={1.5} absoluteStrokeWidth /></DFButton>
+				}}><Send size="20" strokeWidth={1.5} absoluteStrokeWidth /></DFButton>)}
 			</div>
 		</div>
 	</SectionHeader>
