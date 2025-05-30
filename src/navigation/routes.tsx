@@ -1,4 +1,4 @@
-import type { ComponentType, JSX } from "react";
+import { useEffect, type ComponentType, type JSX } from "react";
 
 import { Page } from "@/components/Page";
 import { GameCenterPage } from "@/pages/GameCenterPage/GameCenterPage";
@@ -10,14 +10,14 @@ import { GameCenter_SearchPage } from "@/pages/GameCenterPage/SubPages/SearchGam
 import { GameCenter_TaskPage } from "@/pages/GameCenterPage/SubPages/TaskPage";
 import { GameWrapper } from "@/pages/GamePage/GameWrapper";
 import { InitDataPage } from "@/pages/InitDataPage/InitDataPage";
-import { IntroPage } from "@/pages/IntroPage/IntroPage";
+// import { IntroPage } from "@/pages/IntroPage/IntroPage";
 import { LaunchParamsPage } from "@/pages/LaunchParamsPage/LaunchParamsPage.tsx";
 import MainPage from "@/pages/MainPage/MainPage";
 import { TestingPage } from "@/pages/TestingPage/TestingPage";
 import { ThemeParamsPage } from "@/pages/ThemeParamsPage/ThemeParamsPage.tsx";
 import { TONConnectPage } from "@/pages/TONConnectPage/TONConnectPage";
 import { Cpu, Gamepad2, Gift, Trophy, Users } from "lucide-react";
-import { createHashRouter, RouteObject } from "react-router-dom";
+import { createHashRouter, RouteObject, useNavigate } from "react-router-dom";
 import { GameCenter_TopPage } from "@/pages/GameCenterPage/SubPages/TopsPage";
 import EntryPage from "@/pages/Entry/EntryPage";
 import GameCenter_RechargePage from "@/pages/GameCenterPage/SubPages/RechargePage";
@@ -57,8 +57,16 @@ const setupRoute = (route: AppRoute, wrapPage: boolean = true): RouteObject => {
   return r;
 }
 
+const RootComponent = () => {
+  const nav = useNavigate();
+  useEffect(() => {
+    nav("/game-center")
+  }, [])
+  return <></>
+}
+
 export const routes: AppRoute[] = [
-  { id: "root", path: "/", Component: IntroPage, allowYScroll: true, back: "close" },
+  { id: "root", path: "/", Component: RootComponent, allowYScroll: true, back: "close" },
   { id: "testing", path: "/testing", Component: TestingPage, allowYScroll: true, back: "close" },
   { id: "game", path: "/game", Component: () => <GameProvider><GameWrapper /></GameProvider>, back: "close", allowYScroll: false },
   { id: "", path: "/init-data", Component: InitDataPage, title: "Init Data" },
