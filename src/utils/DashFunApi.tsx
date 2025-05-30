@@ -39,6 +39,11 @@ const api_url = () => {
 
 		return api_prod;
 	}
+	if (url.indexOf("https://app.dashfun.games") >= 0) {
+		env = Env.Prod
+
+		return api_prod;
+	}
 	env = Env.Dev
 	return api_local;
 	// return api_test;
