@@ -71,13 +71,14 @@ export const GameWrapper: FC = () => {
 
 	const [taskCount, setTaskCount] = useState<{ [key: number]: number }>({})
 
+	const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
+
 	const getTaskCount = async () => {
 		if (game != null) {
 			const count = await TaskApi.getCount(initDataRaw as string, game.id)
 			setTaskCount(count);
 		}
 	}
-
 
 	const onShare = () => {
 		if (game != null) {
@@ -159,6 +160,16 @@ export const GameWrapper: FC = () => {
 		}
 	}, [showRecharge])
 
+	useEffect(() => {
+		const handleResize = () => {
+			setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+		};
+		window.addEventListener('resize', handleResize);
+		return () => {
+			window.removeEventListener('resize', handleResize);
+		};
+	}, []);
+
 
 	// const numb = coin?.userData?.amount || 0;
 	// const formatted = numb == null ? "0" : numb.toLocaleString('en-US', { style: "decimal" })
@@ -223,9 +234,19 @@ export const GameWrapper: FC = () => {
 	];
 
 
+
 	// const [currentTab, setCurrentTab] = useState(tabs[0].id);
 
 	const avatarWidth = window.innerWidth > 400 ? 40 : 32;
+
+	let adjustedSize = { ...windowSize };
+
+	if (adjustedSize.width > 640) {
+		adjustedSize.width = adjustedSize.height * (9 / 16)
+		if (adjustedSize.width > 640) {
+			adjustedSize.width = 640;
+		}
+	}
 
 	const header = <SectionHeader
 		className='px-2'
@@ -296,20 +317,22 @@ export const GameWrapper: FC = () => {
 		<MessageListener />
 		<div className="game-wrapper max-w-screen-sm sm:mx-auto" style={{ paddingTop: pt, paddingBottom: pb }}>
 			{header}
-			<div id="game-iframe" className=' flex-1 h-full'>
-				<Iframe
-					id='GameFrame'
-					name='GameFrame'
-					url={game == null ? "" : game.url}
-					display="block"
-					width='100%'
-					height="100%"
-					frameBorder={0}
-					className='game-frame'
-					styles={{
-						visibility: play ? "" : "hidden"
-					}}
-				/>
+			<div id="game-iframe" className=' flex flex-1 h-full items-center justify-center' >
+				<div id="frame-wrapper" className=' h-full' style={{ width: adjustedSize.width }}>
+					<Iframe
+						id='GameFrame'
+						name='GameFrame'
+						url={game == null ? "" : game.url}
+						display="block"
+						width='100%'
+						height="100%"
+						frameBorder={0}
+						className='game-frame'
+						styles={{
+							visibility: play ? "" : "hidden"
+						}}
+					/>
+				</div>
 				{showLoading && (<div className={`flex flex-col bg-gradient-to-b from-[#004275] to-[#00254E] justify-start items-center game-loading ${play ? ", game-loading-fadeout" : ""}`}
 					style={{ paddingTop: pt, paddingBottom: pb }}>
 					<div className='w-full'>
