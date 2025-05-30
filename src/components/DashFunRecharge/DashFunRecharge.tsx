@@ -334,7 +334,7 @@ const RechargeSelected: FC<{
             {
                 //非tg环境下，或者充值金额不是star时，显示充值提示和链接
                 (!isInTelegram() || priceType != RechargePriceType.TGSTAR) && rechargeOrder == null && order != null && order.orderId != "" && order.optionIndex >= 0 &&
-                <div className="w-full flex flex-col items-center justify-center p-2">
+                <div className="w-full flex flex-col items-center justify-center p-2 gap-3">
                     <DFText size="xs" weight="2"><L langKey={LangKeys.Recharge_Purchase_Link_Tip} /></DFText>
                     {
                         <a href={rechargeLink} target="_blank"><DFText size="xs" color="var(--tg-theme-link-color)" weight="1">{rechargeLink}</DFText></a>

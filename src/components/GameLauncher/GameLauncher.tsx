@@ -4,7 +4,7 @@ import { useDashFunGame } from "../DashFun/DashFunGame";
 import { GameData } from "../DashFunData/GameData";
 import { GameLoadingEvent } from "../Event/Events";
 import "./GameLauncher.css";
-import { toTimeString } from "@/utils/Utils";
+import { isInTelegram, toTimeString } from "@/utils/Utils";
 import { initData, shareURL, useSignal } from "@telegram-apps/sdk-react";
 import { Heart, Send } from "lucide-react";
 import { GameApi } from "@/utils/DashFunApi";
@@ -108,10 +108,32 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked, foote
 						</div>
 						<DFText weight="3" size="2xl">{game?.name}</DFText>
 					</div>
-					<div className="py-4">
+					{
+						(
+							!isInTelegram() && <div className="py-4 flex flex-row gap-2">
+								<div className="flex-1">
+									<DFText weight="1" size="sm">{game?.desc}</DFText>
+								</div>
+								<DFButton
+									size="m"
+									mode="normal"
+									loading={isFavorite == -1}
+									onClick={() => {
+										setFavorite(game?.id || "");
+									}}
+								>
+									{
+										isFavorite == 0 ? <Heart size="24" strokeWidth={2} />
+											: <Heart size="24" strokeWidth={0} fill="#ef4444" />
+									}
+								</DFButton>
+							</div>
+						)
+					}
+					{(isInTelegram() && <div className="py-4">
 						<DFText weight="1" size="sm">{game?.desc}</DFText>
-					</div>
-					<div className="flex flex-row items-center gap-2">
+					</div>)}
+					{(isInTelegram() && <div className="flex flex-row items-center gap-2">
 						<div className="flex-1">
 							<DFButton
 								size="m"
@@ -138,7 +160,7 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked, foote
 									: <Heart size="24" strokeWidth={0} fill="#ef4444" />
 							}
 						</DFButton>
-					</div>
+					</div>)}
 				</>}
 		</div>
 		<div className="gl-playbutton">
