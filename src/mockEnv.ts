@@ -1,6 +1,6 @@
-import { mockTelegramEnv, isTMA, parseInitData } from '@telegram-apps/sdk-react';
-import { Env, getEnv } from './utils/DashFunApi';
+import { isTMA, mockTelegramEnv, parseInitData } from '@telegram-apps/sdk-react';
 import { v4 as uuidv4 } from "uuid";
+import { AccountType, Env, getEnv } from './utils/DashFunApi';
 
 // It is important, to mock the environment only for development purposes. When building the
 // application, import.meta.env.DEV will become false, and the code inside will be tree-shaken,
@@ -146,4 +146,121 @@ const makeTestTgEnv = () => {
 	});
 }
 
+// const makeBrowserEnv = () => {
+// 	mockTelegramEnv({
+// 		themeParams: {
+// 			accentTextColor: '#3e88f7',
+// 			bgColor: '#222222',
+// 			buttonColor: '#3e88f7',
+// 			buttonTextColor: '#ffffff',
+// 			destructiveTextColor: '#eb5545',
+// 			headerBgColor: '#1a1a1a',
+// 			hintColor: '#98989e',
+// 			linkColor: '#3e88f7',
+// 			secondaryBgColor: '#1c1c1d',
+// 			sectionBgColor: '#2c2c2c',
+// 			sectionHeaderTextColor: '#8d8e93',
+// 			subtitleTextColor: '#98989e',
+// 			textColor: '#ffffff',
+// 		},
+// 		initDataRaw: "",
+// 		version: '8',
+// 		platform: 'browser',
+// 	});
+// }
+const base36ToDecimal = (base36: string): number => {
+	const base36Chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	return base36.split('').reverse().reduce((acc, char, index) => {
+		const value = base36Chars.indexOf(char.toUpperCase());
+		if (value === -1) {
+			throw new Error(`Invalid character '${char}' in base32 string.`);
+		}
+		return acc + value * Math.pow(36, index);
+	}, 0);
+};
+
+const makeBrowserEnv = (accountId: string, username: string, displayName: string, accType: AccountType, auth_date: string, hash: string) => {
+	let initDataRaw = "";
+	let initData = undefined;
+
+
+	const accountIdDecimal = base36ToDecimal(accountId.substring(2));
+
+	if (accountId != null && accountId != "") {
+		const params = getQueryParams();
+		let startParam = ""
+		if (params["game_id"] != null) {
+			startParam = "&start_param=" + params["game_id"];
+		}
+		const encodedDisplayName = encodeURIComponent(displayName);
+		initDataRaw = `query_id=AAGdRiMDAQAAAJ1GIwP8XZGl${startParam}&user=%7B%22id%22%3A%22${accountIdDecimal}%22%2C%22acc_id%22%3A%22${accountId}%22%2C%22type%22%3A%22${accType}%22%2C%22display_name%22%3A%22${encodedDisplayName}%22%2C%22first_name%22%3A%22${""}%22%2C%22last_name%22%3A%22${""}%22%2C%22username%22%3A%22${username}%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22%22%7D&auth_date=${auth_date}&signature=&hash=${hash}`;
+		initData = parseInitData(initDataRaw);
+	}
+
+	mockTelegramEnv({
+		themeParams: {
+			accentTextColor: '#3e88f7',
+			bgColor: '#222222',
+			buttonColor: '#3e88f7',
+			buttonTextColor: '#ffffff',
+			destructiveTextColor: '#eb5545',
+			headerBgColor: '#1a1a1a',
+			hintColor: '#98989e',
+			linkColor: '#3e88f7',
+			secondaryBgColor: '#1c1c1d',
+			sectionBgColor: '#2c2c2c',
+			sectionHeaderTextColor: '#8d8e93',
+			subtitleTextColor: '#98989e',
+			textColor: '#ffffff',
+		},
+
+		initData: initData,
+		initDataRaw,
+		version: '8',
+		platform: 'browser',
+	});
+}
+
+
+// const makeTelegramWebEnv = (user: TelegramUser | null) => {
+// 	let initDataRaw = "";
+// 	let initData = undefined;
+
+
+
+// 	if (user != null) {
+// 		const params = getQueryParams();
+// 		let startParam = ""
+// 		if (params["game_id"] != null) {
+// 			startParam = "&start_param=" + params["game_id"];
+// 		}
+// 		initDataRaw = `query_id=AAGdRiMDAQAAAJ1GIwP8XZGl${startParam}&user=%7B%22id%22%3A%22${user.id}%22%2C%22type%22%3A%22${AccountType.Telegram}%22%2C%22first_name%22%3A%22${user.first_name}%22%2C%22last_name%22%3A%22${user.last_name}%22%2C%22username%22%3A%22${user.username}%22%2C%22language_code%22%3A%22en%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22${user.photo_url}%22%7D&auth_date=${user.auth_date}&signature=&hash=${user.hash}`;
+// 		initData = parseInitData(initDataRaw);
+// 	}
+
+// 	mockTelegramEnv({
+// 		themeParams: {
+// 			accentTextColor: '#3e88f7',
+// 			bgColor: '#222222',
+// 			buttonColor: '#3e88f7',
+// 			buttonTextColor: '#ffffff',
+// 			destructiveTextColor: '#eb5545',
+// 			headerBgColor: '#1a1a1a',
+// 			hintColor: '#98989e',
+// 			linkColor: '#3e88f7',
+// 			secondaryBgColor: '#1c1c1d',
+// 			sectionBgColor: '#2c2c2c',
+// 			sectionHeaderTextColor: '#8d8e93',
+// 			subtitleTextColor: '#98989e',
+// 			textColor: '#ffffff',
+// 		},
+
+// 		initData: initData,
+// 		initDataRaw,
+// 		version: '8',
+// 		platform: 'browser',
+// 	});
+// }
+
 export default makeTestTgEnv;
+export { makeBrowserEnv };

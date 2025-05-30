@@ -92,37 +92,61 @@ const onRequestAd = (ctx: Context) => {
 	const { method, payload } = ctx.callData
 	const { title, desc } = payload
 
-	PaymentApi.requestTGPayment(ctx.initDataRaw, {
-		game_id: ctx.dfGame.id,
-		title,
-		desc: desc == null || desc == "" ? " " : desc,
-		payload: "ad",
-		price: 1, //所有广告都按扣1星星处理
-	}).then(result => {
-		const { invoiceLink } = result;
-		if (invoiceLink) {
-			if (invoiceLink.startsWith("test-")) {
-				sendResult(ctx.source, method, new Result("success", { data: "success" }))
+	if (isInTelegram()) {
+		PaymentApi.requestTGPayment(ctx.initDataRaw, {
+			game_id: ctx.dfGame.id,
+			title,
+			desc: desc == null || desc == "" ? " " : desc,
+			payload: "ad",
+			price: 1, //所有广告都按扣1星星处理
+		}).then(result => {
+			const { invoiceLink } = result;
+			if (invoiceLink) {
+				if (invoiceLink.startsWith("test-")) {
+					sendResult(ctx.source, method, new Result("success", { data: "success" }))
+				} else {
+					console.log("opening invoice", invoiceLink)
+					invoice.open(invoiceLink, "url").then((status) => {
+						console.log(`invoice ${invoiceLink} status changed:`, status);
+						sendResult(ctx.source, method, new Result("success", { data: status == "paid" ? "success" : status }))
+					}).catch(e => {
+						console.error(e);
+						sendResult(ctx.source, method, new Result("error", { data: "error" }))
+					});
+				}
 			} else {
-				console.log("opening invoice", invoiceLink)
-				invoice.open(invoiceLink, "url").then((status) => {
-					console.log(`invoice ${invoiceLink} status changed:`, status);
-					sendResult(ctx.source, method, new Result("success", { data: status == "paid" ? "success" : status }))
-				}).catch(e => {
-					console.error(e);
-					sendResult(ctx.source, method, new Result("error", { data: "error" }))
-				});
+				const r = new Result("error", { data: "canceled" });
+				sendResult(ctx.source, method, r)
 			}
-		} else {
-			const r = new Result("error", { data: "canceled" });
+
+		}).catch(e => {
+			console.error(e);
+			const r = new Result("error", e);
+			sendResult(ctx.source, method, r)
+		})
+	} else {
+		//web环境下，目前扣1个diamond
+		PaymentApi.requestPayment(ctx.initDataRaw, {
+			game_id: ctx.dfGame.id,
+			title,
+			desc: desc == null || desc == "" ? " " : desc,
+			payload: "ad",
+			price: 1, //1 diamond
+		}).then(result => {
+
+			//open dashfun payment
+			const onResult = (success: boolean, msg: string) => {
+				sendResult(ctx.source, method, new Result(success ? "success" : "error", { paymentId, status: success ? "paid" : "error", msg }))
+			}
+			const { paymentId } = result;
+			OpenDashFunPaymentEvent.fire(paymentId, onResult);
+		}).catch(e => {
+			console.error(e);
+			const r = new Result("error", e);
 			sendResult(ctx.source, method, r)
 		}
-
-	}).catch(e => {
-		console.error(e);
-		const r = new Result("error", e);
-		sendResult(ctx.source, method, r)
-	})
+		)
+	}
 
 }
 

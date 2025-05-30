@@ -1,14 +1,21 @@
+import { DFButton, DFText } from "@/components/controls";
 import { GameListType } from "@/components/DashFunData/GameData";
 import { GameIcon } from "@/components/GameIcon/GameIcon";
 import { L, LangKeys, useLanguage } from "@/components/Language/Language";
+import { AccountType, getEnv } from "@/utils/DashFunApi";
+import { isInTelegram } from "@/utils/Utils";
 import { useEffectOnActive } from "keepalive-for-react";
 import { Heart } from "lucide-react";
 import { FC, PropsWithChildren, ReactNode, useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useGameCenterData } from "../Components/GameCenterDataProvider";
 import ProfileHeader from "../Components/ProfileHeader";
-import { DFText } from "@/components/controls";
+import { makeBrowserEnv } from "@/mockEnv";
+import { initData } from "@telegram-apps/sdk-react";
 
 export const GameCenter_Profile: FC = () => {
+	const nav = useNavigate();
+	const [loading, setLoading] = useState(false);
 	// const tabItems = [
 	// 	{
 	// 		icon: <UsersRound size={20} />,
@@ -38,6 +45,24 @@ export const GameCenter_Profile: FC = () => {
 		</div>
 		{tabItems[tabselected].item} */}
 		<MyGames />
+
+		{(
+			!isInTelegram() && <div className="w-full flex flex-col flex-1 justify-end">
+				<DFButton mode="plain" loading={loading} disabled={loading} onClick={() => {
+					localStorage.removeItem('DashFun-Token-' + getEnv());
+					setLoading(true);
+
+					makeBrowserEnv("", "", "", AccountType.Email, "", "");
+					initData.restore();
+
+					setTimeout(() => {
+						setLoading(false);
+						nav("/game-center");
+						window.location.reload();
+					}, 1000);
+				}}>Sign Out</DFButton>
+			</div>
+		)}
 	</div >
 }
 

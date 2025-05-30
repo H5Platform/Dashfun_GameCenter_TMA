@@ -1,9 +1,11 @@
 import { UserApi } from "@/utils/DashFunApi";
+import { isInTelegram } from "@/utils/Utils";
 import { initData, useSignal } from "@telegram-apps/sdk-react";
 import { Spinner } from "@telegram-apps/telegram-ui";
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { DashFunUser } from "../DashFunData/UserData";
-import { useLocation } from "react-router-dom";
+import DashFunLogin from "../DashFunLogin/DashFunLogin";
 import { UserLoginEvent } from "../Event/Events";
 
 
@@ -19,16 +21,23 @@ export const UserProvider = ({ children }: PropsWithChildren<{}>) => {
 	const initDataRaw = useSignal(initData.raw)
 	const initDataState = useSignal(initData.state)
 	const l = useLocation();
+	const [URLSearchParams] = useSearchParams();
+
 
 	let referrerId = "";
 	if (l.pathname.includes("game-center")) {
 		//is game-center
-		referrerId = initDataState?.startParam as string || "";
+		if (isInTelegram()) {
+			referrerId = initDataState?.startParam as string || "";
+		} else {
+			referrerId = URLSearchParams.get("r") || "";
+		}
 	}
-
 	const loginUser = async () => {
 		if (initDataRaw == null) return;
-		const dfUser = await UserApi.tgLogin(initDataRaw as string, referrerId);
+		let dfUser: DashFunUser;
+		dfUser = await UserApi.tgLogin(initDataRaw as string, referrerId);
+
 		dfUser.language = initDataState?.user?.languageCode as string
 		setUser(dfUser);
 		UserLoginEvent.fire(dfUser);
@@ -51,8 +60,15 @@ export const UserProvider = ({ children }: PropsWithChildren<{}>) => {
 
 	}, [initDataState?.user?.id, initDataRaw])
 
+	let loginComp = <div className="w-full h-full items-center justify-center flex"><Spinner size={"l"} /></div>
+	if ((initDataRaw == null || initDataRaw == "") && !isInTelegram()) {
+		//未登录且不在telegram中
+		loginComp = <DashFunLogin />
+	}
+
+
 	return <UserContext.Provider value={{ user, avatar }}>
-		{user == null ? <div className="w-full h-full items-center justify-center flex"><Spinner size={"l"} /></div> : children}
+		{user == null ? loginComp : children}
 	</UserContext.Provider>
 }
 

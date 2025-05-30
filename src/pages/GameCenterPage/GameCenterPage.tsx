@@ -132,7 +132,7 @@ export const GameCenterPage: FC = () => {
 
 	return <div className="max-w-screen-sm sm:aligen-center sm:mx-auto h-full">
 		<div id="GameCenterPage" className={"w-full h-full flex flex-col bg-gradient-to-b from-[#004275] to-[#00254E] " + (customPageBg[location.pathname] || "")}>
-			<div className="absolute top-[-175px] left-1/2 -translate-x-1/2 w-[80%] h-[350px] bg-[radial-gradient(circle,rgba(0,200,255,0.3)_0%,transparent_70%)] pointer-events-none z-0"></div>
+			<div className="absolute max-w-screen-sm sm:aligen-center sm:mx-auto top-[-425px] left-1/2 -translate-x-1/2 w-[100%] h-[650px] bg-[radial-gradient(circle,rgba(0,200,255,0.3)_0%,transparent_70%)] pointer-events-none z-0"></div>
 			<GameCenterDataProvider>
 				{
 					!keepalive && outlet

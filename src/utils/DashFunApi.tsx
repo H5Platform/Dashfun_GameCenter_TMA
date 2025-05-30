@@ -13,8 +13,8 @@ enum Env {
 
 let env: Env = Env.Test
 
-// const api_local = "https://tma-server-test.nexgami.com/api/v1/"
-const api_local = "http://localhost:8088/api/v1/"
+const api_local = "https://tma-server-test.nexgami.com/api/v1/"
+// const api_local = "http://10.0.0.173:8088/api/v1/"
 const api_test = "https://dashfun-server-test.nexgami.com/api/v1/"
 const api_prod = "https://tma-server.dashfun.games/api/v1/"
 
@@ -53,7 +53,160 @@ const processToken = (token: string) => {
 	// 	token
 	// }
 	// return JSON.stringify(info);
-	return token;
+
+	if (isInTelegram()) {
+		return "tma " + token;
+	} else {
+		return "duc " + token;
+	}
+}
+
+enum AccountStatus {
+	Unvalidated = 0,
+	Normal = 1,
+	Frozen = 2,
+	Deleted = 3,
+}
+enum AccountType {
+	Email = 1,
+	Telegram = 2,
+}
+
+type DashFunAccount = {
+	account_id: string,
+	username: string,
+	type: AccountType,
+	status: AccountStatus
+	token: string,
+	display_name: string,
+}
+
+const AccApi = {
+	apiUrl: (): string => {
+		return dashFunApiUrl + "acc/"
+	},
+
+	create: async (username: string, password: string, acc_type: AccountType): Promise<DashFunAccount> => {
+		const api = AccApi.apiUrl() + "create";
+		const result = await axios.post(api, {
+			username,
+			password,
+			acc_type
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data;
+			} else {
+				throw result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
+
+	login: async (username: string, password: string, acc_type: AccountType): Promise<DashFunAccount> => {
+		const api = AccApi.apiUrl() + "login"
+		const result = await axios.post(api, {
+			username,
+			password,
+			acc_type
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data;
+			} else {
+				throw result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
+
+	requestSendEmail: async (accountId: string): Promise<string> => {
+		const api = AccApi.apiUrl() + "send_email"
+		const result = await axios.post(api, {
+			account_id: accountId
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data;
+			} else {
+				throw result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
+
+	verifyEmail: async (accountId: string, code: string): Promise<DashFunAccount> => {
+		const api = AccApi.apiUrl() + "verify_email"
+		const result = await axios.post(api, {
+			account_id: accountId,
+			code
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data;
+			} else {
+				throw result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
+
+	checkToken: async (accountId: string, token: string, acc_type: AccountType): Promise<DashFunAccount> => {
+		const api = AccApi.apiUrl() + "check_token"
+		const result = await axios.post(api, {
+			account_id: accountId,
+			token,
+			acc_type
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data;
+			} else {
+				throw result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
+
+	requestResetPassword: async (username: string): Promise<string> => {
+		const api = AccApi.apiUrl() + "request_reset_password"
+		const result = await axios.post(api, {
+			username
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data;
+			} else {
+				throw result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
+
+	resetPassword: async (username: string, code: string, password: string): Promise<string> => {
+		const api = AccApi.apiUrl() + "reset_password"
+		const result = await axios.post(api, {
+			username,
+			code,
+			password
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data;
+			} else {
+				throw result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
+
 }
 
 const UserApi = {
@@ -65,7 +218,7 @@ const UserApi = {
 		const api = UserApi.apiUrl() + "avatar"
 		const result = await axios.get(api, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			},
 			responseType: "blob"
 		})
@@ -83,7 +236,27 @@ const UserApi = {
 		formData.append("referrer_id", referrerId);
 		const result = await axios.post(api, formData, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
+			},
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return new DashFunUser(result.data.data)
+			} else {
+				throw result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
+
+	webLogin: async (tgToken: string, referrerId: string = ""): Promise<DashFunUser> => {
+		const api = UserApi.apiUrl() + "tg_login"
+		const formData = new FormData();
+		formData.append("referrer_id", referrerId);
+		const result = await axios.post(api, formData, {
+			headers: {
+				"Authorization": "duc " + processToken(tgToken)
 			},
 		})
 		if (result.status == 200) {
@@ -101,7 +274,7 @@ const UserApi = {
 		const api = UserApi.apiUrl() + "enter_game"
 		const result = await axios.get(api, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			},
 			params: {
 				game_id: gameId
@@ -125,7 +298,7 @@ const UserApi = {
 			address
 		}, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			}
 		})
 		if (result.status == 200) {
@@ -146,7 +319,7 @@ const UserApi = {
 				photo_path: photoFile
 			},
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			},
 			responseType: "blob"
 		})
@@ -191,7 +364,7 @@ const GameApi = {
 		const api = GameApi.apiUrl() + gameId
 		const result = await axios.get(api, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			}
 		})
 		if (result.status == 200) {
@@ -209,7 +382,7 @@ const GameApi = {
 		const api = GameApi.apiUrl() + "testing"
 		const result = await axios.get(api, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			}
 		})
 		if (result.status == 200) {
@@ -244,7 +417,7 @@ const GameApi = {
 			key, data: strToEncode
 		}, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			}
 		})
 		if (result.status == 200) {
@@ -272,7 +445,7 @@ const GameApi = {
 
 		const result = await axios.get(api, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			},
 			params: {
 				key
@@ -304,7 +477,7 @@ const GameApi = {
 
 		const result = await axios.get(api, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			},
 			params: {
 				key
@@ -331,7 +504,7 @@ const GameApi = {
 
 		}, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			},
 		},
 		)
@@ -356,7 +529,7 @@ const GameApi = {
 		const api = GameApi.apiUrl() + "game_list"
 		const result = await axios.get(api, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			},
 			params: {
 				list_type: listTypes
@@ -377,7 +550,7 @@ const GameApi = {
 		const api = GameApi.apiUrl() + gameId + "/favorite"
 		const result = await axios.get(api, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			},
 		})
 		if (result.status == 200) {
@@ -397,7 +570,7 @@ const GameApi = {
 		formData.append("action", action);
 		const result = await axios.post(api, formData, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			}
 		})
 		if (result.status == 200) {
@@ -439,7 +612,7 @@ const PaymentApi = {
 		const api = PaymentApi.apiUrl() + "request/tg"
 		const result = await axios.get(api, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			},
 			params: request
 		});
@@ -458,7 +631,7 @@ const PaymentApi = {
 		const api = PaymentApi.apiUrl() + "request"
 		const result = await axios.get(api, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			},
 			params: request
 		});
@@ -480,7 +653,7 @@ const PaymentApi = {
 		try {
 			const result = await axios.post(api, formData, {
 				headers: {
-					"Authorization": "tma " + processToken(tgToken)
+					"Authorization": processToken(tgToken)
 				}
 			});
 			if (result.status == 200) {
@@ -543,7 +716,7 @@ const RechargeApi = {
 		const api = RechargeApi.apiUrl() + "options"
 		const result = await axios.get(api, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			},
 			params: {
 				platform
@@ -566,7 +739,7 @@ const RechargeApi = {
 			platform, recharge_option_index: optionIndex, channel: currentChannel(), game_id: gameId
 		}, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			},
 		})
 		if (result.status == 200) {
@@ -586,7 +759,7 @@ const RechargeApi = {
 		formData.append("id", orderId);
 		const result = await axios.post(api, formData, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			},
 		})
 		if (result.status == 200) {
@@ -625,7 +798,7 @@ const TaskApi = {
 		const api = TaskApi.apiUrl() + "list"
 		const result = await axios.get(api, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			},
 			params: {
 				game_id: gameId
@@ -646,7 +819,7 @@ const TaskApi = {
 		const api = TaskApi.apiUrl() + "clicked"
 		const result = await axios.get(api, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			},
 			params: {
 				game_id: gameId,
@@ -668,7 +841,7 @@ const TaskApi = {
 		const api = TaskApi.apiUrl() + "verify"
 		const result = await axios.get(api, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			},
 			params: {
 				game_id: gameId,
@@ -690,7 +863,7 @@ const TaskApi = {
 		const api = TaskApi.apiUrl() + "claim"
 		const result = await axios.get(api, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			},
 			params: {
 				game_id: gameId,
@@ -718,7 +891,7 @@ const TaskApi = {
 		const api = TaskApi.apiUrl() + "count"
 		const result = await axios.get(api, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			},
 			params: {
 				game_id: gameId,
@@ -745,7 +918,7 @@ const CoinApi = {
 		const api = CoinApi.apiUrl() + "get"
 		const result = await axios.get(api, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			},
 		})
 		if (result.status == 200) {
@@ -766,7 +939,7 @@ const CoinApi = {
 			id_type: idType
 		}, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			}
 		})
 		if (result.status == 200) {
@@ -787,7 +960,7 @@ const CoinApi = {
 			id_type: idType
 		}, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			}
 		})
 		if (result.status == 200) {
@@ -811,7 +984,7 @@ const FriendsApi = {
 		const api = FriendsApi.apiUrl() + "my"
 		const result = await axios.get(api, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			},
 		})
 		if (result.status == 200) {
@@ -835,7 +1008,7 @@ const LeaderBoardApi = {
 		const api = LeaderBoardApi.apiUrl() + "xp_top"
 		const result = await axios.get(api, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			}
 		})
 		if (result.status == 200) {
@@ -860,7 +1033,7 @@ const SpinWheelApi = {
 		const api = SpinWheelApi.apiUrl() + "get"
 		const result = await axios.get(api, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			},
 			// params: {
 			// 	game_id: gameId,
@@ -881,7 +1054,7 @@ const SpinWheelApi = {
 		const api = SpinWheelApi.apiUrl() + "spin"
 		const result = await axios.get(api, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			},
 			// params: {
 			// 	game_id: gameId,
@@ -902,7 +1075,7 @@ const SpinWheelApi = {
 		const api = SpinWheelApi.apiUrl() + "claim"
 		const result = await axios.get(api, {
 			headers: {
-				"Authorization": "tma " + processToken(tgToken)
+				"Authorization": processToken(tgToken)
 			},
 			// params: {
 			// 	game_id: gameId,
@@ -952,7 +1125,11 @@ const TGLink = {
 		}
 	},
 	centerLink: (userId?: string) => {
-		return userId == null || userId == "" ? `${tg_link()}/Center` : `${tg_link()}/Center?startapp=${userId}`
+		if (isInTelegram()) {
+			return userId == null || userId == "" ? `${tg_link()}/Center` : `${tg_link()}/Center?startapp=${userId}`
+		} else {
+			return userId == null || userId == "" ? `https://app.dashfun.games/game-center` : `https://app.dashfun.games/game-center?r=${userId}`
+		}
 	},
 	botLink: () => {
 		return `${tg_link()}`
@@ -1001,5 +1178,5 @@ const getEnv = () => {
 }
 
 
-export { GameApi, PaymentApi, RechargeApi, UserApi, TGLink, TaskApi, CoinApi, SpinWheelApi, LeaderBoardApi, FriendsApi, RechargeLink, getEnv, Env }
-export type { PaymentData, RechargeOrder }
+export { AccountType, AccountStatus, AccApi, GameApi, PaymentApi, RechargeApi, UserApi, TGLink, TaskApi, CoinApi, SpinWheelApi, LeaderBoardApi, FriendsApi, RechargeLink, getEnv, Env }
+export type { PaymentData, RechargeOrder, DashFunAccount, }

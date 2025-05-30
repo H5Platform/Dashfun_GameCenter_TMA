@@ -12,7 +12,8 @@ import { FC, useEffect, useState } from "react";
 import ReactAvatar from "react-avatar";
 import ProfileHeader from "../Components/ProfileHeader";
 import DFButton from "@/components/controls/Button";
-import { DFCell, DFText } from "@/components/controls";
+import { DFCell, DFLabel, DFText } from "@/components/controls";
+import { isInTelegram } from "@/utils/Utils";
 
 export const GameCenter_FriendsPage: FC = () => {
 	const user = useDashFunUser();
@@ -20,6 +21,7 @@ export const GameCenter_FriendsPage: FC = () => {
 	const [rewardPoints, setRewardPoints] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const initDataRaw = useSignal(initData.raw)
+	const [copied, setCopied] = useState(false);
 
 	const getFriends = async () => {
 		setIsLoading(true);
@@ -38,12 +40,35 @@ export const GameCenter_FriendsPage: FC = () => {
 
 	return <div id="GameCenter_FriendsPage" className="w-full h-full flex flex-col px-4 pt-4 gap-4">
 		<ProfileHeader />
-		<DFButton size="l" onClick={() => {
-			shareURL(TGLink.centerLink(user?.id));
-		}}>
-			Invite
-		</DFButton>
-
+		{
+			isInTelegram() ?
+				<DFButton size="l" onClick={() => {
+					shareURL(TGLink.centerLink(user?.id));
+				}}>
+					Invite
+				</DFButton> :
+				<div className="w-full flex flex-col gap-2">
+					<DFButton onClick={() => {
+						navigator.clipboard.writeText(TGLink.centerLink(user?.id)).then(() => {
+							setCopied(true);
+							setTimeout(() => {
+								setCopied(false);
+							}, 10000);
+						})
+					}}>
+						<div className="py-1 px-4">
+							{copied ? "Copied!" : "Copy Invitation Link"}
+						</div>
+					</DFButton>
+					{copied && <div className="flex items-center justify-center">
+						<DFLabel>
+							<div className="px-6 py-1">
+								Share it with your friends to invite them to join DashFun!
+							</div>
+						</DFLabel>
+					</div>}
+				</div>
+		}
 		{/* <Button mode="filled" size="l" onClick={() => {
 			shareURL(TGLink.centerLink(user?.id));
 		}}>Invite</Button> */}

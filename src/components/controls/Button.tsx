@@ -4,6 +4,7 @@ import { FC } from "react"
 interface DFButtonProps {
     onClick?: (evt: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
     mode?: "plain" | "primary" | "normal";
+    type?: "button" | "submit" | "reset";
     disabled?: boolean;
     loading?: boolean;
     className?: string;
@@ -11,7 +12,7 @@ interface DFButtonProps {
     children?: React.ReactNode;
 }
 
-const DFButton: FC<DFButtonProps> = ({ onClick, mode = "primary", disabled = false, loading = false, size = "m", className = "", children }) => {
+const DFButton: FC<DFButtonProps> = ({ onClick, mode = "primary", type = "button", disabled = false, loading = false, size = "m", className = "", children }) => {
     const h = size == "s" ? 28 : size == "m" ? 38 : 48;
     const rounded = size == "l" ? "rounded-2xl" : "rounded-full";
     const textSize = size == "l" ? " text-2xl " : size == "m" ? " text-base " : " text-sm ";
@@ -22,13 +23,13 @@ const DFButton: FC<DFButtonProps> = ({ onClick, mode = "primary", disabled = fal
         to: "#666666",
         text: "black",
     }
-    if(mode == "plain") {
+    if (mode == "plain") {
         colors = {
             from: "transparent",
             to: "transparent",
             text: "white",
         }
-    }else if (mode == "primary") {
+    } else if (mode == "primary") {
         colors = {
             from: "#FFA40B",
             to: "#EC4700",
@@ -46,12 +47,13 @@ const DFButton: FC<DFButtonProps> = ({ onClick, mode = "primary", disabled = fal
         }
 
         <button className={" w-full h-full p-1 bg-[linear-gradient(to_bottom,var(--from),var(--to))] px-4 font-bold shadow-[0_2px_6px_rgba(0,0,0,0.8)] active:shadow-none active:translate-y-[1px] " + rounded + textSize + invisable}
+            type={type}
             style={{
                 "--from": colors.from,
                 "--to": colors.to,
                 color: colors.text,
             } as React.CSSProperties}
-            
+
             onClick={
                 (evt) => {
                     if (disabled || loading) return;

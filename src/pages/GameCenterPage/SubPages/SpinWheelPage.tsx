@@ -226,89 +226,93 @@ export const GameCenter_SpinWheelPage: FC = () => {
 				<DFText weight="2" size="2xl" className="py-4 w-full text-center">Spin To Win</DFText>
 			</DFCell>
 			<DFText className="flex justify-center gap-1 py-2" weight="2" size="xl"> {spinText}</DFText>
-			<div className="relative w-full max-w-[400px] aspect-square">
-				<div className={"absolute top-0 left-0 bottom-0 right-0 flex items-center justify-center z-[3] transition-opacity duration-500 ease-in-out  " + (showResult ? "opacity-90" : "opacity-0")}>
-					<div className="absolute top-0 left-0 bottom-0 right-0">
-						<DFCell mode="highlight" className={""}>
-							{(<Player
-								autoplay={false}
-								loop={2}
-								src={firework}
-								style={{ width: "100%" }}
-								ref={playerRef}
-							/>)}
-						</DFCell>
+			<div className="flex flex-col items-center justify-start w-full h-full">
+				<div className="relative w-full max-w-[400px] aspect-square">
+					<div className={"absolute top-0 left-0 bottom-0 right-0 flex items-center justify-center z-[3] transition-opacity duration-500 ease-in-out  " + (showResult ? "opacity-90" : "opacity-0")}>
+						<div className="absolute top-0 left-0 bottom-0 right-0">
+							<DFCell mode="highlight" className={""}>
+								{(<Player
+									autoplay={false}
+									loop={2}
+									src={firework}
+									style={{ width: "100%" }}
+									ref={playerRef}
+								/>)}
+							</DFCell>
+						</div>
+						<div className="absolute top-0 left-0 bottom-0 right-0 flex flex-col gap-4 items-center justify-center">
+							<DFText weight="3" size="3xl" className="text-white">
+								Congratulations!!!
+							</DFText>
+							<DFText weight="2" size="xl" className="flex items-center justify-center gap-2">You won <Avatar src={getRwawardIcon(spinWheel?.rewards[spinWheel?.reward_index].reward_type) || ""} size={28} /> {spinWheel?.reward_value} !</DFText>
+						</div>
 					</div>
-					<div className="absolute top-0 left-0 bottom-0 right-0 flex flex-col gap-4 items-center justify-center">
-						<DFText weight="3" size="3xl" className="text-white">
-							Congratulations!!!
-						</DFText>
-						<DFText weight="2" size="xl" className="flex items-center justify-center gap-2">You won <Avatar src={getRwawardIcon(spinWheel?.rewards[spinWheel?.reward_index].reward_type) || ""} size={28} /> {spinWheel?.reward_value} !</DFText>
-					</div>
-				</div>
-				<img
-					src={pointerImg}
-					alt="pointer"
-					className="absolute top-0 left-0 w-full h-full z-[2] pointer-events-none"
-					style={{ filter: "drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5))" }}
-				/>
-				<img
-					src={wheelRingImg}
-					alt="ring"
-					className="absolute top-0 left-0 w-full h-full z-[1] pointer-events-none"
-				/>
-				<motion.div
-					animate={controls}
-					className="w-full h-full bg-contain bg-center bg-no-repeat absolute top-0 left-0"
-				>
 					<img
-						src={wheelImg}
-						alt="wheel"
-						className="absolute top-0 left-0 w-full h-full"
-						style={{ transform: `rotate(-${SEGMENT_CENTER_OFFSET}deg)` }}
+						src={pointerImg}
+						alt="pointer"
+						className="absolute top-0 left-0 w-full h-full z-[2] pointer-events-none"
+						style={{ filter: "drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5))" }}
 					/>
-					{spinWheel?.rewards.map((reward, i) => {
-						const angle = i * DEG_PER_SEGMENT;
+					<img
+						src={wheelRingImg}
+						alt="ring"
+						className="absolute top-0 left-0 w-full h-full z-[1] pointer-events-none"
+					/>
+					<motion.div
+						animate={controls}
+						className="w-full h-full bg-contain bg-center bg-no-repeat absolute top-0 left-0"
+					>
+						<img
+							src={wheelImg}
+							alt="wheel"
+							className="absolute top-0 left-0 w-full h-full"
+							style={{ transform: `rotate(-${SEGMENT_CENTER_OFFSET}deg)` }}
+						/>
+						{spinWheel?.rewards.map((reward, i) => {
+							const angle = i * DEG_PER_SEGMENT;
 
-						let icon = getRwawardIcon(reward.reward_type) || "";
+							let icon = getRwawardIcon(reward.reward_type) || "";
 
-						return (
-							<div
-								key={i}
-								className="absolute left-1/2 top-1/2 w-20 h-[75%] \
+							return (
+								<div
+									key={i}
+									className="absolute left-1/2 top-1/2 w-20 h-[75%] \
 								text-center text-sm text-white font-bold\
 								flex flex-col items-center"
-								
-								style={{
-									transform: `translateY(-50%) translateX(-50%) rotate(${angle}deg) `
-								}}
-							>
 
-								<img src={icon} style={{ width: 32 }} />
-								<DFText weight="2">{reward.reward_value}</DFText>
-							</div>
-						);
-					})}
-				</motion.div>
+									style={{
+										transform: `translateY(-50%) translateX(-50%) rotate(${angle}deg) `
+									}}
+								>
+
+									<img src={icon} style={{ width: 32 }} />
+									<DFText weight="2">{reward.reward_value}</DFText>
+								</div>
+							);
+						})}
+					</motion.div>
+				</div>
 			</div>
 			<div className="flex flex-col w-full p-4 flex-1 fixed bottom-4 left-0">
-				{(remaining == 0 && spinWheel?.status == SpinWheelUserStatus.Claimed) &&
-					<DFLabel>
-						<div className="flex py-2 items-center justify-center">
-							<DFText weight="2" size="lg">Reset In: {(() => {
-								const { days, hours, minutes, seconds } = convertMilliseconds(countDown);
-								return toTimeString(days, hours, minutes, seconds);
-							})()}</DFText>
-						</div>
-					</DFLabel>
-				}
-				{((isSpinning || spinWheel?.status != SpinWheelUserStatus.Claimable) && remaining > 0 && <DFButton size="l" onClick={spinAni} disabled={isSpinning}>
-					{isSpinning ? "Spinning" : "Spin Now!"}
-				</DFButton>)}
+				<div className="flex flex-col w-full max-w-screen-sm sm:aligen-center sm:mx-auto px-2">
+					{(remaining == 0 && spinWheel?.status == SpinWheelUserStatus.Claimed) &&
+						<DFLabel>
+							<div className="flex py-2 items-center justify-center">
+								<DFText weight="2" size="lg">Reset In: {(() => {
+									const { days, hours, minutes, seconds } = convertMilliseconds(countDown);
+									return toTimeString(days, hours, minutes, seconds);
+								})()}</DFText>
+							</div>
+						</DFLabel>
+					}
+					{((isSpinning || spinWheel?.status != SpinWheelUserStatus.Claimable) && remaining > 0 && <DFButton size="l" onClick={spinAni} disabled={isSpinning}>
+						{isSpinning ? "Spinning" : "Spin Now!"}
+					</DFButton>)}
 
-				{((!isSpinning && spinWheel?.status == SpinWheelUserStatus.Claimable) && <DFButton size="l" onClick={doClaim} disabled={isClaiming}>
-					Claim
-				</DFButton>)}
+					{((!isSpinning && spinWheel?.status == SpinWheelUserStatus.Claimable) && <DFButton size="l" onClick={doClaim} disabled={isClaiming}>
+						Claim
+					</DFButton>)}
+				</div>
 			</div>
 		</div>
 	);

@@ -18,17 +18,14 @@ const EntryPage: React.FC = () => {
         if (allowTest || channel != "test") {
             let toPath = "";
             if (to == "" || to == null) {
-                console.log("to...", to)
                 toPath = "/game-center"
             } else {
-                console.log("to...2", to)
                 toPath = "/" + to;
             }
 
             if (l.search != "") {
                 toPath += l.search;
             }
-
             //save login channel
             localStorage.setItem(channelSaveKey(), channel || "");
 

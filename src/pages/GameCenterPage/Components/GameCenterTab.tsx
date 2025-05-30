@@ -10,6 +10,19 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 //selectedTab不用了，改为使用location自动判断选中的是哪个tab
 
+
+const useScreenWidth = () => {
+	const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+
+	useEffect(() => {
+		const handleResize = () => setScreenWidth(window.innerWidth);
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
+
+	return screenWidth;
+};
+
 export const GameCenterTab = forwardRef<GameCenterTabRef>(({ }, ref) => {
 	const divRef = useRef<HTMLDivElement>(null);
 	const bottom = useSignal(viewport.safeAreaInsetBottom);
@@ -17,6 +30,8 @@ export const GameCenterTab = forwardRef<GameCenterTabRef>(({ }, ref) => {
 	const l = useLocation();
 	const initDataRaw = useLaunchParams().initDataRaw;
 	const [taskCount, setTaskCount] = useState<{ [key: number]: number }>({})
+
+	const screenWidth = useScreenWidth();
 
 	const getTaskCount = async () => {
 		const count = await TaskApi.getCount(initDataRaw as string, "DashFun")
@@ -72,7 +87,7 @@ export const GameCenterTab = forwardRef<GameCenterTabRef>(({ }, ref) => {
 		const selected = l.pathname.endsWith(path);
 		tabItems.push(<Tabbar.Item
 			key={path}
-			text={title}
+			text={screenWidth <= 400 ? "" : title}
 			selected={selected}
 			onClick={() => {
 				if (!selected) {

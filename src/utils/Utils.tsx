@@ -45,7 +45,16 @@ export const orderSaveKey = (userId: string) => {
 }
 
 export const currentChannel = () => {
-	return localStorage.getItem(channelSaveKey()) || "tg";
+	const saved = localStorage.getItem(channelSaveKey());
+	if (saved != null) {
+		return saved;
+	} else {
+		if (isInTelegram()) {
+			return "tg";
+		} else {
+			return "web";
+		}
+	}
 }
 
 export const isInGameCenter = () => {
