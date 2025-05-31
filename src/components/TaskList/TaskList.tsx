@@ -126,7 +126,7 @@ const sortTask = (tasklist: Task[], user_data: { [key: string]: TaskSave }): Tas
 	if (!isInTelegram()) {
 		//如果不是在Telegram内运行，返回的任务列表需要过滤掉TG相关的任务
 		tasklist = tasklist.filter(task => {
-			return task.require.type != TaskCondition.JoinTGChannel;
+			return task.require.type != TaskCondition.JoinTGChannel && task.require.type != TaskCondition.SpendTGStar;
 		});
 	}
 	return tasklist;
