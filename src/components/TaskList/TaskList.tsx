@@ -14,7 +14,7 @@ import Section from "../Section/Section";
 import "./TaskList.css";
 import { DFButton, DFCell, DFImage, DFProgressBar, DFProgressCircle, DFText, MixedText } from "../controls";
 import { useNavigate } from "react-router-dom";
-import { isInGameCenter } from "@/utils/Utils";
+import { isInGameCenter, isInTelegram } from "@/utils/Utils";
 import diamondIcon from "@/icons/dashfun-diamond4.png";
 
 export type TaskListype = {
@@ -122,6 +122,13 @@ const sortTask = (tasklist: Task[], user_data: { [key: string]: TaskSave }): Tas
 
 		return b.create_time - a.create_time;
 	});
+
+	if (!isInTelegram()) {
+		//如果不是在Telegram内运行，返回的任务列表需要过滤掉TG相关的任务
+		tasklist = tasklist.filter(task => {
+			return task.require.type != TaskCondition.JoinTGChannel;
+		});
+	}
 	return tasklist;
 }
 
