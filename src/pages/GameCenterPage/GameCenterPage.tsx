@@ -1,13 +1,14 @@
+import useDashFunSafeArea from "@/components/DashFun/DashFunSafeArea";
+import DashFunPay from "@/components/DashFunPay/DashFunPay";
 import { AppRoute, routes } from "@/navigation/routes";
-import { backButton, useSignal, viewport } from "@telegram-apps/sdk-react";
+import { backButton } from "@telegram-apps/sdk-react";
 import KeepAlive, { useKeepAliveRef } from "keepalive-for-react";
 import { FC, ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate, useOutlet } from "react-router-dom";
 import { ContentWrapper } from "../ContentWrapper";
+import { GameCenterDataProvider } from "./Components/GameCenterDataProvider";
 import { GameCenterTab, GameCenterTabRef } from "./Components/GameCenterTab";
 import "./GameCenterPage.css";
-import { GameCenterDataProvider } from "./Components/GameCenterDataProvider";
-import DashFunPay from "@/components/DashFunPay/DashFunPay";
 
 
 // const pageHideTabBar = [
@@ -83,7 +84,7 @@ export const GameCenterPage: FC = () => {
 	const [tabOffset, setTabOffset] = useState(0);
 	const location = useLocation();
 	const navigate = useNavigate();
-	const viewportState = useSignal(viewport.state);
+	const { safeArea } = useDashFunSafeArea();
 	let outlet = useOutlet();
 
 	const hideTabBar = !showTabBar(location.pathname);
@@ -102,7 +103,7 @@ export const GameCenterPage: FC = () => {
 
 	useEffect(() => {
 		const h = tabRef.current?.getHeight() || 0;
-		setTabOffset(h - viewportState.safeAreaInsets.bottom);
+		setTabOffset(h - safeArea.bottom);
 	}, [tabRef.current])
 
 	useEffect(() => {

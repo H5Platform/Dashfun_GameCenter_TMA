@@ -14,7 +14,7 @@ import { useEffect, type FC } from "react";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 
 import { AppRoute, routes } from "@/navigation/routes.tsx";
-import { miniApp, postEvent, useLaunchParams } from "@telegram-apps/sdk-react";
+import { miniApp, postEvent, useLaunchParams, viewport } from "@telegram-apps/sdk-react";
 import { CoinProvider } from "./DashFun/DashFunCoins";
 import { SpinWheelProvider } from "./DashFun/DashFunSpinWheel";
 import { UserProvider } from "./DashFun/DashFunUser";

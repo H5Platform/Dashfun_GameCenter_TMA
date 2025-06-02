@@ -8,35 +8,36 @@ import { useEffect, useState, type FC } from 'react';
 import Iframe from 'react-iframe';
 import "./GameWrapper.css";
 
+import { DFProfileAvatar } from '@/components/Avatar/Avatar';
 import { CoinPanel, Coins } from '@/components/Coins/coins';
 import { useDashFunCoins } from '@/components/DashFun/DashFunCoins';
 import { useDashFunSpinWheel } from '@/components/DashFun/DashFunSpinWheel';
 import { SpinWheelConstants } from '@/components/DashFunData/SpinWheelData';
 import { DashFunUser } from '@/components/DashFunData/UserData';
+import DashFunRecharge from '@/components/DashFunRecharge/DashFunRecharge';
+import { L, LangKeys } from '@/components/Language/Language';
 import { MessageListener } from '@/components/MessageListener/MessageListener';
 import SpinWheel from '@/components/SpinWheel/SpinWheel';
 import { TaskAndCoin } from '@/components/TaskAndCoin/TaskAndCoin';
 import { CoinInfo, DashFunCoins, TaskStatus } from '@/constats';
-import { Badge, Gamepad2, Gift, LoaderPinwheel, Send } from 'lucide-react';
-import { DFProfileAvatar } from '@/components/Avatar/Avatar';
-import DashFunRecharge from '@/components/DashFunRecharge/DashFunRecharge';
-import { motion } from 'framer-motion';
-import { ContentWrapper } from '../ContentWrapper';
-import { L, LangKeys } from '@/components/Language/Language';
 import { isInTelegram } from '@/utils/Utils';
+import { motion } from 'framer-motion';
+import { Badge, Gamepad2, Gift, LoaderPinwheel, Send } from 'lucide-react';
+import { ContentWrapper } from '../ContentWrapper';
 
 import aniLoading1 from "@/assets/animation/loading1.json";
 import aniLoading2 from "@/assets/animation/loading2.json";
 import aniLoading3 from "@/assets/animation/loading3.json";
 // import aniLoading4 from "@/assets/animation/loading4.json";
 import aniLoading5 from "@/assets/animation/loading5.json";
-import { backButton, openLink, openTelegramLink, shareURL, useLaunchParams, useSignal, viewport } from '@telegram-apps/sdk-react';
-import DashFunPay from '@/components/DashFunPay/DashFunPay';
-import { TaskStatusChangedEvent, SpinWheelStatusChangedEvent, OpenDashFunRechargeEvent, UserEnterGameEvent } from '@/components/Event/Events';
-import { Player } from '@lottiefiles/react-lottie-player';
-import { LargeTitle, Button, Modal } from '@telegram-apps/telegram-ui';
-import dashFunIcon from "@/icons/dashfun-icon-256.png";
 import { DFBadge, DFButton, DFText } from '@/components/controls';
+import useDashFunSafeArea from '@/components/DashFun/DashFunSafeArea';
+import DashFunPay from '@/components/DashFunPay/DashFunPay';
+import { OpenDashFunRechargeEvent, SpinWheelStatusChangedEvent, TaskStatusChangedEvent, UserEnterGameEvent } from '@/components/Event/Events';
+import dashFunIcon from "@/icons/dashfun-icon-256.png";
+import { Player } from '@lottiefiles/react-lottie-player';
+import { backButton, openLink, openTelegramLink, shareURL, useLaunchParams } from '@telegram-apps/sdk-react';
+import { Button, LargeTitle, Modal } from '@telegram-apps/telegram-ui';
 
 const loadingAnis = [aniLoading1, aniLoading2, aniLoading3, aniLoading5];
 const idx = Math.floor(Math.random() * loadingAnis.length);
@@ -61,10 +62,13 @@ export const GameWrapper: FC = () => {
 
 	const [coins, userCoinData, updateCoins, getCoinInfo] = useDashFunCoins();
 
-	const top = useSignal(viewport.safeAreaInsetTop);
-	const bottom = useSignal(viewport.safeAreaInsetBottom);
-	const contentTop = useSignal(viewport.contentSafeAreaInsetTop)
-	const contentBottom = useSignal(viewport.contentSafeAreaInsetBottom)
+	const { safeArea, content } = useDashFunSafeArea();
+
+
+	const top = safeArea.top;
+	const bottom = safeArea.bottom;
+	const contentTop = content.top;
+	const contentBottom = content.bottom;
 
 	const pt = top + contentTop;
 	const pb = bottom + contentBottom;

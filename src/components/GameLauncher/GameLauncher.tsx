@@ -9,6 +9,7 @@ import { initData, shareURL, useSignal } from "@telegram-apps/sdk-react";
 import { Heart, Send } from "lucide-react";
 import { GameApi } from "@/utils/DashFunApi";
 import { DFButton, DFImage, DFText } from "../controls";
+import useDashFunSafeArea from "../DashFun/DashFunSafeArea";
 
 export type GLProps = JSX.IntrinsicElements['div'] & {
 	gameId: string | undefined,
@@ -25,6 +26,8 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked, foote
 	const [loading, setLoading] = useState(-1);
 	const [playText, setPlayText] = useState("Play")
 	const initDataRaw = useSignal(initData.raw)
+
+	const { safeArea } = useDashFunSafeArea();
 
 	const [isFavorite, setIsFavorite] = useState<-1 | 0 | 1>(-1); // -1: loading, 0: not favorite, 1: favorite
 
@@ -89,7 +92,7 @@ export const GameLauncher: FC<GLProps> = ({ gameId, onLoad, onPlayClicked, foote
 		}
 	}
 
-	return <div className="gl-container">
+	return <div className="gl-container" style={{ paddingBottom: safeArea.bottom + "px" }}>
 		<div className="flex flex-col p-4 shadow-[0_4px_12px_rgba(0,0,0,0.5)] relative bg-gradient-to-b from-[#1E6493] to-[#0C3D63] rounded-2xl">
 			< div className="absolute inset-[2px] ring-[2px] ring-white/50 pointer-events-none rounded-2xl" ></div>
 			{game == null ? <div className="gl-loading-spinner"><Spinner size="l" /> </div> :
