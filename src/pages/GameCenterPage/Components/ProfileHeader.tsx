@@ -2,6 +2,7 @@ import { DFProfileAvatar } from "@/components/Avatar/Avatar";
 import { CoinPanel } from "@/components/Coins/coins";
 import { useDashFunCoins } from "@/components/DashFun/DashFunCoins";
 import { useDashFunUser } from "@/components/DashFun/DashFunUser";
+import { isRechargeOpen } from "@/utils/Utils";
 import { FC } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -32,8 +33,10 @@ const ProfileHeader: FC<{ disableClick?: boolean }> = ({ disableClick = false })
 				<div className="flex p-1 items-center justify-between w-full gap-5 bg-gray-900 bg-opacity-30 rounded-full ">
 					<CoinPanel coin={dp?.coin} userCoinData={dp?.userData} forceDark={forceDark} />
 					{/* <CoinPanel coin={dc?.coin} userCoinData={dc?.userData} forceDark={forceDark} /> */}
-					<CoinPanel coin={dd?.coin} userCoinData={dd?.userData} forceDark={forceDark} showAdd onClick={() => {
-						navigator("/game-center/recharge");
+					<CoinPanel coin={dd?.coin} userCoinData={dd?.userData} forceDark={forceDark} showAdd={isRechargeOpen()} onClick={() => {
+						if (isRechargeOpen()) {
+							navigator("/game-center/recharge");
+						}
 					}} />
 				</div>
 			</div>

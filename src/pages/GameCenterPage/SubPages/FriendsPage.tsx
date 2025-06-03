@@ -13,7 +13,7 @@ import ReactAvatar from "react-avatar";
 import ProfileHeader from "../Components/ProfileHeader";
 import DFButton from "@/components/controls/Button";
 import { DFCell, DFLabel, DFText } from "@/components/controls";
-import { isInTelegram } from "@/utils/Utils";
+import { isInDashFunApp, isInTelegram } from "@/utils/Utils";
 
 export const GameCenter_FriendsPage: FC = () => {
 	const user = useDashFunUser();
@@ -41,7 +41,7 @@ export const GameCenter_FriendsPage: FC = () => {
 	return <div id="GameCenter_FriendsPage" className="w-full h-full flex flex-col px-4 pt-4 gap-4">
 		<ProfileHeader />
 		{
-			isInTelegram() ?
+			(isInTelegram()/* || isInDashFunApp() != null*/) ?
 				<DFButton size="l" onClick={() => {
 					shareURL(TGLink.centerLink(user?.id));
 				}}>
@@ -49,12 +49,22 @@ export const GameCenter_FriendsPage: FC = () => {
 				</DFButton> :
 				<div className="w-full flex flex-col gap-2">
 					<DFButton onClick={() => {
-						navigator.clipboard.writeText(TGLink.centerLink(user?.id)).then(() => {
+						if (copied) return;
+						if (isInDashFunApp() == null) {
+							navigator.clipboard.writeText(TGLink.centerLink(user?.id)).then(() => {
+								setCopied(true);
+								setTimeout(() => {
+									setCopied(false);
+								}, 10000);
+							})
+						} else {
+							//在DashFun App中，发送事件
+							window.TelegramWebviewProxy?.postEvent("app_share_link", JSON.stringify({ link: TGLink.centerLink(user?.id) }));
 							setCopied(true);
 							setTimeout(() => {
 								setCopied(false);
 							}, 10000);
-						})
+						}
 					}}>
 						<div className="py-1 px-4">
 							{copied ? "Copied!" : "Copy Invitation Link"}

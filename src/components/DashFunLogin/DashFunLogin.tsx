@@ -10,6 +10,7 @@ import React, { useEffect, useState } from 'react';
 import { DFAvatar } from '../Avatar/Avatar';
 import { DFButton, DFLabel, DFText } from '../controls';
 import TelegramLogin from "../TelegramWidget/TelegramWidget";
+import useDashFunSafeArea from "../DashFun/DashFunSafeArea";
 
 interface DashFunLoginProps {
 	onLogin?: (acc: DashFunAccount) => void;
@@ -89,6 +90,8 @@ const DashFunLogin: React.FC = () => {
 	const [mode, setMode] = useState<UiMode>(-1);//0=signin, 1=signup, 2=reset password, 3=verify email
 	const [currAcc, setCurrAcc] = useState<DashFunAccount | null>(null);
 
+	const { safeArea } = useDashFunSafeArea();
+
 	//① 先从localStorage中获取当前token并验证，如果验证成功，直接使用token登陆
 	useEffect(() => {
 		resotreAccount().then(() => {
@@ -98,7 +101,7 @@ const DashFunLogin: React.FC = () => {
 	}, [])
 	//② 如果没有token或者token验证失败，显示登陆页面
 	return <div className="max-w-screen-sm sm:aligen-center sm:mx-auto h-full">
-		<div id="GameCenterPage" className={"w-full h-full flex flex-col bg-gradient-to-b from-[#004275] to-[#00254E] items-center py-4"}>
+		<div id="DashFunLogin" className={"w-full h-full flex flex-col bg-gradient-to-b from-[#004275] to-[#00254E] items-center py-4"} style={{ paddingTop: safeArea.top + "px", paddingBottom: safeArea.bottom + "px" }}>
 			<div className="absolute max-w-screen-sm sm:aligen-center sm:mx-auto top-[-425px] left-1/2 -translate-x-1/2 w-[100%] h-[650px] bg-[radial-gradient(circle,rgba(0,200,255,0.3)_0%,transparent_70%)] pointer-events-none z-0"></div>
 			<Header mode={mode} />
 			{(

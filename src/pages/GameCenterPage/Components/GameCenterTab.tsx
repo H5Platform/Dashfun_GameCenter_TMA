@@ -1,9 +1,10 @@
 import { DFBadge } from "@/components/controls";
+import useDashFunSafeArea from "@/components/DashFun/DashFunSafeArea";
 import { TaskStatusChangedEvent } from "@/components/Event/Events";
 import { TaskStatus } from "@/constats";
 import { AppRoute, routes } from "@/navigation/routes";
 import { TaskApi } from "@/utils/DashFunApi";
-import { useLaunchParams, useSignal, viewport } from "@telegram-apps/sdk-react";
+import { useLaunchParams } from "@telegram-apps/sdk-react";
 import { Tabbar } from "@telegram-apps/telegram-ui";
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -25,13 +26,14 @@ const useScreenWidth = () => {
 
 export const GameCenterTab = forwardRef<GameCenterTabRef>(({ }, ref) => {
 	const divRef = useRef<HTMLDivElement>(null);
-	const bottom = useSignal(viewport.safeAreaInsetBottom);
+	const { safeArea } = useDashFunSafeArea();
 	const navigate = useNavigate();
 	const l = useLocation();
 	const initDataRaw = useLaunchParams().initDataRaw;
 	const [taskCount, setTaskCount] = useState<{ [key: number]: number }>({})
 
 	const screenWidth = useScreenWidth();
+	const bottom = safeArea.bottom;
 
 	const getTaskCount = async () => {
 		const count = await TaskApi.getCount(initDataRaw as string, "DashFun")
@@ -87,7 +89,7 @@ export const GameCenterTab = forwardRef<GameCenterTabRef>(({ }, ref) => {
 		const selected = l.pathname.endsWith(path);
 		tabItems.push(<Tabbar.Item
 			key={path}
-			text={screenWidth <= 400 ? "" : title}
+			text={screenWidth <= 430 ? "" : title}
 			selected={selected}
 			onClick={() => {
 				if (!selected) {

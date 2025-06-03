@@ -31,6 +31,25 @@ export const isPcBrowser = () => {
 };
 
 const telegramPlatforms = ["tdesktop", "android", "ios", "macos", "web"]
+
+const openReachargeInApp = false;
+
+export const isRechargeOpen = () => {
+	if (isInDashFunApp() != null) {
+		return openReachargeInApp;
+	} else {
+		return true;
+	}
+}
+
+/**
+ * 判断当前是否在DashFun应用中
+ * @returns {string} 返回平台 ios | android | null，null表示不在DashFun应用中
+ */
+export const isInDashFunApp = (): "ios" | "android" | null => {
+	return window.dashfun_app;
+}
+
 export const isInTelegram = () => {
 	const platform = retrieveLaunchParams().platform;
 	return telegramPlatforms.includes(platform);
