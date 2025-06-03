@@ -1,4 +1,4 @@
-import { TelegramWebviewProxy, WebviewProxy } from "./TelegramWebviewProxy/TelegramWebviewProxy";
+import { WebviewProxy } from "./TelegramWebviewProxy/TelegramWebviewProxy";
 
 enum ProfileType {
     ANONYMOUS = 0,
