@@ -89,7 +89,7 @@ export const GameCenterTab = forwardRef<GameCenterTabRef>(({ }, ref) => {
 		const selected = l.pathname.endsWith(path);
 		tabItems.push(<Tabbar.Item
 			key={path}
-			text={screenWidth <= 400 ? "" : title}
+			text={screenWidth <= 430 ? "" : title}
 			selected={selected}
 			onClick={() => {
 				if (!selected) {

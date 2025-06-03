@@ -18,6 +18,10 @@ const ProcessEvents = [
     "web_app_open_link",
 ]
 
+type WebviewProxy = {
+    postEvent: (...args: any[]) => void;
+}
+
 class TelegramWebviewProxy {
     postEvent(...args: any[]) {
         console.log("TelegramWebviewProxy postEvent----", args);
@@ -25,6 +29,19 @@ class TelegramWebviewProxy {
         if (ProcessEvents.includes(args[0])) {
             processEvent(args[0], ...args.slice(1));
         }
+        return;
+    }
+}
+
+class RNWebviewProxy {
+    postEvent(...args: any[]) {
+        console.log("RNWebviewProxy postEvent----", args);
+        logInfo(false, "Posting Event", args[0])
+        window.ReactNativeWebView?.postMessage(JSON.stringify({
+            name: args[0],
+            from: 'rn',
+            args: args.slice(1)
+        }));
         return;
     }
 }
@@ -65,10 +82,16 @@ const openLink = (url: string) => {
 
 const initProxy = () => {
     if (!isInTelegram()) {
-        window.TelegramWebviewProxy = new TelegramWebviewProxy();
-        console.log("TelegramWebviewProxy init");
+        if (window.ReactNativeWebView) {
+            window.TelegramWebviewProxy = new RNWebviewProxy();
+            console.log("RNWebviewProxy init");
+        } else {
+            window.TelegramWebviewProxy = new TelegramWebviewProxy();
+            console.log("TelegramWebviewProxy init");
+        }
     }
 }
 
 export default initProxy
 export { TelegramWebviewProxy }
+export type { WebviewProxy };

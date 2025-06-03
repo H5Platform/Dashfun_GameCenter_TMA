@@ -1,4 +1,4 @@
-import { TelegramWebviewProxy } from "./TelegramWebviewProxy/TelegramWebviewProxy";
+import { TelegramWebviewProxy, WebviewProxy } from "./TelegramWebviewProxy/TelegramWebviewProxy";
 
 enum ProfileType {
     ANONYMOUS = 0,
@@ -43,7 +43,9 @@ interface TDAPPInterface {
 
 declare global {
     interface Window {
-        TelegramWebviewProxy?: TelegramWebviewProxy;
+        dashfun_app: "ios" | "android" | null;
+        TelegramWebviewProxy?: WebviewProxy;
+        ReactNativeWebView?: { postMessage: (message: any) => void; };
         TDAPP?: TDAPPInterface;
         TD_CHANNEL: string;
         aplus_queue: {
