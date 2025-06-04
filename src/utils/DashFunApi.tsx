@@ -75,6 +75,7 @@ enum AccountStatus {
 enum AccountType {
 	Email = 1,
 	Telegram = 2,
+	AppleId = 3,
 }
 
 type DashFunAccount = {
@@ -131,6 +132,24 @@ const AccApi = {
 		const api = AccApi.apiUrl() + "send_email"
 		const result = await axios.post(api, {
 			account_id: accountId
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data;
+			} else {
+				throw result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
+
+	deleteAccount: async (accountId: string, token: string, acc_type: AccountType): Promise<string> => {
+		const api = AccApi.apiUrl() + "delete"
+		const result = await axios.post(api, {
+			account_id: accountId,
+			token,
+			acc_type
 		})
 		if (result.status == 200) {
 			if (result.data.code == 0) {

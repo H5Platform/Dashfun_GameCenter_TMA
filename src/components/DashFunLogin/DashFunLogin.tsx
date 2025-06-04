@@ -97,8 +97,17 @@ const DashFunLogin: React.FC = () => {
 		resotreAccount().then(() => {
 		}).finally(() => {
 			setMode(0);
-		})
+		});
+
+		return () => {
+		}
 	}, [])
+
+	useEffect(() => {
+		window.TelegramWebviewProxy?.postEvent("app_login_mode", mode.toString());
+	}, [mode]);
+
+
 	//② 如果没有token或者token验证失败，显示登陆页面
 	return <div className="max-w-screen-sm sm:aligen-center sm:mx-auto h-full">
 		<div id="DashFunLogin" className={"w-full h-full flex flex-col bg-gradient-to-b from-[#004275] to-[#00254E] items-center py-4"} style={{ paddingTop: safeArea.top + "px", paddingBottom: safeArea.bottom + "px" }}>
@@ -118,6 +127,8 @@ const DashFunLogin: React.FC = () => {
 					} else {
 						//如果账号已验证，直接登陆
 						loginAccount(acc);
+						//通知app关闭登录界面
+						window.TelegramWebviewProxy?.postEvent("app_login_mode", "-1");
 					}
 				}} onAction={a => {
 					switch (a) {
@@ -403,6 +414,35 @@ const Login: React.FC<DashFunLoginProps> = ({ onLogin, onAction }) => {
 		email: false,
 		password: false,
 	});
+
+	const onMessage = (e: MessageEvent) => {
+		console.log("Received message from parent:", e.data);
+		if (e.data) {
+			const evt = JSON.parse(e.data);
+			if (evt.type == 'app_apple_login') {
+				setLoading(true);
+				AccApi.login("apple_id", evt.token, AccountType.AppleId).then((res) => {
+					if (res) {
+						onLogin && onLogin(res);
+					}
+				}).catch((e) => {
+					console.error("Apple login error:", e);
+					setError(processError(e));
+				}).finally(() => {
+					setErrorCtls({ ...errorCtls, email: false, password: false });
+					setLoading(false);
+				});
+			}
+		}
+	}
+
+	useEffect(() => {
+		window.addEventListener('message', onMessage);
+		return () => {
+			window.removeEventListener('message', onMessage);
+		}
+
+	}, [])
 
 
 	const handleSubmit = (e: React.FormEvent) => {

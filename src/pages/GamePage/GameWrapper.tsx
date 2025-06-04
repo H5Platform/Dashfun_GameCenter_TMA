@@ -20,7 +20,7 @@ import { MessageListener } from '@/components/MessageListener/MessageListener';
 import SpinWheel from '@/components/SpinWheel/SpinWheel';
 import { TaskAndCoin } from '@/components/TaskAndCoin/TaskAndCoin';
 import { CoinInfo, DashFunCoins, TaskStatus } from '@/constats';
-import { isInTelegram } from '@/utils/Utils';
+import { isInDashFunApp, isInTelegram, isRechargeOpen } from '@/utils/Utils';
 import { motion } from 'framer-motion';
 import { Badge, Gamepad2, Gift, LoaderPinwheel, Send } from 'lucide-react';
 import { ContentWrapper } from '../ContentWrapper';
@@ -153,7 +153,7 @@ export const GameWrapper: FC = () => {
 	}, [game]);
 
 	useEffect(() => {
-		if (showRecharge) {
+		if (showRecharge && isInDashFunApp() == null) {
 			backButton.show();
 			return backButton.onClick(() => {
 				setShowRecharge(false);
@@ -280,8 +280,10 @@ export const GameWrapper: FC = () => {
 					<CoinPanel coin={coin?.coin} userCoinData={coin?.userData} showBG />
 				</div>
 				<div className='flex-1'>
-					<CoinPanel showBG coin={diamond?.coin} userCoinData={diamond?.userData} showAdd onClick={() => {
-						setShowRecharge(true);
+					<CoinPanel showBG coin={diamond?.coin} userCoinData={diamond?.userData} showAdd={isRechargeOpen()} onClick={() => {
+						if (isRechargeOpen()) {
+							setShowRecharge(true);
+						}
 					}} />
 				</div>
 			</div>

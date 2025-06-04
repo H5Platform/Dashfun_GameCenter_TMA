@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 const ProfileHeader: FC<{ disableClick?: boolean }> = ({ disableClick = false }) => {
 	const navigator = useNavigate();
 	const user = useDashFunUser();
+
 	//const l = useLocation();
 
 	//所有页面都强制暗色

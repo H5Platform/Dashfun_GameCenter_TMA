@@ -3,7 +3,7 @@ import { FC } from "react"
 
 interface DFButtonProps {
     onClick?: (evt: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-    mode?: "plain" | "primary" | "normal";
+    mode?: "plain" | "primary" | "normal" | "danger";
     type?: "button" | "submit" | "reset";
     disabled?: boolean;
     loading?: boolean;
@@ -17,6 +17,8 @@ const DFButton: FC<DFButtonProps> = ({ onClick, mode = "primary", type = "button
     const rounded = size == "l" ? "rounded-2xl" : "rounded-full";
     const textSize = size == "l" ? " text-2xl " : size == "m" ? " text-base " : " text-sm ";
     const invisable = loading ? " invisible " : "";
+
+    const activeStyle = disabled ? "" : " active:shadow-none active:translate-y-[1px]";
 
     let colors = {
         from: "#cccccc",
@@ -35,7 +37,14 @@ const DFButton: FC<DFButtonProps> = ({ onClick, mode = "primary", type = "button
             to: "#EC4700",
             text: "white",
         }
+    } else if (mode == "danger") {
+        colors = {
+            from: "transparent",
+            to: "transparent",
+            text: "#ef4444",
+        }
     }
+
 
     return <div className={"relative " + className} style={{ height: h, minHeight: h }}>
         {/* 发光边缘层 */}
@@ -46,7 +55,7 @@ const DFButton: FC<DFButtonProps> = ({ onClick, mode = "primary", type = "button
                 className={"absolute w-full h-full bg-black/50 pointer-events-none active:translate-y-[1px] " + rounded} ></div>
         }
 
-        <button className={" w-full h-full p-1 bg-[linear-gradient(to_bottom,var(--from),var(--to))] px-4 font-bold shadow-[0_2px_6px_rgba(0,0,0,0.8)] active:shadow-none active:translate-y-[1px] " + rounded + textSize + invisable}
+        <button className={" w-full h-full p-1 bg-[linear-gradient(to_bottom,var(--from),var(--to))] px-4 font-bold shadow-[0_2px_6px_rgba(0,0,0,0.8)]  " + rounded + textSize + invisable + activeStyle}
             type={type}
             style={{
                 "--from": colors.from,
