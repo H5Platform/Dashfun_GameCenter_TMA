@@ -1,21 +1,27 @@
 import { DFButton, DFText } from "@/components/controls";
+import useDashFunSafeArea from "@/components/DashFun/DashFunSafeArea";
 import { GameListType } from "@/components/DashFunData/GameData";
 import { GameIcon } from "@/components/GameIcon/GameIcon";
 import { L, LangKeys, useLanguage } from "@/components/Language/Language";
-import { AccountType, getEnv } from "@/utils/DashFunApi";
+import { makeBrowserEnv } from "@/mockEnv";
+import { AccApi, AccountType, DashFunAccount, getEnv } from "@/utils/DashFunApi";
 import { isInTelegram } from "@/utils/Utils";
+import { initData } from "@telegram-apps/sdk-react";
+import { Input, Modal } from "@telegram-apps/telegram-ui";
+import { ModalHeader } from "@telegram-apps/telegram-ui/dist/components/Overlays/Modal/components/ModalHeader/ModalHeader";
 import { useEffectOnActive } from "keepalive-for-react";
 import { Heart } from "lucide-react";
 import { FC, PropsWithChildren, ReactNode, useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGameCenterData } from "../Components/GameCenterDataProvider";
 import ProfileHeader from "../Components/ProfileHeader";
-import { makeBrowserEnv } from "@/mockEnv";
-import { initData } from "@telegram-apps/sdk-react";
 
 export const GameCenter_Profile: FC = () => {
 	const nav = useNavigate();
 	const [loading, setLoading] = useState(false);
+	const [showDelete, setShowDelete] = useState(false);
+	const { safeArea, content } = useDashFunSafeArea();
+	const [dleteInput, setDeleteInput] = useState("");
 	// const tabItems = [
 	// 	{
 	// 		icon: <UsersRound size={20} />,
@@ -28,6 +34,20 @@ export const GameCenter_Profile: FC = () => {
 	// 		item: <MyGames />
 	// 	}
 	// ]
+
+	const signOut = useCallback(() => {
+		localStorage.removeItem('DashFun-Token-' + getEnv());
+		setLoading(true);
+
+		makeBrowserEnv("", "", "", AccountType.Email, "", "");
+		initData.restore();
+
+		setTimeout(() => {
+			setLoading(false);
+			nav("/game-center");
+			window.location.reload();
+		}, 1000);
+	}, [nav]);
 
 	return <div id="GameCenter_Profile" className="w-full flex flex-col gap-4 p-4">
 		<ProfileHeader disableClick />
@@ -48,21 +68,105 @@ export const GameCenter_Profile: FC = () => {
 
 		{(
 			!isInTelegram() && <div className="w-full flex flex-col flex-1 justify-end">
-				<DFButton mode="plain" loading={loading} disabled={loading} onClick={() => {
-					localStorage.removeItem('DashFun-Token-' + getEnv());
-					setLoading(true);
-
-					makeBrowserEnv("", "", "", AccountType.Email, "", "");
-					initData.restore();
-
-					setTimeout(() => {
-						setLoading(false);
-						nav("/game-center");
-						window.location.reload();
-					}, 1000);
+				<DFButton mode="normal" loading={loading} disabled={loading} onClick={() => {
+					signOut();
 				}}>Sign Out</DFButton>
 			</div>
 		)}
+
+		{
+			(
+				!isInTelegram() /*&& isInDashFunApp() == 'ios'*/ && <div>
+					<div className="left-4 right-4 flex flex-col flex-1 justify-end absolute max-w-screen-sm sm:mx-auto" style={{ bottom: safeArea.bottom }}>
+						<DFButton mode="danger" loading={loading} disabled={loading} onClick={() => {
+							setShowDelete(true);
+						}}>Delete My Account</DFButton>
+					</div>
+
+					<Modal
+						className='max-w-screen-sm sm:mx-auto bg-gradient-to-b from-[#004275] to-[#00254E]'
+						open={showDelete}
+						header={<ModalHeader style={{
+							backgroundColor: "",
+						}}></ModalHeader>
+							// <div className='flex flex-col bg-gray-200 text-black p-2 w-full items-center justify-center gap-1'>
+							// 	<div className=' w-10 h-1 bg-gray-400 rounded-full mb-2'></div>
+							// 	<Text weight='1'>Tasks</Text>
+							// </div>
+						}
+						onOpenChange={e => {
+							if (e == false) {
+								setShowDelete(false);
+								setDeleteInput("");
+							}
+						}}
+						snapPoints={[1]}
+					>
+						<div className='flex flex-col w-full h-full' style={{
+							paddingBottom: safeArea.bottom + content.bottom
+						}}>
+							<div className="flex flex-col items-center justify-center gap-4 px-4 pb-4">
+								<DFText weight="2" size="xl" color="#ff4444">
+									Delete My Account
+								</DFText>
+								<DFText weight="1" size="sm">
+									Are you sure you want to permanently delete your account? This action cannot be undone and all your data will be lost.
+								</DFText>
+								<div className="w-full flex justify-center items-center gap-1">
+									<DFText weight="1" size="sm">
+										Please enter
+									</DFText>
+									<DFText weight="3" size="sm" color="#ff4444">
+										"DELETE"
+									</DFText>
+									<DFText weight="1" size="sm">
+										below to confirm
+									</DFText>
+								</div>
+								<div className="w-full">
+									<Input
+										status={undefined}
+										type="text"
+										value={dleteInput}
+										placeholder="DELETE"
+										onChange={(e) => {
+											setDeleteInput(e.target.value);
+										}}
+									/>
+								</div>
+								<DFButton
+									mode="danger"
+									disabled={loading || dleteInput.toUpperCase() !== "DELETE"}
+									onClick={() => {
+										setLoading(true);
+										const token = localStorage.getItem('DashFun-Token-' + getEnv());
+										if (token) {
+											const decodedAcc = JSON.parse(atob(token)) as DashFunAccount;
+											if (decodedAcc == null) {
+												setLoading(false);
+												return false;
+											}
+											AccApi.deleteAccount(decodedAcc.account_id, decodedAcc.token, decodedAcc.type).then(() => {
+												signOut();
+											}).catch((err) => {
+												console.error("Failed to delete account:", err);
+												setLoading(false);
+											}).finally(() => {
+												setLoading(false);
+											});
+										}
+									}}
+								>
+									Delete My Account
+								</DFButton>
+							</div>
+						</div>
+					</Modal>
+
+				</div>
+			)
+		}
+
 	</div >
 }
 
