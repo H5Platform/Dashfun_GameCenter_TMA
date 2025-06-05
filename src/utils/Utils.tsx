@@ -32,7 +32,7 @@ export const isPcBrowser = () => {
 
 const telegramPlatforms = ["tdesktop", "android", "ios", "macos", "web"]
 
-const openReachargeInApp = false;
+const openReachargeInApp = true;
 
 export const isRechargeOpen = () => {
 	if (isInDashFunApp() != null) {

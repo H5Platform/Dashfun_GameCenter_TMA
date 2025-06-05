@@ -2,7 +2,7 @@ import { RechargeOrderStatus, RechargePriceType, RechargePriceTypeText, toCurren
 import diamondIcon from "@/icons/dashfun-diamond4.png";
 import starIcon from "@/icons/star-icon.png";
 import { RechargeApi, RechargeLink, RechargeOrder } from "@/utils/DashFunApi";
-import { isInTelegram, orderSaveKey } from "@/utils/Utils";
+import { isInDashFunApp, isInTelegram, orderSaveKey } from "@/utils/Utils";
 import { initData, invoice, openLink, retrieveLaunchParams, useLaunchParams, useSignal } from "@telegram-apps/sdk-react";
 import { Button, Spinner, Text, Title } from "@telegram-apps/telegram-ui";
 import { motion } from "framer-motion";
@@ -20,11 +20,26 @@ import CountUp from "../CountUp/CountUp";
 import { TopupItem, UserRechargeEvent } from "../Event/Events";
 import { DFButton, DFCell, DFLabel, DFText } from "../controls";
 import "./DashFunRecharge.css";
+import { useEffectOnActive } from "keepalive-for-react";
 
 type OrderInfo = {
     orderId: string,
     optionIndex: number,
     channelPayId?: string
+}
+
+const useRechargePlatform = () => {
+    const ps = useLaunchParams();
+    let platform = ps.platform;
+
+    const appStr = isInDashFunApp();
+
+    if (appStr != null) {
+        //如果在DashFun应用中，使用应用平台
+        platform = "dfapp_" + appStr;
+    }
+
+    return platform;
 }
 
 const priceToString = (price: number, priceType: number) => {
@@ -84,7 +99,7 @@ const DashFunRecharge: FC<{ minRechargeValue: number, gameId: string }> = ({ min
     const [selected, setSelected] = useState<number>(-1);
     const initDataRaw = useSignal(initData.raw)
     const user = useDashFunUser();
-    const ps = useLaunchParams();
+    const platform = useRechargePlatform();
     const [purchasedOrder, setPurchasedOrder] = useState<any>(null);
 
     const [_1, _2, updateCoins, getCoinInfo] = useDashFunCoins();
@@ -93,7 +108,7 @@ const DashFunRecharge: FC<{ minRechargeValue: number, gameId: string }> = ({ min
 
     const getRechargeOptions = async () => {
         // Fetch recharge options
-        const result = await RechargeApi.getOptions(initDataRaw as string, ps.platform);
+        const result = await RechargeApi.getOptions(initDataRaw as string, platform);
         setPriceType(result.price_type);
         setOptions(result.options);
 
@@ -209,7 +224,6 @@ const RechargeSelected: FC<{
         console.log("checking order status", order);
         if (order && order.orderId != "") {
             const result = await RechargeApi.getOrder(order?.orderId)
-            console.log(result);
             if (result.status == RechargeOrderStatus.Completed
                 || result.status == RechargeOrderStatus.Failed
                 || result.status == RechargeOrderStatus.Canceled
@@ -263,6 +277,13 @@ const RechargeSelected: FC<{
         //rechargeOrder状态变化
     }, [rechargeOrder])
 
+    useEffectOnActive(() => {
+        if (isInDashFunApp() != null) {
+            //在DashFun App环境下，需要重新按Purchase按钮
+            setLoading(false);
+        }
+    }, [])
+
     const requestOrder = async () => {
         setLoading(true);
         try {
@@ -283,6 +304,9 @@ const RechargeSelected: FC<{
                     console.error(e);
                     cancelOrder();
                 });
+            } else if (isInDashFunApp() != null) {
+                //在DashFun App环境下，调用iap支付
+                window.TelegramWebviewProxy?.postEvent("app_request_recharge", JSON.stringify(result));
             }
 
         } catch (e) {
@@ -332,8 +356,8 @@ const RechargeSelected: FC<{
             </div>
 
             {
-                //非tg环境下，或者充值金额不是star时，显示充值提示和链接
-                (!isInTelegram() || priceType != RechargePriceType.TGSTAR) && rechargeOrder == null && order != null && order.orderId != "" && order.optionIndex >= 0 &&
+                //非tg环境下，非rn app环境下，或者充值金额不是star时，显示充值提示和链接
+                (!isInTelegram() || priceType != RechargePriceType.TGSTAR) && isInDashFunApp() == null && rechargeOrder == null && order != null && order.orderId != "" && order.optionIndex >= 0 &&
                 <div className="w-full flex flex-col items-center justify-center p-2 gap-3">
                     <DFText size="xs" weight="2"><L langKey={LangKeys.Recharge_Purchase_Link_Tip} /></DFText>
                     {
