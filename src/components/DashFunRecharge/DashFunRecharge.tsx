@@ -267,7 +267,7 @@ const RechargeSelected: FC<{
         checkOrderStatus();
         const interval = setInterval(() => {
             checkOrderStatus();
-        }, 20000);
+        }, 10000);
         return () => {
             clearInterval(interval);
         }
