@@ -87,6 +87,17 @@ type DashFunAccount = {
 	display_name: string,
 }
 
+type AirdropData = {
+	start_time: number,
+	claim_time: number,
+	token_amount: string,
+	claimed: boolean,
+	vesting_contract: string,
+	token_contract: string,
+	claim_address: string,
+	ku_coin_id: string,
+}
+
 const AccApi = {
 	apiUrl: (): string => {
 		return dashFunApiUrl + "acc/"
@@ -1048,6 +1059,60 @@ const LeaderBoardApi = {
 }
 
 
+const AirdropApi = {
+	apiUrl: (): string => {
+		return dashFunApiUrl + "airdrop/"
+	},
+
+	detail: async (tgToken: string): Promise<AirdropData> => {
+		const api = AirdropApi.apiUrl() + "detail"
+		const result = await axios.get(api, {
+			headers: {
+				"Authorization": processToken(tgToken)
+			},
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data as AirdropData;
+			} else {
+				throw result.data.msg
+			}
+		} else {
+			throw result.status
+		}
+	},
+
+	claim: async (tgTGoken: string, address: string, kcUid: string): Promise<string> => {
+		const api = AirdropApi.apiUrl() + "claim"
+		const formData = new FormData();
+		formData.append("address", address);
+		formData.append("kc_uid", kcUid);
+		try {
+			const result = await axios.post(api, formData, {
+				headers: {
+					"Authorization": processToken(tgTGoken)
+				}
+			})
+			if (result.status == 200) {
+				if (result.data.code == 0) {
+					return result.data.data;
+				} else {
+					throw result.data.msg
+				}
+			} else {
+				throw result.data.msg
+			}
+		} catch (error: any) {
+			if (error.response && error.response.data) {
+				throw error.response.data.msg;
+			} else {
+				throw error;
+			}
+		}
+	}
+}
+
+
 const SpinWheelApi = {
 	apiUrl: (): string => {
 		return dashFunApiUrl + "spinwheel/"
@@ -1202,5 +1267,5 @@ const getEnv = () => {
 }
 
 
-export { AccountType, AccountStatus, AccApi, GameApi, PaymentApi, RechargeApi, UserApi, TGLink, TaskApi, CoinApi, SpinWheelApi, LeaderBoardApi, FriendsApi, RechargeLink, getEnv, Env }
-export type { PaymentData, RechargeOrder, DashFunAccount, }
+export { AccountType, AccountStatus, AccApi, AirdropApi, GameApi, PaymentApi, RechargeApi, UserApi, TGLink, TaskApi, CoinApi, SpinWheelApi, LeaderBoardApi, FriendsApi, RechargeLink, getEnv, Env }
+export type { PaymentData, RechargeOrder, DashFunAccount, AirdropData }

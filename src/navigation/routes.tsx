@@ -16,13 +16,14 @@ import MainPage from "@/pages/MainPage/MainPage";
 import { TestingPage } from "@/pages/TestingPage/TestingPage";
 import { ThemeParamsPage } from "@/pages/ThemeParamsPage/ThemeParamsPage.tsx";
 import { TONConnectPage } from "@/pages/TONConnectPage/TONConnectPage";
-import { Cpu, Gamepad2, Gift, Trophy, Users } from "lucide-react";
+import { Cpu, Gamepad2, Gift, Trophy, Users, Wallet2 } from "lucide-react";
 import { createHashRouter, RouteObject, useNavigate } from "react-router-dom";
 import { GameCenter_TopPage } from "@/pages/GameCenterPage/SubPages/TopsPage";
 import EntryPage from "@/pages/Entry/EntryPage";
 import GameCenter_RechargePage from "@/pages/GameCenterPage/SubPages/RechargePage";
 import { GameProvider } from "@/components/DashFun/DashFunGame";
 import { GameCenter_SpinWheelPage } from "@/pages/GameCenterPage/SubPages/SpinWheelPage";
+import { GameCenter_WalletPage } from "@/pages/GameCenterPage/SubPages/WalletPage";
 
 export interface AppRoute {
   id: string;
@@ -82,6 +83,7 @@ export const routes: AppRoute[] = [
       { id: "gamecenter-games", path: "games", Component: GameCenter_GamesPage, allowYScroll: true, back: "/game-center/main", title: "Games", icon: <Gamepad2 absoluteStrokeWidth size={28} /> },
       { id: "gamecenter-tasks", path: "tasks", Component: GameCenter_TaskPage, allowYScroll: true, back: "/game-center/main", title: "Tasks", icon: <Gift absoluteStrokeWidth size={28} /> },
       { id: "gamecenter-friends", path: "friends", Component: GameCenter_FriendsPage, allowYScroll: true, back: "/game-center/main", title: "Friends", icon: <Users absoluteStrokeWidth size={28} /> },
+      { id: "gamecenter-wallet", path: "wallet", Component: GameCenter_WalletPage, allowYScroll: true, back: "/game-center/main", title: "Wallet", icon: <Wallet2 absoluteStrokeWidth size={28} /> },
       { id: "gamecenter-tops", path: "tops", Component: GameCenter_TopPage, allowYScroll: true, back: "/game-center/main", title: "Top", icon: <Trophy absoluteStrokeWidth size={28} /> },
       { id: "gamecenter-search", path: "search", Component: GameCenter_SearchPage, allowYScroll: true, back: "/game-center/games" },
       { id: "gamecenter-profile", path: "profile", Component: GameCenter_Profile, allowYScroll: true, back: "/game-center/main" },
