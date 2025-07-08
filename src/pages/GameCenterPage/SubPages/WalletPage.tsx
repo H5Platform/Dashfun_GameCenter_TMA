@@ -252,7 +252,7 @@ const ClaimCell: FC = () => {
 											<div className="w-full">
 												You have provided your KuCoin UID, the tokens unlocked at TGE (
 												<DFText size="m" weight="3" className="inline">
-													{trimTrailingZeros(((airdropData?.token_amount ? parseFloat(airdropData.token_amount) : 0) * 0.2).toFixed(8))}
+													{roundToTwoDecimals(trimTrailingZeros(((airdropData?.token_amount ? parseFloat(airdropData.token_amount) : 0) * 0.2).toFixed(8)))}
 												</DFText>
 												<img src={iconDashFun} className="inline h-8 mb-2" />
 												) will be distributed by
