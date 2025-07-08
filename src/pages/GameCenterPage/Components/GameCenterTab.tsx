@@ -60,6 +60,7 @@ export const GameCenterTab = forwardRef<GameCenterTabRef>(({ }, ref) => {
 	const tasks = gamecenter.subRoutes?.find(r => r.id == "gamecenter-tasks") as AppRoute;
 	const friends = gamecenter.subRoutes?.find(r => r.id == "gamecenter-friends") as AppRoute;
 	const tops = gamecenter.subRoutes?.find(r => r.id == "gamecenter-tops") as AppRoute;
+	const wallet = gamecenter.subRoutes?.find(r => r.id == "gamecenter-wallet") as AppRoute;
 
 
 	useImperativeHandle(ref, () => ({
@@ -82,6 +83,8 @@ export const GameCenterTab = forwardRef<GameCenterTabRef>(({ }, ref) => {
 		friends,
 		tops,
 	]
+
+	tabs.push(wallet); //wallet tab is always at the end
 
 	const tabItems = [];
 	for (let index = 0; index < tabs.length; index++) {

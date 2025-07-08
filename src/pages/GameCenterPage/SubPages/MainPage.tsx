@@ -7,6 +7,8 @@ import { useGameCenterData } from "../Components/GameCenterDataProvider";
 
 import ProfileHeader from "../Components/ProfileHeader";
 import { DFButton, DFLabel } from "@/components/controls";
+import { Web3Provider } from "@/components/Wallet/airdrop_contract";
+import { TGECountDown } from "../Components/TGECountDown";
 
 
 export const GameCenter_MainPage: FC = () => {
@@ -55,6 +57,12 @@ export const GameCenter_MainPage: FC = () => {
 	return <div id="GameCenter_MainPage" className="w-full p-4 min-h-full flex flex-col gap-2">
 		<ProfileHeader />
 
+		<Web3Provider>
+			<div className="w-full flex items-center justify-center py-2">
+				<TGECountDown showCheckBtn />
+			</div>
+		</Web3Provider>
+
 		<div className="w-full pt-4">
 			<DFLabel>
 				<div className="w-full flex justify-between pl-4 items-center">
@@ -77,7 +85,6 @@ export const GameCenter_MainPage: FC = () => {
 				return <GameCard key={index} game={game} width={(pageWidth - 8) / 3} />
 			})}
 		</div>
-
 
 	</div>
 }

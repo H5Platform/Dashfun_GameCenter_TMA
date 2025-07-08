@@ -43,7 +43,7 @@ export const isRechargeOpen = () => {
 }
 
 /**
- * 判断当前是否在DashFun应用中
+ * 判断当前是否在DashFun应用中(Mobile App)
  * @returns {string} 返回平台 ios | android | null，null表示不在DashFun应用中
  */
 export const isInDashFunApp = (): "ios" | "android" | null => {
