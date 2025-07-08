@@ -4,13 +4,18 @@ import { EthersAdapter } from "@reown/appkit-adapter-ethers";
 import { AppKitNetwork, bsc, bscTestnet } from '@reown/appkit/networks'
 import { useAppKit } from "@reown/appkit/react";
 import { FC } from 'react';
+import { Env, getEnv } from '@/utils/DashFunApi';
 
 // 1. Get projectId
 const projectId = '0cbed54d6cddbb99a52e4fc4a6f209c4';
 
 // 2. Set the networks
 
-const networks: [AppKitNetwork, ...AppKitNetwork[]] = [bsc, bscTestnet];
+const networks: [AppKitNetwork, ...AppKitNetwork[]] = [bsc];
+
+if (getEnv() != Env.Prod) {
+	networks.push(bscTestnet);
+}
 
 // 3. Create a metadata object - optional
 const metadata = {
