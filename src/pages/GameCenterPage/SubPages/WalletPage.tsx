@@ -259,7 +259,7 @@ const ClaimCell: FC = () => {
 												<img src={kcLogo} className="h-5 inline mb-1 mx-1" />
 												, approximately 5 hours after the TGE at&nbsp;
 												{airdropData?.start_time
-													? new Date(airdropData.start_time * 1000)
+													? new Date((airdropData.start_time + airdropData.claim_time) * 1000)
 														.toISOString()
 														.replace('T', ' ')
 														.substring(0, 16) + " UTC"
