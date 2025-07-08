@@ -85,19 +85,19 @@ const VestingInfo: FC = () => {
 					<DFText weight="1" size="xl">
 						You've received
 					</DFText>
-					<DFunLabel amount={amount} />
+					<DFunLabel amount={roundToTwoDecimals(amount)} />
 					<DFText weight="1" size="m"  >
 						through XP.
 					</DFText>
 				</div>
 				<div className="w-full flex flex-row items-center justify-start gap-2">
-					<DFunLabel amount={trimTrailingZeros((numAmount * 0.2).toFixed(8))} />
+					<DFunLabel amount={roundToTwoDecimals(trimTrailingZeros((numAmount * 0.2).toFixed(8)))} />
 					<DFText weight="1" size="m" className="break-words w-full min-w-0 whitespace-pre-line text-wrap text-left">
 						will be unlocked at TGE. You can claim them after airdrop starts.
 					</DFText>
 				</div>
 				<div className="w-full flex flex-row items-center justify-start gap-2">
-					<DFunLabel amount={trimTrailingZeros((numAmount * 0.8).toFixed(8))} />
+					<DFunLabel amount={roundToTwoDecimals(trimTrailingZeros((numAmount * 0.8).toFixed(8)))} />
 					<DFText weight="1" size="m">
 						will be locked for 3 months
 					</DFText>
