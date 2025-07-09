@@ -36,6 +36,7 @@ const Web3Context = createContext<{
 	vestingInfo: VestingInfo,
 	userClaimTokens: () => Promise<string>,
 	updateVestingInfo: () => Promise<void>,
+	updateAirdropData: () => Promise<void>;
 } | null>(null);
 
 
@@ -165,11 +166,20 @@ export const Web3Provider = ({ children }: PropsWithChildren<{}>) => {
 			dfBalance: { amount: dfBalance, loading: dfLoading },
 			vestingInfo: { ...vestingInfo, loading: vestingLoading },
 			userClaimTokens: userClaimTokens,
-			updateVestingInfo: updateVestingInfo
+			updateVestingInfo: updateVestingInfo,
+			updateAirdropData: fetchAirdropData
 		}}>
 			{children}
 		</Web3Context.Provider >
 	);
+}
+
+export const useUpdateAirdropData = () => {
+	const context = useContext(Web3Context);
+	if (!context) {
+		throw new Error("useUpdateAirdropData must be used within a Web3Provider");
+	}
+	return context.updateAirdropData;
 }
 
 export const useUpdateVestingInfo = () => {
