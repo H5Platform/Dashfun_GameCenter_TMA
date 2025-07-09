@@ -79,3 +79,7 @@ export const currentChannel = () => {
 export const isInGameCenter = () => {
 	return window.location.href.includes("game-center");
 }
+
+export const sleep = (ms: number): Promise<void> => {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}

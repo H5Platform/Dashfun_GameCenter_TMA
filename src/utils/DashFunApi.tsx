@@ -98,6 +98,18 @@ type AirdropData = {
 	ku_coin_id: string,
 }
 
+type AirdropVestingRequest = {
+	existed: boolean,
+	request: {
+		user_id: string,
+		address: string,
+		token_amount: string,
+		kc_uid: string,
+		status: number,
+		result: string,
+	} | null,
+}
+
 const AccApi = {
 	apiUrl: (): string => {
 		return dashFunApiUrl + "acc/"
@@ -1109,6 +1121,24 @@ const AirdropApi = {
 				throw error;
 			}
 		}
+	},
+
+	myRequest: async (tgToken: string): Promise<AirdropVestingRequest> => {
+		const api = AirdropApi.apiUrl() + "my_request"
+		const result = await axios.get(api, {
+			headers: {
+				"Authorization": processToken(tgToken)
+			},
+		})
+		if (result.status == 200) {
+			if (result.data.code == 0) {
+				return result.data.data as AirdropVestingRequest;
+			} else {
+				throw result.data.msg
+			}
+		} else {
+			throw result.status
+		}
 	}
 }
 
@@ -1268,4 +1298,4 @@ const getEnv = () => {
 
 
 export { AccountType, AccountStatus, AccApi, AirdropApi, GameApi, PaymentApi, RechargeApi, UserApi, TGLink, TaskApi, CoinApi, SpinWheelApi, LeaderBoardApi, FriendsApi, RechargeLink, getEnv, Env }
-export type { PaymentData, RechargeOrder, DashFunAccount, AirdropData }
+export type { PaymentData, RechargeOrder, DashFunAccount, AirdropData, AirdropVestingRequest }

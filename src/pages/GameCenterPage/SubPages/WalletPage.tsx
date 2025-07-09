@@ -1,10 +1,10 @@
 import { DFButton, DFCell, DFImage, DFLabel, DFText } from "@/components/controls";
 import { DFInfoLabel } from "@/components/controls/Label";
-import { useAirdropData, useDFBalance, useUpdateVestingInfo, useUserClaimTokens, useVestingInfo, useWaitingForTransaction, Web3Provider } from "@/components/Wallet/airdrop_contract";
+import { useAirdropData, useDFBalance, useUpdateAirdropData, useUpdateVestingInfo, useUserClaimTokens, useVestingInfo, useWaitingForTransaction, Web3Provider } from "@/components/Wallet/airdrop_contract";
 import iconDashFun from "@/icons/dashfun-icon-256.png";
 import kcLogo from "@/icons/kc-logo.svg";
-import { AirdropApi } from "@/utils/DashFunApi";
-import { isInTelegram } from "@/utils/Utils";
+import { AirdropApi, AirdropVestingRequest, Env, getEnv } from "@/utils/DashFunApi";
+import { isInTelegram, sleep } from "@/utils/Utils";
 import { useAppKit, useAppKitAccount } from "@reown/appkit/react";
 import { useLaunchParams } from "@telegram-apps/sdk-react";
 import { Input, Spinner } from "@telegram-apps/telegram-ui";
@@ -142,6 +142,7 @@ const ClaimCell: FC = () => {
 	const vestingInfo = useVestingInfo();
 	const userClaimTokens = useUserClaimTokens();
 	const updateVestingInfo = useUpdateVestingInfo();
+	const updateAirdropData = useUpdateAirdropData();
 
 	const waitingForTransaction = useWaitingForTransaction();
 
@@ -171,13 +172,21 @@ const ClaimCell: FC = () => {
 			setClaimTx("loading");
 			//向服务器请求，建立vesting
 			try {
-				const tx = await AirdropApi.claim(initDataRaw as string, address as string, kcUid)
+				await AirdropApi.claim(initDataRaw as string, address as string, kcUid)
+				const req = await waitingForRequest(initDataRaw as string);
+
+				if (req == null || req.existed == false || req.request == null) {
+					setError("Failed to claim tokens. Please try again later.");
+					setClaimTx("");
+					return;
+				}
+				const tx = req.request.result;
 				setClaimTx(tx);
 				setError("");
 				//等待交易完成
 				await waitingForTransaction(tx);
 				setClaimTx("");
-				updateVestingInfo();
+				updateAirdropData();
 			} catch (e) {
 				console.error("Error claiming tokens:", e);
 				setError(e instanceof Error ? e.message : e as string);
@@ -289,6 +298,16 @@ const ClaimCell: FC = () => {
 								>
 									Claim Your Tokens
 								</DFButton>
+								{(
+									claimTx != "" && claimTx != "loading" && <DFInfoLabel rounded="md">
+										<DFText size="sm" weight="1" className="px-3 py-1">
+											Transaction sent! Waiting for confirmation...
+										</DFText>
+										<DFText size="sm" weight="1" className="px-3 py-1">
+											TX Hash: <a href={getTxLink(claimTx)} target="_blank" className="text-blue-300 underline">{claimTx.slice(0, 6) + "..." + claimTx.slice(-6)}</a>
+										</DFText>
+									</DFInfoLabel>
+								)}
 							</div>
 					)
 				}
@@ -359,4 +378,32 @@ function roundToTwoDecimals(numStr: string): string {
 	return num.toFixed(2);
 }
 
+async function waitingForRequest(token: string): Promise<AirdropVestingRequest | null> {
+	let req: AirdropVestingRequest | null = null;
 
+	do {
+		await sleep(2000); // 等待2秒
+		req = await AirdropApi.myRequest(token);
+		if (req == null || req.existed == false || req.request == null) {
+			return { existed: false, request: null };
+		}
+		console.log("Waiting for request to be ready...", req);
+		if (req.request.status == 3) { //Done
+			//请求已完成
+			return req;
+		} else if (req.request.status == 4) { //Failed
+			//请求失败
+			throw new Error("Request failed: " + req.request.result);
+		}
+	} while (req != null && req.request != null && req.request.status != 3 && req.request.status != 4);
+
+	return null;
+}
+
+function getTxLink(txHash: string): string {
+	let url = "https://testnet.bscscan.com/tx/";
+	if (getEnv() == Env.Prod) {
+		url = "https://bscscan.com/tx/";
+	}
+	return `${url}${txHash}`;
+}
