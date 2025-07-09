@@ -40,8 +40,8 @@ export const TGECountDown: FC<{ showCheckBtn?: boolean }> = ({ showCheckBtn = fa
 		return () => clearInterval(interval);
 	}, [airdropData]);
 
-	const days = Math.floor(countdown / (24 * 3600));
-	const hours = Math.floor((countdown % (24 * 3600)) / 3600);
+	//const days = Math.floor(countdown / (24 * 3600));
+	const hours = Math.floor(countdown / 3600);
 	const minutes = Math.floor((countdown % 3600) / 60);
 	const seconds = countdown % 60;
 
@@ -62,7 +62,7 @@ export const TGECountDown: FC<{ showCheckBtn?: boolean }> = ({ showCheckBtn = fa
 				<DFText weight="3" size="xl" className="w-full text-center">{
 					type == "tge" ? "TGE starts in" : "Airdrop starts in"
 				}</DFText>
-				<DFText weight="3" size="3xl">{days}d {hours}h {minutes}m {seconds}s</DFText>
+				<DFText weight="3" size="3xl">{hours}h {minutes}m {seconds}s</DFText>
 				{(showCheckBtn && <DFButton size="m" onClick={() => {
 					nav("/game-center/wallet")
 				}}>
