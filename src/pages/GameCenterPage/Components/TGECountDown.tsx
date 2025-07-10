@@ -45,6 +45,8 @@ export const TGECountDown: FC<{ showCheckBtn?: boolean }> = ({ showCheckBtn = fa
 	const minutes = Math.floor((countdown % 3600) / 60);
 	const seconds = countdown % 60;
 
+
+
 	return (countdown <= 0 ? <></> : <div className="w-full flex flex-col gap-4">
 		{(type == "airdrop" && <DFCell mode="primary" className="w-full">
 			<div className="w-full flex flex-col items-center justify-center gap-2 py-2 px-4">
@@ -62,7 +64,14 @@ export const TGECountDown: FC<{ showCheckBtn?: boolean }> = ({ showCheckBtn = fa
 				<DFText weight="3" size="xl" className="w-full text-center">{
 					type == "tge" ? "TGE starts in" : "Airdrop starts in"
 				}</DFText>
-				<DFText weight="3" size="3xl">{hours}h {minutes}m {seconds}s</DFText>
+				{/* <DFText weight="3" size="3xl">{hours}h {minutes}m {seconds}s</DFText> */}
+				<div className="w-full flex flex-row items-center justify-center gap-4">
+					<CountdownPanel countdown={hours} unit="Hr" />
+					<DFText size="3xl" weight="3">:</DFText>
+					<CountdownPanel countdown={minutes} unit="Min" />
+					<DFText size="3xl" weight="3">:</DFText>
+					<CountdownPanel countdown={seconds} unit="Sec" />
+				</div>
 				{(showCheckBtn && <DFButton size="m" onClick={() => {
 					nav("/game-center/wallet")
 				}}>
@@ -83,4 +92,17 @@ export const TGECountDown: FC<{ showCheckBtn?: boolean }> = ({ showCheckBtn = fa
 
 	</div>
 	)
+}
+
+const CountdownPanel: FC<{ countdown: number, unit: string }> = ({ countdown, unit }) => {
+	return (
+		<div className="flex flex-col">
+			<div className="w-[70px] h-[50px] rounded-t-md bg-[#88888880] flex items-center justify-center">
+				<DFText size="3xl" weight="3">{countdown.toString().padStart(2, "0")}</DFText>
+			</div>
+			<div className="w-[70px] h-[20px] rounded-b-md bg-[#888888F0]">
+				<DFText size="sm" weight="1" className="w-full text-center">{unit}</DFText>
+			</div>
+		</div>
+	);
 }
