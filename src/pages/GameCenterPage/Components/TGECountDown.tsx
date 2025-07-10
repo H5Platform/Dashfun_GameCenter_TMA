@@ -4,7 +4,8 @@ import { useAirdropData } from "@/components/Wallet/airdrop_contract";
 import { FC, useState, useEffect } from "react";
 import kcLogo from "@/icons/kc-logo.svg";
 import { useNavigate } from "react-router-dom";
-const kc_signup_url = "https://www.kucoin.com/ucenter/signup"
+
+//const kc_signup_url = "https://www.kucoin.com/ucenter/signup"
 const kc_trade_url = "https://www.kucoin.com/trade/DFUN-USDT";
 
 export const TGECountDown: FC<{ showCheckBtn?: boolean }> = ({ showCheckBtn = false }) => {
