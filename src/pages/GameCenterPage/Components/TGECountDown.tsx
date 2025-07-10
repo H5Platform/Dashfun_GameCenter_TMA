@@ -10,7 +10,7 @@ const kc_trade_url = "https://www.kucoin.com/trade/DFUN-USDT";
 
 export const TGECountDown: FC<{ showCheckBtn?: boolean }> = ({ showCheckBtn = false }) => {
 	const airdropData = useAirdropData();
-	const [countdown, setCountdown] = useState<number>(0);
+	const [countdown, setCountdown] = useState<number>(-1);
 	const [type, setType] = useState("tge")
 	const nav = useNavigate();
 	useEffect(() => {
@@ -49,7 +49,7 @@ export const TGECountDown: FC<{ showCheckBtn?: boolean }> = ({ showCheckBtn = fa
 
 
 
-	return (countdown <= 0 ? (airdropData != null && <div className="w-full flex flex-row items-center justify-center gap-2">
+	return (countdown <= 0 ? (countdown == 0 && <div className="w-full flex flex-row items-center justify-center gap-2">
 		<DFText weight="3" size="m">🚀 DFUN is now trading on </DFText>
 		<img src={kcLogo} className="h-6 cursor-pointer" onClick={() => {
 			window.open(kc_trade_url, "_blank");
