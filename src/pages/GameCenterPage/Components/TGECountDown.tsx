@@ -47,9 +47,12 @@ export const TGECountDown: FC<{ showCheckBtn?: boolean }> = ({ showCheckBtn = fa
 	const minutes = Math.floor((countdown % 3600) / 60);
 	const seconds = countdown % 60;
 
+	let showGotoKC = false;
+	if (airdropData != null && countdown == 0 && type == "airdrop") {
+		showGotoKC = true;
+	}
 
-
-	return (countdown <= 0 ? (countdown == 0 && <div className="w-full flex flex-row items-center justify-center gap-2">
+	return (countdown <= 0 ? (showGotoKC && <div className="w-full flex flex-row items-center justify-center gap-2">
 		<DFText weight="3" size="m">🚀 DFUN is now trading on </DFText>
 		<img src={kcLogo} className="h-6 cursor-pointer" onClick={() => {
 			window.open(kc_trade_url, "_blank");
