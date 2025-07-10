@@ -49,12 +49,12 @@ export const TGECountDown: FC<{ showCheckBtn?: boolean }> = ({ showCheckBtn = fa
 
 
 
-	return (countdown <= 0 ? <div className="w-full flex flex-row items-center justify-center gap-2">
+	return (countdown <= 0 ? (airdropData != null && <div className="w-full flex flex-row items-center justify-center gap-2">
 		<DFText weight="3" size="m">🚀 DFUN is now trading on </DFText>
 		<img src={kcLogo} className="h-6 cursor-pointer" onClick={() => {
 			window.open(kc_trade_url, "_blank");
 		}} />
-	</div> : <div className="w-full flex flex-col gap-4">
+	</div>) : <div className="w-full flex flex-col gap-4">
 		{(type == "airdrop" && <DFCell mode="primary" className="w-full">
 			<div className="w-full flex flex-col items-center justify-center gap-2 py-2 px-4">
 				<DFText weight="3" size="xl" className="w-full text-center">🎉 TGE is live!</DFText>
