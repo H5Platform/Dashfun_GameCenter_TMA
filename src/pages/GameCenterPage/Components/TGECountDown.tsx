@@ -51,6 +51,7 @@ export const TGECountDown: FC<{ showCheckBtn?: boolean }> = ({ showCheckBtn = fa
 	if (airdropData != null && countdown == 0 && type == "airdrop") {
 		showGotoKC = true;
 	}
+	showGotoKC = false; // remove goto kc
 
 	return (countdown <= 0 ? (showGotoKC && <div className="w-full flex flex-row items-center justify-center gap-2">
 		<DFText weight="3" size="m">🚀 DFUN is now trading on </DFText>
