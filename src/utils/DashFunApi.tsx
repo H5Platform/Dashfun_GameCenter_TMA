@@ -13,8 +13,8 @@ enum Env {
 
 let env: Env = Env.Test
 
-const api_local = "https://tma-server-test.nexgami.com/api/v1/"
-// const api_local = "http://10.0.0.173:8088/api/v1/"
+//const api_local = "https://tma-server-test.nexgami.com/api/v1/"
+ const api_local = "http://localhost:8088/api/v1/"
 const api_test = "https://dashfun-server-test.nexgami.com/api/v1/"
 const api_prod = "https://tma-server.dashfun.games/api/v1/"
 
