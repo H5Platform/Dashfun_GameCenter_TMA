@@ -6,10 +6,19 @@
   <link rel="icon" type="image/svg+xml" href="https://res.dashfun.games/icons/dashfun-icon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
   <title>DashFun</title>
+  <script async src="https://www.roiify.net/sdk/roiify-ads.js"></script>
+  <script>
+    window.addEventListener('load', function () {
+      RoiifyAds.show('plc_fhgx7f4qkzj9', '#roiify-ad-slot', { theme: 'auto', width: 'auto', radius: '8' });
+    });
+  </script>
 </head>
 
 <body>
-  <div id="root"></div>
+  <div class="w-full flex h-full justify-center flex-col">
+    <div id="roiify-ad-slot" class="max-w-screen-sm sm:items-center sm:mx-auto h-full"></div>
+    <div id="root"></div>
+  </div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 
